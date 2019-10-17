@@ -1,0 +1,1 @@
+python genedx.py ./test/input ./test/output

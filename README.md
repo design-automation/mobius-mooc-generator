@@ -28,13 +28,13 @@ In order to create the edx course, the instructors need to create a set of markd
 The folder strcture is as follows:
 
 - Course_Folder (_1st level_)
-  - settings.md
+  - course_settings.md
   - Section_Folder (_2nd level_)
-    - settings.md
+    - section_settings.md
     - Subsection_Folder (_3rd level_)
-      - settings.md
+      - subsection_settings.md
       - Unit_Folder (_4th level_)
-        - settings.md
+        - unit_settings.md
         - component_file.md
 
 ## Example
@@ -42,42 +42,42 @@ The folder strcture is as follows:
 Here is an example of what a folder structure might look like. It should match the structure that the users see in the edx user interface.
 
 - My_MOOC (_course, 1st level_)
-  - settings.md
+  - course_settings.md
   - Week_1 (_section, 2nd level_)
-    - settings.md
+    - section_settings.md
     - 01_Intro (_subsection, 3rd level_)
-      - settings.md
+      - subsection_settings.md
       - Intro_Text(_unit, 3rd level_)
-        - settings.md
+        - unit_settings.md
         - comp1.md
         - image1.jpg
       - Intro_Video (_unit, 3rd level_)
-        - settings.md
+        - unit_settings.md
         - comp1.md
     - 02_Shorts (_subsection, 3rd level_)
-      - settings.md
+      - subsection_settings.md
       - Concept_1 (_unit, 3rd level_)
-        - settings.md
+        - unit_settings.md
         - comp1.md
         - comp2.md
         - image1.jpg
       - Concept_2 (_unit, 3rd level_)
-        - settings.md
+        - unitsettings.md
         - comp1.md
       - Concept_3 (_unit, 3rd level_)
-        - settings.md
+        - unit_settings.md
         - comp1.md
         - image1.jpg
     - 03_Assignment (_subsection, 3rd level_)
-      - settings.md
+      - subsection_settings.md
       - Quiz (_unit, 3rd level_)
-        - settings.md
+        - unit_settings.md
         - comp1.md
         - comp2.md
         - comp3.md
         - image1.jpg
   - Week_2 (_section, 2nd level_)
-    - settings.md
+    - section_settings.md
     - etc, etc, etc
     
 Note that the alphanumeric ordering of the folders is important, as this will reflect the ordering that will be generated in edx. In this example, the sections'Week_1', 'Week_2', etc will be sorted correctly. However, the subsections 'Intro', 'Shorts', and 'Assignment' would not be sorted correctly. So, for that reason, they have been named '01_Intro', '02_Shorts', and '03_Assignment'.
@@ -87,7 +87,7 @@ Note that the alphanumeric ordering of the folders is important, as this will re
 There are three types of files:
 
 - Settings files
-  - Must be called "settings.md", note the name is all lowercase
+  - Must be end in "settings.md", for example "section_settings.md", note the name is all lowercase
   - Contains the settings for the parent folder.
 - Component files, the actual contents
   - Can have any name.
@@ -107,7 +107,7 @@ The settings file contains the settings for each folder.
 
 Setting are define as a set of key-value pairs. All settings are optional. If a particular setting is not found, then a default value will be used. 
 
-### Common Metadata For Settings Files
+### Common Metadata For Settings Files in Folders
 
 Common setting for all settings files are as follows:
 - display_name: string (if missing, the folder name will be used)
@@ -116,33 +116,50 @@ Common setting for all settings files are as follows:
 
 The display_name is the name that will be displayed to the user in the edx interface.
 
-### Course Metadata
+### Root Folder Metadata
 
 Additional course metadata is as follows:
-- cert_html_view_enabled: "true" 
-- course_image: "course_image.jpg" 
-- graceperiod: "900 seconds" 
-- instructor_info: "[Luke Skywalker, Han Solo]" 
-- invitation_only: "true" 
-- language: "en" 
-- learning_info: "[]" 
-- minimum_grade_credit: "0.8" 
 
-### Section Metadata
+Required
+- url_name: "1234" 
+- org: "abc" 
+- course: "online101"
+
+### Course Folder Metadata
+
+Additional course metadata is as follows:
+
+Required
+- wiki_slug: "xxx"
+
+Optional
+- cert_html_view_enabled: "true"
+- course_image: "course_image.jpg"
+- graceperiod: "900 seconds"
+- instructor_info: "[Luke Skywalker, Han Solo]"
+- invitation_only: "true"
+- language: "en"
+- learning_info: "[]"
+- minimum_grade_credit: "0.8"
+
+
+### Section Folder Metadata
 
 Additional section metadata is as follows:
 
 NIL
 
-### Subsection Metadata
+### Subsection Folder Metadata
 
 Additional subsection metadata is as follows:
+
+Optional
 - format: "Assignment" 
 - graded: "true"
 - due: "2019-08-25T10:00:00+00:00" 
 - hide_after_due: "true" 
 
-### Unit Metadata
+### Unit Folder Metadata
 
 NIL
 
@@ -175,6 +192,8 @@ At the moment, only 'problem-submit' and 'problem-checkboxes' are implemented.
 ### Common Metadata For Component Files
 
 Common setting for all settings files are as follows:
+
+Optional
 - display_name: string
 - visible_to_staff_only: "true"
 - start: "&quot;2019-08-18T10:00:00+00:00&quot;"
@@ -190,19 +209,28 @@ NIL
 ### Video Metadata
 
 Additional video metadata is as follows:
+
+Required
+- youtube_id_1_0: "3_yD_cEKoCk"
+
+Optional
 - download_video: "false" 
 - edx_video_id: "" 
 - html5_sources: "[]" 
-- youtube_id_1_0: "3_yD_cEKoCk"
+
 
 ### Problem Metadata - Submit
 
 Additional submit problem metadata is as follows:
+
+Required
+- question: "question_name"
+- queuename: "name_of_queue_on_edx_server"
+
+Optional
 - max_attempts: "2" 
 - weight: "1.0"
 - showanswer: "finished" 
-- question: "question_name"
-- queuename: "spatial_computational_thinking"
 
 For the content of the submit problem, the markdown should be defined as follows: ... to be completed
 
@@ -265,10 +293,12 @@ This is used for both settings files and for component files, as described above
 Generate all the MOOC file and the .tar.gz file using the following command:
 
 ~~~~~~~~~~~~~~~~~~~~~
-python genedx.py ./src/MOOC1 ./dist/MOOC1
+python genedx.py ./in/MOOC1 ./out/MOOC1
 ~~~~~~~~~~~~~~~~~~~~~
 
-Youmust supply two arguments to the python script:
-- ./src/MOOC1 is the source folder where teh script will read from
-- ./dist/MOOC1 is the destination folder where the script will write to
+You must supply two arguments to the python script:
+- ./in/MOOC1 is the source folder where the script will read from
+- ./out/MOOC1 is the destination folder where the script will write to
+
+Warning: everything in the output folder will be deleted.
 
