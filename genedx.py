@@ -27,7 +27,7 @@ ASSETS_FOLDER = "assets"
 #--------------------------------------------------------------------------------------------------
 # Metadata settings for folders
 # root
-ROOT_FOLDER_REQ = ['url_name', 'org', 'course']
+ROOT_FOLDER_REQ = ['org', 'course', 'url_name']
 ROOT_FOLDER_OPT = ['visible_to_staff_only', 'start']
 # course
 COURSE_FOLDER_REQ = ['display_name']
@@ -192,14 +192,16 @@ def writeXmlForCourse(in_folder, out_folder, filename, sections):
     # create xml
     course_tag = etree.Element("course")
     for key in course_folder_settings:
-        course_tag.set(key, course_folder_settings[key])
+        if not key in ['wiki_slug']:
+            course_tag.set(key, course_folder_settings[key])
     for section in sections:
         chapter_tag = etree.Element("chapter")
         chapter_tag.set('url_name', section)
         course_tag.append(chapter_tag)
-    wiki_tag = etree.Element("wiki")
-    wiki_tag.set('slug', course_folder_settings['wiki_slug'])
-    course_tag.append(wiki_tag)
+    if 'wiki_slug' in course_folder_settings:
+        wiki_tag = etree.Element("wiki")
+        wiki_tag.set('slug', course_folder_settings['wiki_slug'])
+        course_tag.append(wiki_tag)
     result = etree.tostring(course_tag, pretty_print = True)
     # write the file
     xml_out_path = os.path.join(out_folder, COURSE_FOLDER, filename + '.xml')
@@ -358,13 +360,18 @@ def writeXmlForHtmlComp(out_folder, filename, content, settings):
     # />
     # ----  ----  ----
     # write the html file
+    content_root_tag = etree.fromstring(content)
     html_out_path = os.path.join(out_folder, COMP_HTML_FOLDER, filename + '.html')
-    with open(html_out_path, 'w') as fout:
-        fout.write(content)
+    with open(html_out_path, 'wb') as fout:
+        for tag in content_root_tag:
+            tag_result = etree.tostring(tag, pretty_print = True)
+            fout.write(tag_result)
     # create xml
     html_tag = etree.Element("html")
     for key in settings:
-        html_tag.set(key, settings[key])
+        if key not in ['type']:
+            html_tag.set(key, settings[key])
+    html_tag.set('filename', filename)
     result = etree.tostring(html_tag, pretty_print = True)
     # write the xml file
     xml_out_path = os.path.join(out_folder, COMP_HTML_FOLDER, filename + '.xml')
@@ -425,7 +432,7 @@ def writeXmlForProbCheckboxesComp(out_folder, filename, content, settings):
     problem_tag.append( choiceresponse_tag )
     # process the settings
     for key in settings:
-        if key not in ['type', 'display_name']:
+        if key not in ['type']:
             problem_tag.set(key, settings[key])
     # get the content
     content_root = etree.fromstring(content)
