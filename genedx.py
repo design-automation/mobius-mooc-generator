@@ -3,6 +3,7 @@ import tarfile
 import shutil
 from lxml import etree
 import markdown
+from shutil import copyfile
 # create the markdow instance
 md = markdown.Markdown(extensions = ['extra', 'meta', 'sane_lists'])
 #--------------------------------------------------------------------------------------------------
@@ -23,7 +24,7 @@ COMP_HTML_FOLDER = "html"
 COMP_VIDS_FOLDER = "video"
 COMP_PROBS_FOLDER = "problem"
 # Others
-ASSETS_FOLDER = "assets"
+STATIC_FOLDER = "static"
 #--------------------------------------------------------------------------------------------------
 # Metadata settings for folders
 # root
@@ -72,6 +73,10 @@ METADATA_ENUMS = {
     'type': ['html', 'video', 
         'problem-submit', 'problem-checkboxes', 'problem-choice', 'problem-dropdown', 'problem-numerical', 'problem-text']
 }
+#--------------------------------------------------------------------------------------------------
+# Image Settings
+IMAGE_WIDTH = 400
+IMAGE_CSS = 'display:block;margin-left:auto;margin-right:auto;border-style:solid;border-width:1px;'
 #--------------------------------------------------------------------------------------------------
 # converts markdown to html
 # returns the html string (in xml tags) and the metadata object
@@ -359,8 +364,16 @@ def writeXmlForHtmlComp(out_folder, filename, content, settings):
     #   editor="visual"
     # />
     # ----  ----  ----
-    # write the html file
+    # process teh html
     content_root_tag = etree.fromstring(content)
+    img_elems = list(content_root_tag.iter('img'))
+    for img_elem in img_elems:
+        img_elem.set('width', str(IMAGE_WIDTH))
+        img_elem.set('style', IMAGE_CSS)
+        src = img_elem.get('src')
+        if not src.startswith('/'):
+            img_elem.set('src', '/' + STATIC_FOLDER + '/' + src)
+    # write the html file
     html_out_path = os.path.join(out_folder, COMP_HTML_FOLDER, filename + '.html')
     with open(html_out_path, 'wb') as fout:
         for tag in content_root_tag:
@@ -595,9 +608,10 @@ def processHtml(component_path, out_folder, filename):
 #--------------------------------------------------------------------------------------------------
 # write the image to the assets folder
 # returns void
-def processImage(component_path, out_folder, filename):
-    print('Images not implemented yet...')
-    pass
+def processImage(component_path, out_folder, component):
+    # copy the image to the assets folder
+    out_path = os.path.join(out_folder, STATIC_FOLDER, component)
+    copyfile(component_path, out_path)
 #--------------------------------------------------------------------------------------------------
 # get all the sub folders in a folder
 # return the folder names and folder paths, like this 
@@ -693,7 +707,7 @@ def processCourse(in_folder, out_folder):
     os.mkdir(os.path.join(out_folder, COMP_HTML_FOLDER))
     os.mkdir(os.path.join(out_folder, COMP_VIDS_FOLDER))
     os.mkdir(os.path.join(out_folder, COMP_PROBS_FOLDER))
-    os.mkdir(os.path.join(out_folder, ASSETS_FOLDER))
+    os.mkdir(os.path.join(out_folder, STATIC_FOLDER))
     # create the root xml file
     course_filename = writeXmlForRoot(in_folder, out_folder)
     # loop
@@ -729,7 +743,7 @@ def processCourse(in_folder, out_folder):
                         components.append([component_filename, 'html'])
                     elif component_ext in ['jpg', 'jpeg', 'png', 'gif']:
                         # this is an image that needs to go to assets
-                        processImage(component_path, out_folder, component_filename)
+                        processImage(component_path, out_folder, component)
                     else:
                         pass
                         # could be any other file, just ignore and continue
