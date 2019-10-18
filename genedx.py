@@ -87,13 +87,13 @@ def convertMd(data):
         return [content, meta]
 #--------------------------------------------------------------------------------------------------
 # process images
-def setImageHtml(img_elems):
+def setImageHtml(img_elems, unit_filename):
     for img_elem in img_elems:
         img_elem.set('width', str(IMAGE_WIDTH))
         img_elem.set('style', IMAGE_CSS)
         src = img_elem.get('src')
         if not src.startswith('/'):
-            img_elem.set('src', '/' + STATIC_FOLDER + '/' + src)
+            img_elem.set('src', '/' + STATIC_FOLDER + '/' + unit_filename + '_' + src)
 #--------------------------------------------------------------------------------------------------
 # get the settings from a folder
 # returns a dict of settings
@@ -320,7 +320,7 @@ def writeXmlForUnit(in_folder, out_folder, filename, components):
 #--------------------------------------------------------------------------------------------------
 # read md
 # write to either units folder or problems folder, depending on the type
-def processMd(component_path, out_folder, filename):
+def processMd(component_path, out_folder, component_filename, unit_filename):
     # print("component_path", component_path)
     # generate the files in the right folders
     [content, meta] = getComponentContentMeta(component_path)
@@ -334,16 +334,16 @@ def processMd(component_path, out_folder, filename):
     # generate xml files
     if comp_type == 'html':
         settings = getMetaSettings(component_path, meta, COMP_HTML_REQ, COMP_HTML_OPT )
-        writeXmlForHtmlComp(out_folder, filename, content, settings)
+        writeXmlForHtmlComp(out_folder, component_filename, content, settings, unit_filename)
     elif comp_type == 'problem-checkboxes':
         settings = getMetaSettings(component_path, meta, COMP_PROB_CHECKBOXES_REQ, COMP_PROB_CHECKBOXES_OPT )
-        writeXmlForProbCheckboxesComp(out_folder, filename, content, settings)
+        writeXmlForProbCheckboxesComp(out_folder, component_filename, content, settings, unit_filename)
     elif comp_type == 'problem-submit':
         settings = getMetaSettings(component_path, meta, COMP_PROB_SUBMIT_REQ , COMP_PROB_SUBMIT_OPT )
-        writeXmlForSubmitComp(out_folder, filename, content, settings)
+        writeXmlForSubmitComp(out_folder, component_filename, content, settings, unit_filename)
     elif comp_type == 'video':
         settings = getMetaSettings(component_path, meta, COMP_VID_REQ, COMP_VID_OPT )
-        writeXmlForVidComp(out_folder, filename, content, settings)
+        writeXmlForVidComp(out_folder, component_filename, content, settings)
     else:
         print('Error: Component type not recognised:', comp_type, "in", component_path)
     # return the component type, which is needed for generating the xml for the subsection
@@ -352,7 +352,7 @@ def processMd(component_path, out_folder, filename):
     return comp_type
 #--------------------------------------------------------------------------------------------------
 # write xml for Html component
-def writeXmlForHtmlComp(out_folder, filename, content, settings):
+def writeXmlForHtmlComp(out_folder, filename, content, settings, unit_filename):
     # ---- Html file ----
     # <p>
     #   <span style="text-decoration: underline;">Objective:</span>
@@ -377,7 +377,7 @@ def writeXmlForHtmlComp(out_folder, filename, content, settings):
     content_root_tag = etree.fromstring(content)
     # process images
     img_elems = list(content_root_tag.iter('img'))
-    setImageHtml(img_elems)
+    setImageHtml(img_elems, unit_filename)
     # write the html file
     html_out_path = os.path.join(out_folder, COMP_HTML_FOLDER, filename + '.html')
     with open(html_out_path, 'wb') as fout:
@@ -397,7 +397,7 @@ def writeXmlForHtmlComp(out_folder, filename, content, settings):
         fout.write(result)
 #--------------------------------------------------------------------------------------------------
 # write xml for problem Checkboxescomponent
-def writeXmlForProbCheckboxesComp(out_folder, filename, content, settings):
+def writeXmlForProbCheckboxesComp(out_folder, filename, content, settings, unit_filename):
     # ----  ----  ----
     # <problem 
     #   display_name="Q2" 
@@ -434,7 +434,7 @@ def writeXmlForProbCheckboxesComp(out_folder, filename, content, settings):
     content_root_tag = etree.fromstring(content)
     # process images
     img_elems = list(content_root_tag.iter('img'))
-    setImageHtml(img_elems)
+    setImageHtml(img_elems, unit_filename)
     # process the p elements
     # these will be converted to <label>, <description>, and solution <p> elements
     label_tag = etree.Element("label") 
@@ -496,7 +496,7 @@ def writeXmlForProbCheckboxesComp(out_folder, filename, content, settings):
         fout.write(result)
 #--------------------------------------------------------------------------------------------------
 # write xml for problem submit
-def writeXmlForSubmitComp(out_folder, filename, content, settings):
+def writeXmlForSubmitComp(out_folder, filename, content, settings, unit_filename):
     # ----  ----  ----
     # <problem 
     #       attempts_before_showanswer_button="1" 
@@ -545,7 +545,7 @@ def writeXmlForSubmitComp(out_folder, filename, content, settings):
     content_root_tag = etree.fromstring(content)
     # process images
     img_elems = list(content_root_tag.iter('img'))
-    setImageHtml(img_elems)
+    setImageHtml(img_elems, unit_filename)
     # process the p elements
     # these will be converted to <label>, <description>, and solution <p> elements
     label_tag = etree.Element("label") 
@@ -618,9 +618,9 @@ def processHtml(component_path, out_folder, filename):
 #--------------------------------------------------------------------------------------------------
 # write the image to the assets folder
 # returns void
-def processImage(component_path, out_folder, component):
+def processImage(component_path, out_folder, component, unit_filename):
     # copy the image to the assets folder
-    out_path = os.path.join(out_folder, STATIC_FOLDER, component)
+    out_path = os.path.join(out_folder, STATIC_FOLDER, unit_filename + '_' + component)
     copyfile(component_path, out_path)
 #--------------------------------------------------------------------------------------------------
 # get all the sub folders in a folder
@@ -745,7 +745,7 @@ def processCourse(in_folder, out_folder):
                         if not component_path.endswith('settings.md'):
                             # this is md, not a settings file
                             # this can be html, problem, or video
-                            component_type = processMd(component_path, out_folder, component_filename)
+                            component_type = processMd(component_path, out_folder, component_filename, unit_filename)
                             components.append([component_filename, component_type])
                     elif component_ext in ['htm','html']:
                         # this is an html snippet, only used in special cases
@@ -753,7 +753,7 @@ def processCourse(in_folder, out_folder):
                         components.append([component_filename, 'html'])
                     elif component_ext in ['jpg', 'jpeg', 'png', 'gif']:
                         # this is an image that needs to go to assets
-                        processImage(component_path, out_folder, component)
+                        processImage(component_path, out_folder, component, unit_filename)
                     else:
                         pass
                         # could be any other file, just ignore and continue
