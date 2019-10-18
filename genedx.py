@@ -86,6 +86,15 @@ def convertMd(data):
         meta = md.Meta
         return [content, meta]
 #--------------------------------------------------------------------------------------------------
+# process images
+def setImageHtml(img_elems):
+    for img_elem in img_elems:
+        img_elem.set('width', str(IMAGE_WIDTH))
+        img_elem.set('style', IMAGE_CSS)
+        src = img_elem.get('src')
+        if not src.startswith('/'):
+            img_elem.set('src', '/' + STATIC_FOLDER + '/' + src)
+#--------------------------------------------------------------------------------------------------
 # get the settings from a folder
 # returns a dict of settings
 def getMetaSettings(input, meta, req_names, opt_names=None):
@@ -326,15 +335,15 @@ def processMd(component_path, out_folder, filename):
     if comp_type == 'html':
         settings = getMetaSettings(component_path, meta, COMP_HTML_REQ, COMP_HTML_OPT )
         writeXmlForHtmlComp(out_folder, filename, content, settings)
-    elif comp_type == 'video':
-        settings = getMetaSettings(component_path, meta, COMP_VID_REQ, COMP_VID_OPT )
-        writeXmlForVidComp(out_folder, filename, content, settings)
     elif comp_type == 'problem-checkboxes':
         settings = getMetaSettings(component_path, meta, COMP_PROB_CHECKBOXES_REQ, COMP_PROB_CHECKBOXES_OPT )
         writeXmlForProbCheckboxesComp(out_folder, filename, content, settings)
     elif comp_type == 'problem-submit':
         settings = getMetaSettings(component_path, meta, COMP_PROB_SUBMIT_REQ , COMP_PROB_SUBMIT_OPT )
         writeXmlForSubmitComp(out_folder, filename, content, settings)
+    elif comp_type == 'video':
+        settings = getMetaSettings(component_path, meta, COMP_VID_REQ, COMP_VID_OPT )
+        writeXmlForVidComp(out_folder, filename, content, settings)
     else:
         print('Error: Component type not recognised:', comp_type, "in", component_path)
     # return the component type, which is needed for generating the xml for the subsection
@@ -364,15 +373,11 @@ def writeXmlForHtmlComp(out_folder, filename, content, settings):
     #   editor="visual"
     # />
     # ----  ----  ----
-    # process teh html
+    # read content
     content_root_tag = etree.fromstring(content)
+    # process images
     img_elems = list(content_root_tag.iter('img'))
-    for img_elem in img_elems:
-        img_elem.set('width', str(IMAGE_WIDTH))
-        img_elem.set('style', IMAGE_CSS)
-        src = img_elem.get('src')
-        if not src.startswith('/'):
-            img_elem.set('src', '/' + STATIC_FOLDER + '/' + src)
+    setImageHtml(img_elems)
     # write the html file
     html_out_path = os.path.join(out_folder, COMP_HTML_FOLDER, filename + '.html')
     with open(html_out_path, 'wb') as fout:
@@ -388,28 +393,6 @@ def writeXmlForHtmlComp(out_folder, filename, content, settings):
     result = etree.tostring(html_tag, pretty_print = True)
     # write the xml file
     xml_out_path = os.path.join(out_folder, COMP_HTML_FOLDER, filename + '.xml')
-    with open(xml_out_path, 'wb') as fout:
-        fout.write(result)
-#--------------------------------------------------------------------------------------------------
-# write xml for video component
-def writeXmlForVidComp(out_folder, filename, content, settings):
-    # ----  ----  ----
-    # <video 
-    #   url_name="5bf2b878f31d4d20a2cc657e5b4b0e2e" 
-    #   youtube_id_1_0="3_yD_cEKoCk"
-    #   display_name="Summary: Week 2" 
-    #   download_video="false" 
-    #   edx_video_id="" 
-    #   html5_sources="[]" 
-    # />
-    # ----  ----  ----
-    # create xml
-    video_tag = etree.Element("video")
-    for key in settings:
-        video_tag.set(key, settings[key])
-    result = etree.tostring(video_tag, pretty_print = True)
-    # write the file
-    xml_out_path = os.path.join(out_folder, COMP_VIDS_FOLDER, filename + '.xml')
     with open(xml_out_path, 'wb') as fout:
         fout.write(result)
 #--------------------------------------------------------------------------------------------------
@@ -447,14 +430,17 @@ def writeXmlForProbCheckboxesComp(out_folder, filename, content, settings):
     for key in settings:
         if key not in ['type']:
             problem_tag.set(key, settings[key])
-    # get the content
-    content_root = etree.fromstring(content)
+    # process the html
+    content_root_tag = etree.fromstring(content)
+    # process images
+    img_elems = list(content_root_tag.iter('img'))
+    setImageHtml(img_elems)
     # process the p elements
     # these will be converted to <label>, <description>, and solution <p> elements
     label_tag = etree.Element("label") 
     description_tag = etree.Element("description") 
     solution_p_tags = []
-    p_elems = list(content_root.iter('p'))
+    p_elems = list(content_root_tag.iter('p'))
     if p_elems:
         label_tag.text = p_elems[0].text
         if len(p_elems) > 1:
@@ -468,7 +454,7 @@ def writeXmlForProbCheckboxesComp(out_folder, filename, content, settings):
     # process the ul and li elements
     # these will be converted to <choice> elements
     choices_tags = []
-    ul_elems = list(content_root.iter('ul'))
+    ul_elems = list(content_root_tag.iter('ul'))
     li_elems = []
     if ul_elems:
         li_elems = list(ul_elems[0].iter('li'))
@@ -555,13 +541,16 @@ def writeXmlForSubmitComp(out_folder, filename, content, settings):
         print('Submit problem is missing metadata: question.', filename)
     grader_payload_tag = etree.Element("grader_payload")
     grader_payload_tag.text = '{"question": "' + question + '"}'
-    # get the content
-    content_root = etree.fromstring(content)
+    # read content
+    content_root_tag = etree.fromstring(content)
+    # process images
+    img_elems = list(content_root_tag.iter('img'))
+    setImageHtml(img_elems)
     # process the p elements
     # these will be converted to <label>, <description>, and solution <p> elements
     label_tag = etree.Element("label") 
     solution_p_tags = []
-    p_elems = list(content_root.iter('p'))
+    p_elems = list(content_root_tag.iter('p'))
     if p_elems:
         label_tag.text = p_elems[0].text
         for p_elem in p_elems[1:]:
@@ -588,8 +577,29 @@ def writeXmlForSubmitComp(out_folder, filename, content, settings):
     with open(xml_out_path, 'wb') as fout:
         fout.write(result)
 #--------------------------------------------------------------------------------------------------
-# read xml
-# this is just in case there are some  html files
+# write xml for video component
+def writeXmlForVidComp(out_folder, filename, content, settings):
+    # ----  ----  ----
+    # <video 
+    #   url_name="5bf2b878f31d4d20a2cc657e5b4b0e2e" 
+    #   youtube_id_1_0="3_yD_cEKoCk"
+    #   display_name="Summary: Week 2" 
+    #   download_video="false" 
+    #   edx_video_id="" 
+    #   html5_sources="[]" 
+    # />
+    # ----  ----  ----
+    # create xml
+    video_tag = etree.Element("video")
+    for key in settings:
+        video_tag.set(key, settings[key])
+    result = etree.tostring(video_tag, pretty_print = True)
+    # write the file
+    xml_out_path = os.path.join(out_folder, COMP_VIDS_FOLDER, filename + '.xml')
+    with open(xml_out_path, 'wb') as fout:
+        fout.write(result)
+#--------------------------------------------------------------------------------------------------
+# this is just in case there are some html files
 # write to units to the correct folder
 # returns void
 def processHtml(component_path, out_folder, filename):
