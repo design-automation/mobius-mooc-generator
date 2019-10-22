@@ -1,10 +1,14 @@
 import sys, os
 import tarfile
 import shutil
+import urllib
 from lxml import etree
 import markdown
 # create the markdow instance
 md = markdown.Markdown(extensions = ['extra', 'meta', 'sane_lists'])
+#--------------------------------------------------------------------------------------------------
+IN_FOLDER = './test/input'
+OUT_FOLDER = './test/output'
 #--------------------------------------------------------------------------------------------------
 # Folders
 # Hierarchical Terminology (very confusing)
@@ -25,9 +29,19 @@ COMP_PROBS_FOLDER = "problem"
 # Others
 STATIC_FOLDER = "static"
 #--------------------------------------------------------------------------------------------------
+# Repo settings
+# Example Repo, Github, where examples can be uploaded
+# These examples can be viewed by anyone
+# Answer to graded questions should not be uploaded here
+EXAMPLE_REPO = {'url': 'https://github-examples.com', 'id': '123', 'key': 'xxx'}
+# Answer Repo, AWS, where answers to graded questions can be uploaded
+ANSWER_REPO = {'url': 'https://aws-answers.com', 'id': '123', 'key': 'xxx'}
+#--------------------------------------------------------------------------------------------------
 # File extensions used for different types of assets
-# Images, PDFs, Video captions
+# Images, PDFs, Video captions, these will be copied to the STATIC_FOLDER
 ASSET_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'srt']
+# Upload extensions
+UPLOAD_EXTENSIONS = ['mob']
 #--------------------------------------------------------------------------------------------------
 # Metadata settings for folders
 # root
@@ -55,7 +69,7 @@ COMP_VIDEO_REQ = ['type', 'youtube_id_1_0']
 COMP_VIDEO_OPT = ['transcript', 'display_name', 'edx_video_id', 'visible_to_staff_only', 'start', 'download_video', 
     'show_captions', 'sub', 'html5_sources']
 COMP_PROB_SUBMIT_REQ = ['type', 'question', 'queuename']
-COMP_PROB_SUBMIT_OPT = ['display_name', 'visible_to_staff_only', 'start', 'max_attempts', 'weight', 
+COMP_PROB_SUBMIT_OPT = ['answer', 'display_name', 'visible_to_staff_only', 'start', 'max_attempts', 'weight', 
     'showanswer', 'attempts_before_showanswer_button']
 COMP_PROB_CHECKBOXES_REQ = ['type']
 COMP_PROB_CHECKBOXES_OPT = ['display_name', 'visible_to_staff_only', 'start', 'max_attempts', 'weight', 
@@ -80,13 +94,20 @@ METADATA_ENUMS = {
     # more types: ['problem-choice', 'problem-dropdown', 'problem-numerical', 'problem-text']
 }
 #--------------------------------------------------------------------------------------------------
+# Problem Instructions
+INSTRUCTIONS_CHECKBOXES = 'Please select all applicable options from the list below. Multiple selections are allowed. '
+#--------------------------------------------------------------------------------------------------
 # Image Settings
 FIGURE_CSS = 'margin:20px;'
 IMAGE_CSS = 'width:400px;display:block;margin-left:auto;margin-right:auto;border-style:solid;border-width:1px;'
 FIGCAPTION_CSS = 'width:400px;display:block;margin-left:auto;margin-right:auto;margin-top:8px;text-align:center;font-style: italic;'
 #--------------------------------------------------------------------------------------------------
-# Problem Instructions
-INSTRUCTIONS_CHECKBOXES = 'Please select all applicable options from the list below. Multiple selections are allowed. '
+# Iframe settings
+# Any <a> tags with files with these extension will be replaced with iframes
+IFRAME_URLS = {'mob': 'https://mobius.design-automation.net/publish?file='}
+IFRAME_WIDTH = '100%' 
+IFRAME_HEIGHT ='600px' 
+IFRAME_STYLE = 'border: 1px solid black;'
 #--------------------------------------------------------------------------------------------------
 # converts markdown to html
 # returns the html string (in xml tags) and the metadata object
@@ -133,7 +154,55 @@ def setImageHtml(img_elems, unit_filename):
             figure_tag.append(figcaption_tag)
         # replace the existing image with the figure
         img_elem.getparent().replace(img_elem, figure_tag)
-
+#--------------------------------------------------------------------------------------------------
+# process a hrefs
+def setHrefHtml(component_path, a_elems, unit_filename):
+    for a_elem in a_elems:
+        # get the href
+        href = a_elem.get('href')
+        if not href:
+            print('An <a/> tag has no "href" attribute:', a_elem)
+            return
+        # break down the url
+        href_parts = list(urllib.parse.urlparse(href))
+        href_file = None
+        href_file_ext = None
+        href_path = href_parts[2]
+        if href_path and '.' in href_path:
+            href_file = href_path.split('/')[-1]
+            href_file_ext = href_path.split('.')[-1]
+        new_tag = None
+        # create the new href
+        # either the file needs to be uploaded to a repo
+        # or the file has already been copied to the STATIC_FOLDER
+        new_href = None
+        if href_file_ext == None or href_file_ext == '':
+            new_href = href
+        elif href_file_ext in UPLOAD_EXTENSIONS:
+            component_folder = os.path.dirname(component_path)
+            new_href = processUploadsToRepo(component_folder, href_file, EXAMPLE_REPO, unit_filename + '_' + href)
+        elif href_file_ext in ASSET_EXTENSIONS:
+            new_href = '/' + STATIC_FOLDER + '/' + unit_filename + '_' + href_file
+        else:
+            new_href = href
+            print('Found an unrecognised href:', href, href_file_ext)
+        # create the new tag, either an <iframe/> or a <a/>
+        if href_file_ext in IFRAME_URLS.keys():
+            # create new image
+            new_tag = etree.Element('iframe')
+            new_tag.set('width', IFRAME_WIDTH)
+            new_tag.set('height', IFRAME_HEIGHT)
+            new_tag.set('style', IFRAME_STYLE)
+            new_src = IFRAME_URLS[href_file_ext] + new_href
+            new_tag.set('src', new_src)
+        else:
+            new_tag = etree.Element('a')
+            for key in a_elem:
+                if key not in ['href']:
+                    new_tag.set(key, a_elem.get(key))
+            new_tag.set('src', new_href)
+        # replace the existing a with the new tag
+        a_elem.getparent().replace(a_elem, new_tag)
 #--------------------------------------------------------------------------------------------------
 # get the settings from a component or a folder
 # returns a dict of settings
@@ -374,13 +443,14 @@ def processMd(component_path, out_folder, component_filename, unit_filename):
     # generate xml files
     if comp_type == 'html':
         settings = getMetaSettings(component_path, meta, COMP_HTML_REQ, COMP_HTML_OPT )
-        writeXmlForHtmlComp(out_folder, component_filename, content, settings, unit_filename)
+        writeXmlForHtmlComp(component_path, out_folder, component_filename, content, settings, unit_filename)
     elif comp_type == 'problem-checkboxes':
         settings = getMetaSettings(component_path, meta, COMP_PROB_CHECKBOXES_REQ, COMP_PROB_CHECKBOXES_OPT )
-        writeXmlForProbCheckboxesComp(out_folder, component_filename, content, settings, unit_filename)
+        writeXmlForProbCheckboxesComp(component_path, out_folder, component_filename, content, settings, unit_filename)
     elif comp_type == 'problem-submit':
         settings = getMetaSettings(component_path, meta, COMP_PROB_SUBMIT_REQ , COMP_PROB_SUBMIT_OPT )
-        writeXmlForSubmitComp(out_folder, component_filename, content, settings, unit_filename)
+        writeXmlForSubmitComp(component_path, out_folder, component_filename, content, settings, unit_filename)
+        uploadAnswers(component_path, settings, unit_filename)
     elif comp_type == 'video':
         settings = getMetaSettings(component_path, meta, COMP_VIDEO_REQ, COMP_VIDEO_OPT )
         writeXmlForVidComp(out_folder, component_filename, content, settings, unit_filename)
@@ -392,7 +462,7 @@ def processMd(component_path, out_folder, component_filename, unit_filename):
     return comp_type
 #--------------------------------------------------------------------------------------------------
 # write xml for Html component
-def writeXmlForHtmlComp(out_folder, filename, content, settings, unit_filename):
+def writeXmlForHtmlComp(component_path, out_folder, filename, content, settings, unit_filename):
     # ---- Html file ----
     # <p>
     #   <span style="text-decoration: underline;">Objective:</span>
@@ -415,6 +485,9 @@ def writeXmlForHtmlComp(out_folder, filename, content, settings, unit_filename):
     # ----  ----  ----
     # read content
     content_root_tag = etree.fromstring(content)
+    # process hrefs
+    a_elems = list(content_root_tag.iter('a'))
+    setHrefHtml(component_path, a_elems, unit_filename)
     # process images
     img_elems = list(content_root_tag.iter('img'))
     setImageHtml(img_elems, unit_filename)
@@ -437,7 +510,7 @@ def writeXmlForHtmlComp(out_folder, filename, content, settings, unit_filename):
         fout.write(result)
 #--------------------------------------------------------------------------------------------------
 # write xml for problem Checkboxescomponent
-def writeXmlForProbCheckboxesComp(out_folder, filename, content, settings, unit_filename):
+def writeXmlForProbCheckboxesComp(component_path, out_folder, filename, content, settings, unit_filename):
     # ----  ----  ----
     # <problem 
     #   display_name="Q2" 
@@ -472,6 +545,9 @@ def writeXmlForProbCheckboxesComp(out_folder, filename, content, settings, unit_
             problem_tag.set(key, settings[key])
     # process the html
     content_root_tag = etree.fromstring(content)
+    # process hrefs
+    a_elems = list(content_root_tag.iter('a'))
+    setHrefHtml(component_path, a_elems, unit_filename)
     # process images
     img_elems = list(content_root_tag.iter('img'))
     setImageHtml(img_elems, unit_filename)
@@ -547,7 +623,7 @@ def writeXmlForProbCheckboxesComp(out_folder, filename, content, settings, unit_
         fout.write(result)
 #--------------------------------------------------------------------------------------------------
 # write xml for problem submit
-def writeXmlForSubmitComp(out_folder, filename, content, settings, unit_filename):
+def writeXmlForSubmitComp(component_path, out_folder, filename, content, settings, unit_filename):
     # ----  ----  ----
     # <problem 
     #       attempts_before_showanswer_button="1" 
@@ -577,7 +653,7 @@ def writeXmlForSubmitComp(out_folder, filename, content, settings, unit_filename
     problem_tag.append( coderesponse_tag )
     # process the settings
     for key in settings:
-        if key not in ['type', 'question', 'queuename']:
+        if key not in ['type', 'question', 'queuename', 'answer']:
             problem_tag.set(key, settings[key])
     queuename = 'Dummy_Queuename'
     if 'queuename' in settings:
@@ -594,6 +670,9 @@ def writeXmlForSubmitComp(out_folder, filename, content, settings, unit_filename
     grader_payload_tag.text = '{"question": "' + question + '"}'
     # read content
     content_root_tag = etree.fromstring(content)
+    # process hrefs
+    a_elems = list(content_root_tag.iter('a'))
+    setHrefHtml(component_path, a_elems, unit_filename)
     # process images
     img_elems = list(content_root_tag.iter('img'))
     setImageHtml(img_elems, unit_filename)
@@ -706,6 +785,39 @@ def processAsset(component_path, out_folder, component, unit_filename):
     out_path = os.path.join(out_folder, STATIC_FOLDER, unit_filename + '_' + component)
     shutil.copyfile(component_path, out_path)
 #--------------------------------------------------------------------------------------------------
+# upload the file to an online repository
+# out_repo is a dictionary, { url, id, key }
+# returns the url
+def processUploadsToRepo(in_folder, in_filename, out_repo, out_filename):
+    # print('out_repo', out_repo)
+    # print('out_filename', out_filename)
+    repo_url = out_repo.get('url')
+    auth_id = out_repo.get('id')
+    auth_key = out_repo.get('key')
+    cloud_answer_url = repo_url + '/' + out_filename
+    # read the file
+    in_path = os.path.join(in_folder, in_filename)
+    if os.path.isfile(in_path):
+        pass
+        # TODO Upload to Repo
+        # TODO
+        # TODO
+    else:
+        print('Answer does not exist: ' + in_path)
+        print('in_folder', in_folder)
+        print('in_filename', in_filename)
+    return cloud_answer_url
+#--------------------------------------------------------------------------------------------------
+# upload files for problem submit
+def uploadAnswers(component_path, settings, unit_filename):
+    # upload the answer to the answer repository (this repo is private)
+    component_folder = os.path.dirname(component_path)
+    if 'answer' in settings.keys():
+        answer_filename = settings['answer']
+        processUploadsToRepo(component_folder, answer_filename, ANSWER_REPO, unit_filename + '_' + answer_filename)
+    else:
+        print('Settings does not contain the answer file: ' + component_folder)
+#--------------------------------------------------------------------------------------------------
 # get all the sub folders in a folder
 # return the folder names and folder paths, like this 
 # [[folder_name, folder_path], [folder_name, folder_path], [folder_name, folder_path]...]
@@ -806,8 +918,8 @@ def main():
         return
 
     # get the paths
-    in_folder = sys.argv[1]
-    out_folder = sys.argv[2]
+    in_folder = os.path.normpath(sys.argv[1])
+    out_folder = os.path.normpath(sys.argv[2])
 
     # check the input and output folders
     print("in", in_folder)
