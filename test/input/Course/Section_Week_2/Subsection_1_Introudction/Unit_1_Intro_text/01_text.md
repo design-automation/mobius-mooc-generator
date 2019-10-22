@@ -1,4 +1,5 @@
 type: html
+display_name: Testing a Local Image
 
 # Local Images
 

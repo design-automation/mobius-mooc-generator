@@ -1,15 +1,30 @@
 # edx-generator
 
-A python script for generating an edx course from markdown. 
-
-The script generates a compressed .tar.gz file that can be directly imported into the edx course. When this file is imported, it will automatically populate all course contents. 
-
-Warning: any existing course contents in edx will be deleted.
+A Python3 script for generating an edx course from markdown.
 
 The aim is:
 - to allow all content to be created using a simple text editor outside the browser.
 - to allow Git and version control to be used when developing the content.
-- to allow better control over formatting and styles. 
+- to allow better control over formatting and styles.
+
+The script generates a compressed .tar.gz file that can be directly imported into the edx course. When this file is imported, it will automatically populate all course contents.
+
+For the edx import to succeed, it is vital that settings in the course.xml file match teh settings in edx.
+`<course org="Org name" course="My Course" url_name="20192020S2"/>`
+
+In the edx UI for the course, under the menu 'Settings > Schedule & Details', these are named as follows:
+- Organization
+- Course Number
+- Course Run
+
+Warning: any existing course contents in edx will be deleted.
+
+## Python Dependencies
+
+This script requires two python modules, 'python-markdown' and 'lxml'. These can be installed with pip as follows:
+
+pip install markdown
+pip install lxml
 
 ## Hierarchical Terminology
 
@@ -105,11 +120,11 @@ There are three types of files:
 
 The settings file contains the settings for each folder. 
 
-Setting are define as a set of key-value pairs. All settings are optional. If a particular setting is not found, then a default value will be used. 
+Setting are define as a set of key-value pairs.
 
 ### Common Metadata For Settings Files in Folders
 
-Common setting for all settings files are as follows:
+Common setting for all settings files in folders are as follows:
 - display_name: string (if missing, the folder name will be used)
 - visible_to_staff_only: "true"
 - start: "&quot;2019-08-18T10:00:00+00:00&quot;"
@@ -118,12 +133,14 @@ The display_name is the name that will be displayed to the user in the edx inter
 
 ### Root Folder Metadata
 
-Additional course metadata is as follows:
+Additional MOOC metadata is as follows:
 
 Required
 - url_name: "1234" 
 - org: "abc" 
 - course: "online101"
+
+The values must match the values on edx. If they do not match, import of the data into edx will fail.
 
 ### Course Folder Metadata
 
@@ -174,18 +191,18 @@ The 'type' defines the component type.
 - type: video
 - type: problem-submit
 - type: problem-checkboxes
-- type: problem-choice
-- type: problem-dropdown
-- type: problem-numerical
-- type: problem-text
+- type: problem-choice (not supported at this time)
+- type: problem-dropdown (not supported at this time)
+- type: problem-numerical (not supported at this time)
+- type: problem-text (not supported at this time)
 
 For the problems, there are five different types (with/without hints/feedback):
 - Submit a file.
 - Multiple Choice with Hints and Feedback
-- Checkboxes with Hints and Feedback
-- Dropdown with Hints and Feedback
-- Numerical Input with Hints and Feedback
-- Text Input with Hints and Feedback
+- Checkboxes with Hints and Feedback (not supported at this time)
+- Dropdown with Hints and Feedback (not supported at this time)
+- Numerical Input with Hints and Feedback (not supported at this time)
+- Text Input with Hints and Feedback (not supported at this time)
 
 At the moment, only 'problem-submit' and 'problem-checkboxes' are implemented.
 
@@ -259,6 +276,14 @@ The following extensions are used:
 - https://python-markdown.github.io/extensions/meta_data/
 
 extensions = ['extra', 'meta', 'sane_lists']
+
+### Checkboxes Problems
+
+For checkboxes problems, the correct and incorrect choices are specified as follows:
+`
+* [x] This is a correct choice.
+* [ ] This is an incorrect choice.
+`
 
 ### Code Blocks
 

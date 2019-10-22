@@ -1,8 +1,8 @@
 type: problem-submit
-queuename: jsjh
-question: fgsdgfj
+display_name: Submit Problem
+queuename: fsdjg
+question: hdausdui
 attempts_before_showanswer_button: 1 
-display_name: Task 1 - Submission
 max_attempts: 1
 showanswer: finished
 weight: 1.0

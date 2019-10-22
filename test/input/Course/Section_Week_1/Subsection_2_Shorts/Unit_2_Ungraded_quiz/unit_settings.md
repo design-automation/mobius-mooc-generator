@@ -1,1 +1,1 @@
-display_name: Week 2 Assignments
+display_name: Week 1 Ungraded Quiz

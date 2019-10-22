@@ -3,7 +3,6 @@ import tarfile
 import shutil
 from lxml import etree
 import markdown
-from shutil import copyfile
 # create the markdow instance
 md = markdown.Markdown(extensions = ['extra', 'meta', 'sane_lists'])
 #--------------------------------------------------------------------------------------------------
@@ -25,6 +24,10 @@ COMP_VIDS_FOLDER = "video"
 COMP_PROBS_FOLDER = "problem"
 # Others
 STATIC_FOLDER = "static"
+#--------------------------------------------------------------------------------------------------
+# File extensions used for different types of assets
+# Images, PDFs, Video captions
+ASSET_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'srt']
 #--------------------------------------------------------------------------------------------------
 # Metadata settings for folders
 # root
@@ -48,8 +51,9 @@ UNIT_FOLDER_OPT = ['visible_to_staff_only', 'start']
 # Metadata settings for components
 COMP_HTML_REQ = ['type']
 COMP_HTML_OPT = ['display_name', 'visible_to_staff_only', 'start']
-COMP_VID_REQ = ['type', 'youtube_id_1_0']
-COMP_VID_OPT = ['display_name', 'visible_to_staff_only', 'start', 'download_video', 'edx_video_id', 'html5_sources']
+COMP_VIDEO_REQ = ['type', 'youtube_id_1_0']
+COMP_VIDEO_OPT = ['transcript', 'display_name', 'edx_video_id', 'visible_to_staff_only', 'start', 'download_video', 
+    'show_captions', 'sub', 'html5_sources']
 COMP_PROB_SUBMIT_REQ = ['type', 'question', 'queuename']
 COMP_PROB_SUBMIT_OPT = ['display_name', 'visible_to_staff_only', 'start', 'max_attempts', 'weight', 
     'showanswer', 'attempts_before_showanswer_button']
@@ -68,15 +72,21 @@ METADATA_ENUMS = {
     # component files
     'download_video': ['true', 'false'],
     'show_reset': ['true', 'false'],
-    'showanswer': ["always", "answered", "attempted", "closed", "finished", "correct_or_past_due", "past_due", "never", "after_attempts"],
+    'show_captions': ['true', 'false'],
+    'showanswer': ["always", "answered", "attempted", "closed", "finished", "correct_or_past_due", 
+        "past_due", "never", "after_attempts"],
     'rerandomize': ["always", "onreset", "never", "per_student"],
-    'type': ['html', 'video', 
-        'problem-submit', 'problem-checkboxes', 'problem-choice', 'problem-dropdown', 'problem-numerical', 'problem-text']
+    'type': ['html', 'video', 'problem-submit', 'problem-checkboxes']
+    # more types: ['problem-choice', 'problem-dropdown', 'problem-numerical', 'problem-text']
 }
 #--------------------------------------------------------------------------------------------------
 # Image Settings
-IMAGE_WIDTH = 400
-IMAGE_CSS = 'display:block;margin-left:auto;margin-right:auto;border-style:solid;border-width:1px;'
+FIGURE_CSS = 'margin:20px;'
+IMAGE_CSS = 'width:400px;display:block;margin-left:auto;margin-right:auto;border-style:solid;border-width:1px;'
+FIGCAPTION_CSS = 'width:400px;display:block;margin-left:auto;margin-right:auto;margin-top:8px;text-align:center;font-style: italic;'
+#--------------------------------------------------------------------------------------------------
+# Problem Instructions
+INSTRUCTIONS_CHECKBOXES = 'Please select all applicable options from the list below. Multiple selections are allowed. '
 #--------------------------------------------------------------------------------------------------
 # converts markdown to html
 # returns the html string (in xml tags) and the metadata object
@@ -89,13 +99,43 @@ def convertMd(data):
 # process images
 def setImageHtml(img_elems, unit_filename):
     for img_elem in img_elems:
-        img_elem.set('width', str(IMAGE_WIDTH))
-        img_elem.set('style', IMAGE_CSS)
+        # create new image
+        img_tag = etree.Element("img")
+        for key in img_elem:
+            if key not in ['src']:
+                img_tag.set(key, img_elem.get(key))
+        if IMAGE_CSS:
+            img_tag.set('style', IMAGE_CSS)
         src = img_elem.get('src')
-        if not src.startswith('/'):
-            img_elem.set('src', '/' + STATIC_FOLDER + '/' + unit_filename + '_' + src)
+        # get the new src for the image
+        new_src = ''
+        if src.startswith('/') or src.startswith('http'):
+            new_src = src
+        else:
+            new_src = '/' + STATIC_FOLDER + '/' + unit_filename + '_' + src
+        img_tag.set('src', new_src)
+        # create an a href tag
+        a_tag = etree.Element("a")
+        a_tag.set('target', 'image')
+        a_tag.set('href', new_src)
+        a_tag.append(img_tag)
+        # create figure
+        figure_tag = etree.Element("figure")
+        if FIGURE_CSS:
+            figure_tag.set('style', FIGURE_CSS)
+        figure_tag.append(a_tag)
+        #  create caption for the figure
+        if 'alt' in img_elem.keys():
+            figcaption_tag = etree.Element("figcaption")
+            if FIGCAPTION_CSS:
+                figcaption_tag.set('style', FIGCAPTION_CSS)
+            figcaption_tag.text = img_elem.get('alt')
+            figure_tag.append(figcaption_tag)
+        # replace the existing image with the figure
+        img_elem.getparent().replace(img_elem, figure_tag)
+
 #--------------------------------------------------------------------------------------------------
-# get the settings from a folder
+# get the settings from a component or a folder
 # returns a dict of settings
 def getMetaSettings(input, meta, req_names, opt_names=None):
     # process requires metadata
@@ -342,8 +382,8 @@ def processMd(component_path, out_folder, component_filename, unit_filename):
         settings = getMetaSettings(component_path, meta, COMP_PROB_SUBMIT_REQ , COMP_PROB_SUBMIT_OPT )
         writeXmlForSubmitComp(out_folder, component_filename, content, settings, unit_filename)
     elif comp_type == 'video':
-        settings = getMetaSettings(component_path, meta, COMP_VID_REQ, COMP_VID_OPT )
-        writeXmlForVidComp(out_folder, component_filename, content, settings)
+        settings = getMetaSettings(component_path, meta, COMP_VIDEO_REQ, COMP_VIDEO_OPT )
+        writeXmlForVidComp(out_folder, component_filename, content, settings, unit_filename)
     else:
         print('Error: Component type not recognised:', comp_type, "in", component_path)
     # return the component type, which is needed for generating the xml for the subsection
@@ -436,58 +476,69 @@ def writeXmlForProbCheckboxesComp(out_folder, filename, content, settings, unit_
     img_elems = list(content_root_tag.iter('img'))
     setImageHtml(img_elems, unit_filename)
     # process the p elements
-    # these will be converted to <label>, <description>, and solution <p> elements
-    label_tag = etree.Element("label") 
-    description_tag = etree.Element("description") 
-    solution_p_tags = []
-    p_elems = list(content_root_tag.iter('p'))
-    if p_elems:
-        label_tag.text = p_elems[0].text
-        if len(p_elems) > 1:
-            description_tag.text = p_elems[1].text
-        for p_elem in p_elems[2:]:
-            solution_p_tag = etree.Element("p")
-            solution_p_tag.text = p_elem.text
-            solution_p_tags.append(solution_p_tag)
-    else:
-        print('Choice problem is missing paragraphs.', filename)
-    # process the ul and li elements
-    # these will be converted to <choice> elements
-    choices_tags = []
-    ul_elems = list(content_root_tag.iter('ul'))
-    li_elems = []
-    if ul_elems:
-        li_elems = list(ul_elems[0].iter('li'))
-    if li_elems:
-        for li_elem in li_elems:
-            choice_tag = etree.Element("choice")
-            choices_tags.append(choice_tag)
-            choice_tag.text = li_elem.text
-            if 'correct' in li_elem.keys():
-                correct_val = li_elem.get('correct')
-                if correct_val not in ['true', 'false']:
-                    print('Choice problem choice has a "correct" attribute with an invalid value of "' + correct_val + '".', filename)
-                choice_tag.set('correct', correct_val)
+    # these will be converted to <label>, and solution <p> elements
+    labels = []
+    solutions = []
+    choices = []
+    for elem in content_root_tag.getchildren():
+        # first deal with the bullets, <ul/>
+        # this could be normal bullets or could be the choices
+        if elem.tag == 'ul' and not choices:
+            this_is_choices_tag = False
+            for li_elem in elem.getchildren():
+                if li_elem.text[:3] in ['[ ]', '[x]']:
+                    this_is_choices_tag = True # we found a choice
+                    correct_val = 'true'
+                    if li_elem.text[:3] == '[ ]':
+                        correct_val = 'false'
+                    choice_tag = etree.Element("choice")
+                    choice_tag.text = li_elem.text[3:]
+                    choice_tag.set('correct', correct_val)
+                    choices.append(choice_tag)
+                else:
+                    pass # this is ok, could be normal bullets
+            if not this_is_choices_tag:
+                if choices:
+                    solutions.append(elem)
+                else:
+                    labels.append(elem)
+        # process other stuff, like <p/>
+        # if choices is not empty, this must be part of solution text
+        # if choices is empty, this must be part of label text
+        else:
+            if choices:
+                solutions.append(elem)
             else:
-                print('Choice problem choice is missing the "correct" attribute.', filename)
-    else:
-        print('Choice problem seems to have no choices.', filename)
+                labels.append(elem)
     # add the choices and solutions to the choiceresponse_tag
-    choiceresponse_tag.append(label_tag)
-    choiceresponse_tag.append(description_tag)
-    if choices_tags:
+    if labels:
+        label_tag = etree.Element("label") 
+        choiceresponse_tag.append(label_tag)
+        for label in labels:
+            label_tag.append(label)
+    else:
+        print('Choice problem seems to have no text that describes the question.', filename)
+    if INSTRUCTIONS_CHECKBOXES:
+        description_tag = etree.Element("description")
+        choiceresponse_tag.append(description_tag)
+        description_tag.text = INSTRUCTIONS_CHECKBOXES
+    if choices:
         checkboxgroup_tag = etree.Element("checkboxgroup")
         choiceresponse_tag.append(checkboxgroup_tag)
-        for choice_tag in choices_tags:
-            checkboxgroup_tag.append(choice_tag)
-    if solution_p_tags:
+        for choice in choices:
+            checkboxgroup_tag.append(choice)
+    else:
+        print('Choice problem seems to have no choices.', filename)
+    if solutions:
         solution_tag = etree.Element("solution")
         div_tag = etree.Element("div")
         div_tag.set('class', 'detailed-solution')
         choiceresponse_tag.append(solution_tag)
         solution_tag.append(div_tag)
-        for solution_p_tag in solution_p_tags:
-            div_tag.append(solution_p_tag)
+        for solution in solutions:
+            div_tag.append(solution)
+    else:
+        pass # It is ok to have no solution text
     # convert problem_tag to string
     result = etree.tostring(problem_tag, pretty_print=True)
     # write the file
@@ -526,7 +577,7 @@ def writeXmlForSubmitComp(out_folder, filename, content, settings, unit_filename
     problem_tag.append( coderesponse_tag )
     # process the settings
     for key in settings:
-        if key not in ['type', 'display_name', 'question', 'queuename']:
+        if key not in ['type', 'question', 'queuename']:
             problem_tag.set(key, settings[key])
     queuename = 'Dummy_Queuename'
     if 'queuename' in settings:
@@ -547,16 +598,14 @@ def writeXmlForSubmitComp(out_folder, filename, content, settings, unit_filename
     img_elems = list(content_root_tag.iter('img'))
     setImageHtml(img_elems, unit_filename)
     # process the p elements
-    # these will be converted to <label>, <description>, and solution <p> elements
+    # these will be converted to <label>, and solution <p> elements
     label_tag = etree.Element("label") 
-    solution_p_tags = []
-    p_elems = list(content_root_tag.iter('p'))
-    if p_elems:
-        label_tag.text = p_elems[0].text
-        for p_elem in p_elems[1:]:
-            solution_p_tag = etree.Element("p")
-            solution_p_tag.text = p_elem.text
-            solution_p_tags.append(solution_p_tag)
+    solutions = []
+    elems = content_root_tag.getchildren()
+    if elems:
+        label_tag.text = elems[0].text
+        for elem in elems[1:]:
+            solutions.append(elem)
     else:
         print('Submit problem is missing paragraphs.', filename)
     # add elems to the coderesponse_tag
@@ -565,11 +614,11 @@ def writeXmlForSubmitComp(out_folder, filename, content, settings, unit_filename
     codeparam_tag = etree.Element("codeparam")
     codeparam_tag.append(grader_payload_tag)
     coderesponse_tag.append(codeparam_tag)
-    if solution_p_tags:
+    if solutions:
         solution_tag = etree.Element("solution")
         coderesponse_tag.append(solution_tag)
-        for solution_p_tag in solution_p_tags:
-            solution_tag.append(solution_p_tag)
+        for solution in solutions:
+            solution_tag.append(solution)
     # convert problem_tag to string
     result = etree.tostring(problem_tag, pretty_print=True)
     # write the file
@@ -578,23 +627,57 @@ def writeXmlForSubmitComp(out_folder, filename, content, settings, unit_filename
         fout.write(result)
 #--------------------------------------------------------------------------------------------------
 # write xml for video component
-def writeXmlForVidComp(out_folder, filename, content, settings):
+def writeXmlForVidComp(out_folder, filename, content, settings, unit_filename):
     # ----  ----  ----
     # <video 
-    #   url_name="5bf2b878f31d4d20a2cc657e5b4b0e2e" 
-    #   youtube_id_1_0="3_yD_cEKoCk"
-    #   display_name="Summary: Week 2" 
-    #   download_video="false" 
-    #   edx_video_id="" 
-    #   html5_sources="[]" 
-    # />
+    #   url_name="section_week_1_subsection_2_shorts_unit_1_text_and_videos_02_video" 
+    #   sub="" 
+    #   transcripts="{&quot;en&quot;: &quot;7d76f250-0000-42ea-8aba-c0c0ce845280-en.srt&quot;}" 
+    #   display_name="A Video" edx_video_id="7d76f250-0000-42ea-8aba-c0c0ce845280" 
+    #   youtube_id_1_0="3_yD_cEKoCk" >
+    #   <video_asset client_video_id="External Video" duration="0.0" image="">
+    #     <transcripts>
+    #       <transcript file_format="srt" language_code="en" provider="Custom"/>
+    #     </transcripts>
+    #   </video_asset>
+    #   <transcript language="en" src="7d76f250-0000-42ea-8aba-c0c0ce845280-en.srt"/>
+    # </video>
     # ----  ----  ----
     # create xml
     video_tag = etree.Element("video")
+    video_tag.set('url_name', filename)
     for key in settings:
-        video_tag.set(key, settings[key])
-    result = etree.tostring(video_tag, pretty_print = True)
+        if key not in ['type', 'transcript']:
+            video_tag.set(key, settings[key])
+    # add youtube
+    if 'youtube_id_1_0' in settings:
+        video_tag.set('youtube', '1.00:' + settings['youtube_id_1_0'])
+    # add transcript data
+    if 'transcript' in settings:
+        # set the transcript attribute
+        transcripts_str = unit_filename + '_' + settings['transcript']
+        transcripts_obj = '{"en": "' + transcripts_str + '"}'
+        video_tag.set('transcripts', transcripts_obj)
+        # add the video asset tag
+        video_asset_tag = etree.Element("video_asset")
+        video_asset_tag.set('client_video_id', 'external video')
+        video_asset_tag.set('duration', '0.0')
+        video_asset_tag.set('image', '')
+        transcripts_tag = etree.Element('transcripts')
+        transcript_tag = etree.Element('transcript')
+        transcript_tag.set('file_format', transcripts_str.split('.')[-1])
+        transcript_tag.set('language_code', 'en')
+        transcript_tag.set('provider', 'Custom')
+        video_tag.append(video_asset_tag)
+        video_asset_tag.append(transcripts_tag)
+        transcripts_tag.append(transcript_tag)
+        # add the second transcript tag
+        transcript2_tag = etree.Element('transcript')
+        transcript2_tag.set('language', 'en')
+        transcript2_tag.set('src', transcripts_str)
+        video_tag.append(transcript2_tag)
     # write the file
+    result = etree.tostring(video_tag, pretty_print = True)
     xml_out_path = os.path.join(out_folder, COMP_VIDS_FOLDER, filename + '.xml')
     with open(xml_out_path, 'wb') as fout:
         fout.write(result)
@@ -618,10 +701,10 @@ def processHtml(component_path, out_folder, filename):
 #--------------------------------------------------------------------------------------------------
 # write the image to the assets folder
 # returns void
-def processImage(component_path, out_folder, component, unit_filename):
+def processAsset(component_path, out_folder, component, unit_filename):
     # copy the image to the assets folder
     out_path = os.path.join(out_folder, STATIC_FOLDER, unit_filename + '_' + component)
-    copyfile(component_path, out_path)
+    shutil.copyfile(component_path, out_path)
 #--------------------------------------------------------------------------------------------------
 # get all the sub folders in a folder
 # return the folder names and folder paths, like this 
@@ -648,58 +731,6 @@ def getFiles(folder_path):
             files.append([file_or_folder, path])
     files.sort()
     return files
-#--------------------------------------------------------------------------------------------------
-# get the folder display name
-# returns a string
-def getFolderDisplayName(folder_path):
-    name = os.path.split(folder_path)[1]
-    return name.replace('_', ' ').strip()
-#--------------------------------------------------------------------------------------------------
-# get meta data
-# returns a string
-def getCompMetaType(meta):
-    if 'type' in meta:
-        value = meta['type'][0]
-        if value in ['html', 'video', 'problem']:
-            return value
-        else:
-            print('The component type is not recognised. It should be "html", "video", or "problem".')
-    return 'html'
-#--------------------------------------------------------------------------------------------------
-# get meta data
-# returns a sting 
-def getCompMetaSubtype(meta):
-    if 'subtype' in meta:
-        value = meta['subtype'][0]
-        if value in ['Checkboxes', 'Multiple', 'Dropdown', 'Numerical', 'Text']:
-            return value
-        else:
-            print('The component subtype is not recognised.')
-    return 'Checkboxes'
-#--------------------------------------------------------------------------------------------------
-# get the display_name of a component
-# returns a string
-def getComponentDisplayName(component_path):
-    name = None
-    # if this is an md file, get the first heading in the file
-    if (component_path.endswith('.md')):
-        if (os.path.isfile(component_path)):
-            with open(component_path, 'r') as f:
-                lines = f.readlines()
-                for line in lines:
-                    if (line.startswith('#')):
-                        name = line.split('#')[1]
-    # if the name is still None, then use the file name
-    if not name:
-        name = os.path.split(component_path)[1]
-    # clean up the name
-    if ('.' in name):
-        name = name.split('.')[0]
-    if ('__' in name):
-        name = name.split('__')[1]
-    name = name.replace('_', ' ').strip()
-    # return the final name
-    return name
 #--------------------------------------------------------------------------------------------------
 # process one course
 def processCourse(in_folder, out_folder):
@@ -751,9 +782,9 @@ def processCourse(in_folder, out_folder):
                         # this is an html snippet, only used in special cases
                         processHtml(component_path, out_folder, component_filename)
                         components.append([component_filename, 'html'])
-                    elif component_ext in ['jpg', 'jpeg', 'png', 'gif']:
-                        # this is an image that needs to go to assets
-                        processImage(component_path, out_folder, component, unit_filename)
+                    elif component_ext in ASSET_EXTENSIONS:
+                        # this is an asset that needs to get copied to the STATIC folder
+                        processAsset(component_path, out_folder, component, unit_filename)
                     else:
                         pass
                         # could be any other file, just ignore and continue

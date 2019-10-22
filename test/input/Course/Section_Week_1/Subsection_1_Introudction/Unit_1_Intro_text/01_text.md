@@ -1,4 +1,5 @@
 type: html
+display_name: Plain Old Text and Some Code
 
 # Head 1
 
@@ -19,9 +20,3 @@ pos2 = make.Position([1,2,3])
 line = make.Polyline([pos1, pos2])
 ~~~~~~~~~~~~~~~~~~~~~
 
-## Tables
-
-First Header  | Second Header
-------------- | -------------
-Content Cell  | Content Cell
-Content Cell  | Content Cell
