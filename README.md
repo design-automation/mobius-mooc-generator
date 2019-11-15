@@ -54,43 +54,13 @@ The folder strcture is as follows:
 
 ## Example
 
-Here is an example of what a folder structure might look like. It should match the structure that the users see in the edx user interface.
-
-- My_MOOC (_course, 1st level_)
-  - course_settings.md
-  - Week_1 (_section, 2nd level_)
-    - section_settings.md
-    - 01_Intro (_subsection, 3rd level_)
-      - subsection_settings.md
-      - Intro_Text(_unit, 3rd level_)
-        - unit_settings.md
-        - comp1.md
-        - image1.jpg
-      - Intro_Video (_unit, 3rd level_)
-        - unit_settings.md
-        - comp1.md
-    - 02_Shorts (_subsection, 3rd level_)
-      - subsection_settings.md
-      - Concept_1 (_unit, 3rd level_)
-        - unit_settings.md
-        - comp1.md
-        - comp2.md
-        - image1.jpg
-      - Concept_2 (_unit, 3rd level_)
-        - unitsettings.md
-        - comp1.md
-      - Concept_3 (_unit, 3rd level_)
-        - unit_settings.md
-        - comp1.md
-        - image1.jpg
-  - Week_2 (_section, 2nd level_)
-    - section_settings.md
-    - etc, etc, etc
-    
-Note that the alphanumeric ordering of the folders is important, as this will reflect the ordering that will be generated in edx. In this example, the sections'Week_1', 'Week_2', etc will be sorted correctly. However, the subsections 'Intro', 'Shorts', and 'Assignment' would not be sorted correctly. So, for that reason, they have been named '01_Intro', '02_Shorts', and '03_Assignment'.
+The folder structure you create should match the structure that you expect the learners see in the edx user interface.
 
 You can explore an example input dataset here:
 https://github.com/design-automation/edx-generator/tree/master/test/input
+
+
+Note that the alphanumeric ordering of the folders is important, as this will reflect the ordering that will be generated in edx. In this example, the sections'Week_1', 'Week_2', etc will be sorted correctly. However, the subsections 'Intro', 'Shorts', and 'Assignment' would not be sorted correctly. So, for that reason, they have been named '01_Intro', '02_Shorts', and '03_Assignment'.
 
 # Files
 
@@ -192,10 +162,10 @@ The 'type' defines the component type.
 - type: problem-text (not supported at this time)
 
 At the moment, only 'problem-submit' and 'problem-checkboxes' are implemented.
-- problem-submit: A problem where the student needs to submit a file that will be uploade to the edx server and graded with an external grader. 
-- problem-checkboxes: A problem where the student needs to answer a checkboxes question (with multiple right answers).  Feedback
+- problem-submit: A problem where the learner needs to submit a file that will be uploade to the edx server and graded with an external grader. 
+- problem-checkboxes: A problem where the learner needs to answer a checkboxes question (with multiple right answers).  Feedback
 
-In both cases, after answering the question, the student can get feeback on the right answer.
+In both cases, after answering the question, the learner can get feeback on the right answer.
 
 ### Common Metadata For Component Files
 
@@ -354,5 +324,5 @@ You must supply two arguments to the python script:
 - ./in/MOOC1 is the source folder where the script will read from
 - ./out/MOOC1 is the destination folder where the script will write to
 
-**WARNING: any existing comtent in the output folder (i.e. in this case `./out/MOOC1`) will be deleted.**
+**WARNING: any existing contents in the output folder (i.e. in this case `./out/MOOC1`) will be deleted.**
 
