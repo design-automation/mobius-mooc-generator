@@ -65,9 +65,9 @@ UNIT_FOLDER_OPT = ['visible_to_staff_only', 'start']
 # Metadata settings for components
 COMP_HTML_REQ = ['type']
 COMP_HTML_OPT = ['display_name', 'visible_to_staff_only', 'start']
-COMP_VIDEO_REQ = ['type', 'youtube_id_1_0']
+COMP_VIDEO_REQ = ['type']
 COMP_VIDEO_OPT = ['transcript', 'display_name', 'edx_video_id', 'visible_to_staff_only', 'start', 'download_video', 
-    'show_captions', 'sub', 'html5_sources']
+    'show_captions', 'sub', 'html5_sources', 'youtube_id_1_0', 'html5_sources']
 COMP_PROB_SUBMIT_REQ = ['type', 'question', 'queuename']
 COMP_PROB_SUBMIT_OPT = ['answer', 'display_name', 'visible_to_staff_only', 'start', 'max_attempts', 'weight', 
     'showanswer', 'attempts_before_showanswer_button']
@@ -714,6 +714,21 @@ def writeXmlForVidComp(out_folder, filename, content, settings, unit_filename):
     #   transcripts="{&quot;en&quot;: &quot;7d76f250-0000-42ea-8aba-c0c0ce845280-en.srt&quot;}" 
     #   display_name="A Video" edx_video_id="7d76f250-0000-42ea-8aba-c0c0ce845280" 
     #   youtube_id_1_0="3_yD_cEKoCk" >
+    #   <video_asset client_video_id="External Video" duration="0.0" image="">
+    #     <transcripts>
+    #       <transcript file_format="srt" language_code="en" provider="Custom"/>
+    #     </transcripts>
+    #   </video_asset>
+    #   <transcript language="en" src="7d76f250-0000-42ea-8aba-c0c0ce845280-en.srt"/>
+    # </video>
+    # ----  ----  ----
+    # ----  ----  ----
+    # <video 
+    #   url_name="section_week_1_subsection_2_shorts_unit_1_text_and_videos_02_video" 
+    #   sub="" 
+    #   transcripts="{&quot;en&quot;: &quot;7d76f250-0000-42ea-8aba-c0c0ce845280-en.srt&quot;}" 
+    #   display_name="A Video" edx_video_id="7d76f250-0000-42ea-8aba-c0c0ce845280" 
+    #   html5_sources="[&quot;https://aaa.bbb.com/ccc.mp4&quot;]"  >
     #   <video_asset client_video_id="External Video" duration="0.0" image="">
     #     <transcripts>
     #       <transcript file_format="srt" language_code="en" provider="Custom"/>
