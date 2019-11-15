@@ -15,10 +15,14 @@ Lets also insert an image, maybe a diagram.
 
 ![This is the alt text.](edx_image.png "A test image.")
 
-* [x] a correct answer
-* [ ] an incorrect answer
-* [x] another correct answer
-* [x] yet another correct answer
+===
+
+[x] a correct answer
+[ ] an incorrect answer
+[x] another correct answer
+[x] yet another correct answer
+
+===
 
 Some feedback about the correct answer.
 

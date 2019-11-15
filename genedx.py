@@ -109,6 +109,8 @@ IFRAME_WIDTH = '100%'
 IFRAME_HEIGHT ='600px' 
 IFRAME_STYLE = 'border: 1px solid black;'
 #--------------------------------------------------------------------------------------------------
+WARNING = "      WARNING:"
+#--------------------------------------------------------------------------------------------------
 # converts markdown to html
 # returns the html string (in xml tags) and the metadata object
 def convertMd(data):
@@ -161,7 +163,7 @@ def setHrefHtml(component_path, a_elems, unit_filename):
         # get the href
         href = a_elem.get('href')
         if not href:
-            print('An <a/> tag has no "href" attribute:', a_elem)
+            print(WARNING, 'An <a/> tag has no "href" attribute:', a_elem)
             return
         # break down the url
         href_parts = list(urllib.parse.urlparse(href))
@@ -185,7 +187,7 @@ def setHrefHtml(component_path, a_elems, unit_filename):
             new_href = '/' + STATIC_FOLDER + '/' + unit_filename + '_' + href_file
         else:
             new_href = href
-            print('Found an unrecognised href:', href, href_file_ext)
+            print(WARNING, 'Found an unrecognised href:', href, href_file_ext)
         # create the new tag, either an <iframe/> or a <a/>
         if href_file_ext in IFRAME_URLS.keys():
             # create new image
@@ -438,7 +440,7 @@ def processMd(component_path, out_folder, component_filename, unit_filename):
     if comp_type:
         comp_type = comp_type[0]
     else:
-        print('Error: Component type missing:', component_path)
+        print(WARNING, 'Error: Component type missing:', component_path)
         return 
     # generate xml files
     if comp_type == 'html':
@@ -455,7 +457,7 @@ def processMd(component_path, out_folder, component_filename, unit_filename):
         settings = getMetaSettings(component_path, meta, COMP_VIDEO_REQ, COMP_VIDEO_OPT )
         writeXmlForVidComp(out_folder, component_filename, content, settings, unit_filename)
     else:
-        print('Error: Component type not recognised:', comp_type, "in", component_path)
+        print(WARNING, 'Error: Component type not recognised:', comp_type, "in", component_path)
     # return the component type, which is needed for generating the xml for the subsection
     if comp_type.startswith('problem'):
         comp_type = 'problem'
@@ -551,41 +553,36 @@ def writeXmlForProbCheckboxesComp(component_path, out_folder, filename, content,
     # process images
     img_elems = list(content_root_tag.iter('img'))
     setImageHtml(img_elems, unit_filename)
-    # process the p elements
+    # process the elements
     # these will be converted to <label>, and solution <p> elements
+    # the elements are split using '===', there should be two splits
     labels = []
-    solutions = []
     choices = []
-    for elem in content_root_tag.getchildren():
-        # first deal with the bullets, <ul/>
-        # this could be normal bullets or could be the choices
-        if elem.tag == 'ul' and not choices:
-            this_is_choices_tag = False
-            for li_elem in elem.getchildren():
-                if li_elem.text[:3] in ['[ ]', '[x]']:
-                    this_is_choices_tag = True # we found a choice
-                    correct_val = 'true'
-                    if li_elem.text[:3] == '[ ]':
-                        correct_val = 'false'
-                    choice_tag = etree.Element("choice")
-                    choice_tag.text = li_elem.text[3:]
-                    choice_tag.set('correct', correct_val)
-                    choices.append(choice_tag)
-                else:
-                    pass # this is ok, could be normal bullets
-            if not this_is_choices_tag:
-                if choices:
-                    solutions.append(elem)
-                else:
-                    labels.append(elem)
-        # process other stuff, like <p/>
-        # if choices is not empty, this must be part of solution text
-        # if choices is empty, this must be part of label text
-        else:
-            if choices:
-                solutions.append(elem)
+    solutions = []
+    found_splitter = 0 # found ===
+    elems = content_root_tag.getchildren()
+    if elems:
+        for elem in elems:
+            if (elem.text and elem.text.startswith('===')):
+                found_splitter += 1
             else:
-                labels.append(elem)
+                if found_splitter == 0:
+                    labels.append(elem)
+                elif found_splitter == 1:
+                    if elem.text[:3] in ['[ ]', '[x]']:
+                        correct_val = 'true'
+                        if elem.text[:3] == '[ ]':
+                            correct_val = 'false'
+                        choice_tag = etree.Element("choice")
+                        choice_tag.text = elem.text[3:]
+                        choice_tag.set('correct', correct_val)
+                        choices.append(choice_tag)
+                    else:
+                        print(WARNING, 'Submit problem choice must start with [ ] or [x].', filename)
+                else:
+                    solutions.append(elem)
+    else:
+        print(WARNING, 'Submit problem is missing content.', filename)
     # add the choices and solutions to the choiceresponse_tag
     if labels:
         label_tag = etree.Element("label") 
@@ -593,7 +590,7 @@ def writeXmlForProbCheckboxesComp(component_path, out_folder, filename, content,
         for label in labels:
             label_tag.append(label)
     else:
-        print('Choice problem seems to have no text that describes the question.', filename)
+        print(WARNING, 'Choice problem seems to have no text that describes the question.', filename)
     if INSTRUCTIONS_CHECKBOXES:
         description_tag = etree.Element("description")
         choiceresponse_tag.append(description_tag)
@@ -604,7 +601,7 @@ def writeXmlForProbCheckboxesComp(component_path, out_folder, filename, content,
         for choice in choices:
             checkboxgroup_tag.append(choice)
     else:
-        print('Choice problem seems to have no choices.', filename)
+        print(WARNING, 'Choice problem seems to have no choices.', filename)
     if solutions:
         solution_tag = etree.Element("solution")
         div_tag = etree.Element("div")
@@ -659,13 +656,13 @@ def writeXmlForSubmitComp(component_path, out_folder, filename, content, setting
     if 'queuename' in settings:
         queuename = settings.get('queuename')
     else:
-        print('Submit problem is missing metadata: queuename.', filename)
+        print(WARNING, 'Submit problem is missing metadata: queuename.', filename)
     coderesponse_tag.set('queuename', queuename)
     question = 'Dummy_Question'
     if 'question' in settings:
         question = settings.get('question')
     else:
-        print('Submit problem is missing metadata: question.', filename)
+        print(WARNING, 'Submit problem is missing metadata: question.', filename)
     grader_payload_tag = etree.Element("grader_payload")
     grader_payload_tag.text = '{"question": "' + question + '"}'
     # read content
@@ -676,28 +673,47 @@ def writeXmlForSubmitComp(component_path, out_folder, filename, content, setting
     # process images
     img_elems = list(content_root_tag.iter('img'))
     setImageHtml(img_elems, unit_filename)
-    # process the p elements
+    # process the elements
     # these will be converted to <label>, and solution <p> elements
-    label_tag = etree.Element("label") 
+    # the elements are spli using '==='
+    # everything before the split is added to <label>
+    # everything after the split is added to 
+    labels = []
     solutions = []
+    found_splitter = 0 # found ===
     elems = content_root_tag.getchildren()
     if elems:
-        label_tag.text = elems[0].text
-        for elem in elems[1:]:
-            solutions.append(elem)
+        for elem in elems:
+            if (elem.text and elem.text.startswith('===')):
+                found_splitter += 1
+            else:
+                if found_splitter == 0:
+                    labels.append(elem)
+                else:
+                    solutions.append(elem)
     else:
-        print('Submit problem is missing paragraphs.', filename)
-    # add elems to the coderesponse_tag
-    coderesponse_tag.append(label_tag)
+        print(WARNING, 'Submit problem is missing content.', filename)
+    # add labels to the coderesponse_tag
+    if labels:
+        label_tag = etree.Element("label") 
+        coderesponse_tag.append(label_tag)
+        for label in labels:
+            label_tag.append(label)
+    else:
+        print(WARNING, 'Submit problem is missing a description of the problem.', filename)
+    # add <filesubmission> and <codeparam> to the coderesponse_tag
     coderesponse_tag.append(etree.Element("filesubmission") )
     codeparam_tag = etree.Element("codeparam")
     codeparam_tag.append(grader_payload_tag)
     coderesponse_tag.append(codeparam_tag)
+    # add <solution> to the coderesponse_tag
     if solutions:
         solution_tag = etree.Element("solution")
         coderesponse_tag.append(solution_tag)
         for solution in solutions:
             solution_tag.append(solution)
+    else:
+        print(WARNING, 'Submit problem is missing a description of the solution.', filename)
     # convert problem_tag to string
     result = etree.tostring(problem_tag, pretty_print=True)
     # write the file
@@ -804,8 +820,8 @@ def processAsset(component_path, out_folder, component, unit_filename):
 # out_repo is a dictionary, { url, id, key }
 # returns the url
 def processUploadsToRepo(in_folder, in_filename, out_repo, out_filename):
-    # print('out_repo', out_repo)
-    # print('out_filename', out_filename)
+    # print(WARNING, 'out_repo', out_repo)
+    # print(WARNING, 'out_filename', out_filename)
     repo_url = out_repo.get('url')
     auth_id = out_repo.get('id')
     auth_key = out_repo.get('key')
@@ -818,9 +834,9 @@ def processUploadsToRepo(in_folder, in_filename, out_repo, out_filename):
         # TODO
         # TODO
     else:
-        print('Answer does not exist: ' + in_path)
-        print('in_folder', in_folder)
-        print('in_filename', in_filename)
+        print(WARNING, 'Answer does not exist: ' + in_path)
+        print(WARNING, 'in_folder', in_folder)
+        print(WARNING, 'in_filename', in_filename)
     return cloud_answer_url
 #--------------------------------------------------------------------------------------------------
 # upload files for problem submit
@@ -831,7 +847,7 @@ def uploadAnswers(component_path, settings, unit_filename):
         answer_filename = settings['answer']
         processUploadsToRepo(component_folder, answer_filename, ANSWER_REPO, unit_filename + '_' + answer_filename)
     else:
-        print('Settings does not contain the answer file: ' + component_folder)
+        print(WARNING, 'Settings does not contain the answer file: ' + component_folder)
 #--------------------------------------------------------------------------------------------------
 # get all the sub folders in a folder
 # return the folder names and folder paths, like this 
@@ -864,7 +880,7 @@ def processCourse(in_folder, out_folder):
     # get the main mooc input folder, which we assume is the first folder
     courses = getSubFolders(in_folder)
     if (len(courses) != 1):
-        print('There should only be one folder in the root folder.')
+        print(WARNING, 'There should only be one folder in the root folder.')
         return
     course_path = courses[0][1]
     # make the folders inside dist

@@ -277,13 +277,48 @@ The following extensions are used:
 
 extensions = ['extra', 'meta', 'sane_lists']
 
+### Submit Problems
+
+For submit problems, the '===' string is used to split the text into two parts.
+
+Above the '===' describes the problem. 
+Below the '===' described teh solution.
+
+~~~~~~~~~~~~~~~~~~~~~
+This text describes the problem.
+
+===
+
+This text describes the solution.
+~~~~~~~~~~~~~~~~~~~~~
+
+For both the problem and slution, you can use any kind of markdown formatting, and insert images.
+
 ### Checkboxes Problems
 
-For checkboxes problems, the correct and incorrect choices are specified as follows:
-`
-* [x] This is a correct choice.
-* [ ] This is an incorrect choice.
-`
+For checkboxes problems, the '===' string is used to split the text into three parts. 
+(i.e. The '===' needs to be inserted two times.)
+
+Above the first '===' describes the problem. 
+Between the two '===' describes the checkbox choices.
+Below the second '===' described teh solution.
+
+For checkboxes, the correct and incorrect choices are specified by starting with '[ ]' or '[x]'
+
+~~~~~~~~~~~~~~~~~~~~~
+This text describes the problem.
+
+===
+
+[x] This is a correct choice.
+[ ] This is an incorrect choice.
+
+===
+
+This text describes the solution.
+~~~~~~~~~~~~~~~~~~~~~
+
+For both the problem and slution, you can use any kind of markdown formatting, and insert images.
 
 ### Code Blocks
 

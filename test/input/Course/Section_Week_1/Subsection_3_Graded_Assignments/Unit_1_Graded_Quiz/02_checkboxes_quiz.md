@@ -10,10 +10,14 @@ More text
 
 Some more text.
 
-* [x] a correct answer
-* [ ] an incorrect answer
-* [x] another correct answer
-* [x] yet another correct answer
+===
+
+[x] a correct answer
+[ ] an incorrect answer
+[x] another correct answer
+[x] yet another correct answer
+
+===
 
 Some feedback about the right answer.
 
