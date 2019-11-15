@@ -9,7 +9,7 @@ The aim is:
 
 The script generates a compressed .tar.gz file that can be directly imported into the edx course. When this file is imported, it will automatically populate all course contents.
 
-For the edx import to succeed, it is vital that settings in the course.xml file match teh settings in edx.
+For the edx import to succeed, it is vital that settings in the course.xml file match the settings in edx.
 `<course org="Org name" course="My Course" url_name="20192020S2"/>`
 
 In the edx UI for the course, under the menu 'Settings > Schedule & Details', these are named as follows:
@@ -196,15 +196,11 @@ The 'type' defines the component type.
 - type: problem-numerical (not supported at this time)
 - type: problem-text (not supported at this time)
 
-For the problems, there are five different types (with/without hints/feedback):
-- Submit a file.
-- Multiple Choice with Hints and Feedback
-- Checkboxes with Hints and Feedback (not supported at this time)
-- Dropdown with Hints and Feedback (not supported at this time)
-- Numerical Input with Hints and Feedback (not supported at this time)
-- Text Input with Hints and Feedback (not supported at this time)
-
 At the moment, only 'problem-submit' and 'problem-checkboxes' are implemented.
+- problem-submit: A problem where the student needs to submit a file that will be uploade to the edx server and graded with an external grader. 
+- problem-checkboxes: A problem where the student needs to answer a checkboxes question (with multiple right answers).  Feedback
+
+In both cases, after answering the question, the student can get feeback on the right answer.
 
 ### Common Metadata For Component Files
 
@@ -228,12 +224,13 @@ NIL
 Additional video metadata is as follows:
 
 Required
-- youtube_id_1_0: "3_yD_cEKoCk"
+
 
 Optional
 - download_video: "false" 
-- edx_video_id: "" 
-- html5_sources: "[]" 
+- youtube_id_1_0: "3_yD_cEKoCk"
+- html5_sources: [] 
+- ... and many more
 
 
 ### Problem Metadata - Submit
@@ -254,6 +251,8 @@ For the content of the submit problem, the markdown should be defined as follows
 ### Problem Metadata - Checkboxes
 
 Additional checkboxes  problem metadata is as follows:
+
+Optional
 - max_attempts: "2" 
 - weight: "1.0"
 - showanswer: "finished" 
@@ -282,7 +281,7 @@ extensions = ['extra', 'meta', 'sane_lists']
 For submit problems, the '===' string is used to split the text into two parts.
 
 Above the '===' describes the problem. 
-Below the '===' described teh solution.
+Below the '===' described the solution.
 
 ~~~~~~~~~~~~~~~~~~~~~
 This text describes the problem.
@@ -301,7 +300,7 @@ For checkboxes problems, the '===' string is used to split the text into three p
 
 Above the first '===' describes the problem. 
 Between the two '===' describes the checkbox choices.
-Below the second '===' described teh solution.
+Below the second '===' described the solution.
 
 For checkboxes, the correct and incorrect choices are specified by starting with '[ ]' or '[x]'
 
