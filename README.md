@@ -7,7 +7,7 @@ The aim is:
 - to allow Git and version control to be used when developing the content.
 - to allow better control over formatting and styles.
 
-The script generates a compressed .tar.gz file that can be directly imported into the edx course. When this file is imported, it will automatically populate all course contents.
+The basic workflow is that you create all your content locally, in a specific folder structure (described below). When you run the python script, it generates a compressed .tar.gz file that can be directly imported into the edx course. When this file is imported, it will automatically populate all course contents on edx.
 
 For the edx import to succeed, it is vital that settings in the course.xml file match the settings in edx.
 `<course org="Org name" course="My Course" url_name="20192020S2"/>`
@@ -17,7 +17,7 @@ In the edx UI for the course, under the menu 'Settings > Schedule & Details', th
 - Course Number
 - Course Run
 
-Warning: any existing course contents in edx will be deleted.
+**Warning: any existing course contents in edx will be deleted.**
 
 ## Python Dependencies
 
