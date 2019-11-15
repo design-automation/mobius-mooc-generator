@@ -83,26 +83,21 @@ Here is an example of what a folder structure might look like. It should match t
         - unit_settings.md
         - comp1.md
         - image1.jpg
-    - 03_Assignment (_subsection, 3rd level_)
-      - subsection_settings.md
-      - Quiz (_unit, 3rd level_)
-        - unit_settings.md
-        - comp1.md
-        - comp2.md
-        - comp3.md
-        - image1.jpg
   - Week_2 (_section, 2nd level_)
     - section_settings.md
     - etc, etc, etc
     
 Note that the alphanumeric ordering of the folders is important, as this will reflect the ordering that will be generated in edx. In this example, the sections'Week_1', 'Week_2', etc will be sorted correctly. However, the subsections 'Intro', 'Shorts', and 'Assignment' would not be sorted correctly. So, for that reason, they have been named '01_Intro', '02_Shorts', and '03_Assignment'.
-    
+
+You can explore an example input dataset here:
+https://github.com/design-automation/edx-generator/tree/master/test/input
+
 # Files
 
 There are three types of files:
 
 - Settings files
-  - Must be end in "settings.md", for example "section_settings.md", note the name is all lowercase
+  - Must end in "settings.md", for example "section_settings.md", note the name is all lowercase
   - Contains the settings for the parent folder.
 - Component files, the actual contents
   - Can have any name.
