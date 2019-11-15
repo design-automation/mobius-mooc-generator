@@ -762,6 +762,8 @@ def writeXmlForVidComp(out_folder, filename, content, settings, unit_filename):
     # add youtube
     if 'youtube_id_1_0' in settings:
         video_tag.set('youtube', '1.00:' + settings['youtube_id_1_0'])
+    else:
+        video_tag.set('youtube_id_1_0', '')
     # add transcript data
     if 'transcript' in settings:
         # set the transcript attribute
