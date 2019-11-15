@@ -17,7 +17,7 @@ In the edx UI for the course, under the menu 'Settings > Schedule & Details', th
 - Course Number
 - Course Run
 
-**Warning: any existing course contents in edx will be deleted.**
+**WARNING: When you upload the .tar.gz file, any existing course contents in edx will be deleted.**
 
 ## Python Dependencies
 
@@ -354,5 +354,5 @@ You must supply two arguments to the python script:
 - ./in/MOOC1 is the source folder where the script will read from
 - ./out/MOOC1 is the destination folder where the script will write to
 
-Warning: everything in the output folder will be deleted.
+**WARNING: any existing comtent in the output folder (i.e. in this case `./out/MOOC1`) will be deleted.**
 
