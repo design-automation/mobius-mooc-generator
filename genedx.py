@@ -10,6 +10,8 @@ md = markdown.Markdown(extensions = ['extra', 'meta', 'sane_lists'])
 IN_FOLDER = './test/input'
 OUT_FOLDER = './test/output'
 #--------------------------------------------------------------------------------------------------
+LANGUAGES = {'en': 'ENglish', 'zh': 'Mandarin', 'es': 'Spanish'}
+#--------------------------------------------------------------------------------------------------
 # Folders
 # Hierarchical Terminology (very confusing)
 # In  the edx interface, the names are as follows:
@@ -49,9 +51,9 @@ ROOT_FOLDER_REQ = ['org', 'course', 'url_name']
 ROOT_FOLDER_OPT = ['visible_to_staff_only', 'start']
 # course
 COURSE_FOLDER_REQ = ['display_name']
-COURSE_FOLDER_OPT = ['visible_to_staff_only', 'start', 
+COURSE_FOLDER_OPT = ['visible_to_staff_only', 'enrollment_start', 'start', 'end', 'self_paced', 'is_new'
     'cert_html_view_enabled', 'course_image', 'graceperiod', 'instructor_info', 'invitation_only', 
-    'language', 'learning_info', 'minimum_grade_credit', 'wiki_slug']
+    'language', 'learning_info', 'minimum_grade_credit', 'wiki_slug', 'cosmetic_display_price']
 # section
 SECTION_FOLDER_REQ = ['display_name']
 SECTION_FOLDER_OPT = ['visible_to_staff_only', 'start']
@@ -66,7 +68,7 @@ UNIT_FOLDER_OPT = ['visible_to_staff_only', 'start']
 COMP_HTML_REQ = ['type']
 COMP_HTML_OPT = ['display_name', 'visible_to_staff_only', 'start']
 COMP_VIDEO_REQ = ['type']
-COMP_VIDEO_OPT = ['transcript', 'display_name', 'edx_video_id', 'visible_to_staff_only', 'start', 'download_video', 
+COMP_VIDEO_OPT = ['voice', 'display_name', 'edx_video_id', 'visible_to_staff_only', 'start', 'download_video', 
     'show_captions', 'sub', 'html5_sources', 'youtube_id_1_0', 'html5_sources']
 COMP_PROB_SUBMIT_REQ = ['type', 'question', 'queuename']
 COMP_PROB_SUBMIT_OPT = ['answer', 'display_name', 'visible_to_staff_only', 'start', 'max_attempts', 'weight', 
@@ -99,8 +101,31 @@ INSTRUCTIONS_CHECKBOXES = 'Please select all applicable options from the list be
 #--------------------------------------------------------------------------------------------------
 # Image Settings
 FIGURE_CSS = 'margin:20px;'
-IMAGE_CSS = 'width:400px;display:block;margin-left:auto;margin-right:auto;border-style:solid;border-width:1px;'
-FIGCAPTION_CSS = 'width:400px;display:block;margin-left:auto;margin-right:auto;margin-top:8px;text-align:center;font-style: italic;'
+IMAGE_CSS = ';'.join([
+    'width:400px',
+    'display:block',
+    'margin-left:auto',
+    'margin-right',
+    'auto;border-style:solid',
+    'border-width:1px'
+    ])
+FIGCAPTION_CSS = ';'.join([
+    'width:400px',
+    'display:block',
+    'margin-left:auto',
+    'margin-right:auto',
+    'margin-top:8px',
+    'text-align:center',
+    'font-style:italic'
+    ])
+LANG_BUTTON_CSS = ';'.join([
+    'font-style:bold',
+    'font-size:11px',
+    'text-decoration:none',
+    'background-color:#EEEEEE',
+    'color:#333333',
+    'padding: 2px 6px 2px 6px'
+    ])
 #--------------------------------------------------------------------------------------------------
 # Iframe settings
 # Any <a> tags with files with these extension will be replaced with iframes
@@ -423,6 +448,10 @@ def writeXmlForUnit(in_folder, out_folder, filename, components):
         component_tag = etree.Element(component_type)
         component_tag.set('url_name', component_filename)
         vertical_tag.append(component_tag)
+        if component_type == 'video' and len(LANGUAGES) > 1:
+            video_lang_tag = etree.Element('html')
+            video_lang_tag.set('url_name', component_filename)
+            vertical_tag.append(video_lang_tag)
     result = etree.tostring(vertical_tag, pretty_print = True)
     # write file
     xml_out_path = os.path.join(out_folder, UNIT_FOLDER, filename + '.xml')
@@ -724,12 +753,14 @@ def writeXmlForSubmitComp(component_path, out_folder, filename, content, setting
 # write xml for video component
 def writeXmlForVidComp(out_folder, filename, content, settings, unit_filename):
     # ----  ----  ----
+    # Youtube Video
     # <video 
     #   url_name="section_week_1_subsection_2_shorts_unit_1_text_and_videos_02_video" 
     #   sub="" 
     #   transcripts="{&quot;en&quot;: &quot;7d76f250-0000-42ea-8aba-c0c0ce845280-en.srt&quot;}" 
     #   display_name="A Video" edx_video_id="7d76f250-0000-42ea-8aba-c0c0ce845280" 
     #   youtube_id_1_0="3_yD_cEKoCk" >
+    #
     #   <video_asset client_video_id="External Video" duration="0.0" image="">
     #     <transcripts>
     #       <transcript file_format="srt" language_code="en" provider="Custom"/>
@@ -738,13 +769,14 @@ def writeXmlForVidComp(out_folder, filename, content, settings, unit_filename):
     #   <transcript language="en" src="7d76f250-0000-42ea-8aba-c0c0ce845280-en.srt"/>
     # </video>
     # ----  ----  ----
-    # ----  ----  ----
+    # Non-Youtube video
     # <video 
     #   url_name="section_week_1_subsection_2_shorts_unit_1_text_and_videos_02_video" 
     #   sub="" 
     #   transcripts="{&quot;en&quot;: &quot;7d76f250-0000-42ea-8aba-c0c0ce845280-en.srt&quot;}" 
     #   display_name="A Video" edx_video_id="7d76f250-0000-42ea-8aba-c0c0ce845280" 
     #   html5_sources="[&quot;https://aaa.bbb.com/ccc.mp4&quot;]"  >
+    #
     #   <video_asset client_video_id="External Video" duration="0.0" image="">
     #     <transcripts>
     #       <transcript file_format="srt" language_code="en" provider="Custom"/>
@@ -753,46 +785,91 @@ def writeXmlForVidComp(out_folder, filename, content, settings, unit_filename):
     #   <transcript language="en" src="7d76f250-0000-42ea-8aba-c0c0ce845280-en.srt"/>
     # </video>
     # ----  ----  ----
+    # Video with multiple transcripts in different languages
+    # <video url_name="section_week_1_subsection_2_shorts_unit_1_02_video" 
+    #   sub="" 
+    #   transcripts="{&quot;en&quot;: &quot;d8446257-1d13-4b5c-a21a-a4ca57b06cf5-en.srt&quot;, &quot;zh&quot;: &quot;d8446257-1d13-4b5c-a21a-a4ca57b06cf5-zh.srt&quot;}" 
+    #   display_name="Basic Blocking" 
+    #   edx_video_id="d8446257-1d13-4b5c-a21a-a4ca57b06cf5" 
+    #   html5_sources="[&quot;https://mooc-s3cf.s3-ap-southeast-1.amazonaws.com/Ct2.7.1_uk_comp.mp4&quot;]" >
+    #
+    #   <source src="https://mooc-s3cf.s3-ap-southeast-1.amazonaws.com/Ct2.7.1_uk_comp.mp4"/>
+    #   <video_asset client_video_id="External Video" duration="0.0" image="">
+    #     <transcripts>
+    #       <transcript file_format="srt" language_code="en" provider="Custom"/>
+    #       <transcript file_format="srt" language_code="zh" provider="Custom"/>
+    #     </transcripts>
+    #   </video_asset>
+    #   <transcript language="en" src="d8446257-1d13-4b5c-a21a-a4ca57b06cf5-en.srt"/>
+    #   <transcript language="zh" src="d8446257-1d13-4b5c-a21a-a4ca57b06cf5-zh.srt"/>
+    # </video>
+    # 
     # create xml
     video_tag = etree.Element("video")
     video_tag.set('url_name', filename)
     for key in settings:
-        if key not in ['type', 'transcript']:
+        if key not in ['type', 'transcript', 'title', 'voice']:
             video_tag.set(key, settings[key])
     # add youtube
     if 'youtube_id_1_0' in settings:
         video_tag.set('youtube', '1.00:' + settings['youtube_id_1_0'])
     else:
         video_tag.set('youtube_id_1_0', '')
-    # add transcript data
-    if 'transcript' in settings:
-        # set the transcript attribute
-        transcripts_str = unit_filename + '_' + settings['transcript']
-        transcripts_obj = '{"en": "' + transcripts_str + '"}'
-        video_tag.set('transcripts', transcripts_obj)
-        # add the video asset tag
-        video_asset_tag = etree.Element("video_asset")
-        video_asset_tag.set('client_video_id', 'external video')
-        video_asset_tag.set('duration', '0.0')
-        video_asset_tag.set('image', '')
-        transcripts_tag = etree.Element('transcripts')
+    # set the transcript object
+    transcripts_obj = {}
+    for lang in LANGUAGES.keys():
+        transcripts_obj[lang] = unit_filename + '_sub_' + lang + '.srt'
+    video_tag.set('transcripts', str(transcripts_obj))
+    # add the source tag
+    html5_sources_list = []
+    if 'html5_sources' in settings:
+        html5_sources_list = eval(bytes(settings['html5_sources'], "utf-8").decode("unicode_escape"))
+        source_tag = etree.Element("source")
+        source_tag.set('src', html5_sources_list[0])
+        video_tag.append(source_tag)
+    # add the video asset tag
+    video_asset_tag = etree.Element("video_asset")
+    video_asset_tag.set('client_video_id', 'external video')
+    video_asset_tag.set('duration', '0.0')
+    video_asset_tag.set('image', '')
+    video_tag.append(video_asset_tag)
+    transcripts_tag = etree.Element('transcripts')
+    for lang in LANGUAGES.keys():
         transcript_tag = etree.Element('transcript')
-        transcript_tag.set('file_format', transcripts_str.split('.')[-1])
-        transcript_tag.set('language_code', 'en')
+        transcript_tag.set('file_format', 'srt')
+        transcript_tag.set('language_code', lang)
         transcript_tag.set('provider', 'Custom')
-        video_tag.append(video_asset_tag)
-        video_asset_tag.append(transcripts_tag)
         transcripts_tag.append(transcript_tag)
-        # add the second transcript tag
+    video_asset_tag.append(transcripts_tag)
+    # add the transcript tags
+    for lang in LANGUAGES.keys():
         transcript2_tag = etree.Element('transcript')
-        transcript2_tag.set('language', 'en')
-        transcript2_tag.set('src', transcripts_str)
+        transcript2_tag.set('language', lang)
+        transcript2_tag.set('src', transcripts_obj[lang])
         video_tag.append(transcript2_tag)
     # write the file
     result = etree.tostring(video_tag, pretty_print = True)
     xml_out_path = os.path.join(out_folder, COMP_VIDS_FOLDER, filename + '.xml')
     with open(xml_out_path, 'wb') as fout:
         fout.write(result)
+    # generate the language options
+    if 'html5_sources' in settings and len(LANGUAGES) > 1:
+        p_languages_tag = etree.Element("p")
+        p_languages_tag.text = 'View video in other language: '
+        for lang in LANGUAGES.keys():
+            a_tag = etree.Element("a")
+            href = html5_sources_list[0][:-4] + '_' + lang + html5_sources_list[0][-4:]
+            a_tag.set('href', href)
+            a_tag.set('target', '_blank')
+            a_tag.set('style', LANG_BUTTON_CSS)
+            a_tag.text = LANGUAGES[lang]
+            p_languages_tag.append(a_tag)
+        # write the file
+        result2 = etree.tostring(p_languages_tag, pretty_print = True)
+        xml_out_path = os.path.join(out_folder, COMP_HTML_FOLDER, filename + '.xml')
+        with open(xml_out_path, 'wb') as fout:
+            fout.write(result2)
+    
 #--------------------------------------------------------------------------------------------------
 # this is just in case there are some html files
 # write to units to the correct folder

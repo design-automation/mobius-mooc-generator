@@ -268,6 +268,7 @@ Between the two '===' describes the checkbox choices.
 Below the second '===' described the solution.
 
 For checkboxes, the correct and incorrect choices are specified by starting with '[ ]' or '[x]'
+Each choice must be seperated by an empty line.
 
 ~~~~~~~~~~~~~~~~~~~~~
 This text describes the problem.
@@ -275,6 +276,7 @@ This text describes the problem.
 ===
 
 [x] This is a correct choice.
+
 [ ] This is an incorrect choice.
 
 ===
