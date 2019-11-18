@@ -4,13 +4,14 @@ import shutil
 import urllib
 from lxml import etree
 import markdown
+import html
 # create the markdow instance
 md = markdown.Markdown(extensions = ['extra', 'meta', 'sane_lists'])
 #--------------------------------------------------------------------------------------------------
 IN_FOLDER = './test/input'
 OUT_FOLDER = './test/output'
 #--------------------------------------------------------------------------------------------------
-LANGUAGES = {'en': 'ENglish', 'zh': 'Mandarin', 'es': 'Spanish'}
+LANGUAGES = {'en': 'English', 'zh': 'Mandarin', 'pt': 'Portuguese', 'fr': 'French'}
 #--------------------------------------------------------------------------------------------------
 # Folders
 # Hierarchical Terminology (very confusing)
@@ -51,7 +52,7 @@ ROOT_FOLDER_REQ = ['org', 'course', 'url_name']
 ROOT_FOLDER_OPT = ['visible_to_staff_only', 'start']
 # course
 COURSE_FOLDER_REQ = ['display_name']
-COURSE_FOLDER_OPT = ['visible_to_staff_only', 'enrollment_start', 'start', 'end', 'self_paced', 'is_new'
+COURSE_FOLDER_OPT = ['visible_to_staff_only', 'enrollment_start', 'start', 'end', 'self_paced', 'is_new',
     'cert_html_view_enabled', 'course_image', 'graceperiod', 'instructor_info', 'invitation_only', 
     'language', 'learning_info', 'minimum_grade_credit', 'wiki_slug', 'cosmetic_display_price']
 # section
@@ -105,8 +106,8 @@ IMAGE_CSS = ';'.join([
     'width:400px',
     'display:block',
     'margin-left:auto',
-    'margin-right',
-    'auto;border-style:solid',
+    'margin-right:auto',
+    'border-style:solid',
     'border-width:1px'
     ])
 FIGCAPTION_CSS = ';'.join([
@@ -119,13 +120,22 @@ FIGCAPTION_CSS = ';'.join([
     'font-style:italic'
     ])
 LANG_BUTTON_CSS = ';'.join([
-    'font-style:bold',
-    'font-size:11px',
-    'text-decoration:none',
-    'background-color:#EEEEEE',
-    'color:#333333',
-    'padding: 2px 6px 2px 6px'
+    'padding:2px',
+    'margin:1px',
+    'border-style:solid',
+    'border-width:1px',
+    'display:inline',
+    'cursor:pointer'
     ])
+SELECT_LANG_SCRIPT = '''
+function myFunction(lang) {
+  document.getElementById('chinese').style="display:none";
+  document.getElementById('french').style="display:none";
+  if (lang !== 'none') {
+    document.getElementById(lang).style="display:block";
+  }
+}
+'''
 #--------------------------------------------------------------------------------------------------
 # Iframe settings
 # Any <a> tags with files with these extension will be replaced with iframes
@@ -818,8 +828,12 @@ def writeXmlForVidComp(out_folder, filename, content, settings, unit_filename):
     # set the transcript object
     transcripts_obj = {}
     for lang in LANGUAGES.keys():
-        transcripts_obj[lang] = unit_filename + '_sub_' + lang + '.srt'
-    video_tag.set('transcripts', str(transcripts_obj))
+        transcripts_obj[lang] = filename + '_sub_' + lang + '.srt'
+    # escape this dict so that we get &quot; but do not escale the &
+    video_tag_transcripts_list = []
+    for k in transcripts_obj:
+        video_tag_transcripts_list.append( '"' + k + '":"' + transcripts_obj[k] + '"' )
+    video_tag.set('transcripts', '{' + ','.join(video_tag_transcripts_list) + '}')
     # add the source tag
     html5_sources_list = []
     if 'html5_sources' in settings:
@@ -854,22 +868,63 @@ def writeXmlForVidComp(out_folder, filename, content, settings, unit_filename):
         fout.write(result)
     # generate the language options
     if 'html5_sources' in settings and len(LANGUAGES) > 1:
+        # create the html file for video languages
+        # create script str
+        script_str = '\nfunction selLang(lang) {\n'
+        for lang in list(LANGUAGES.keys())[1:]:
+            script_str += '  document.getElementById("' + lang + '").style="display:none";\n'
+        script_str += '  if (lang !== "none") { \n'
+        script_str += '    document.getElementById(lang).style="display:block";\n'
+        script_str += '  }\n'
+        script_str += '}\n'
+        # script tag
+        script_tag = etree.Element("script")
+        script_tag.text = script_str
+        # p tag
         p_languages_tag = etree.Element("p")
+        p_languages_tag.set('style','display:inline')
         p_languages_tag.text = 'View video in other language: '
-        for lang in LANGUAGES.keys():
-            a_tag = etree.Element("a")
-            href = html5_sources_list[0][:-4] + '_' + lang + html5_sources_list[0][-4:]
-            a_tag.set('href', href)
-            a_tag.set('target', '_blank')
-            a_tag.set('style', LANG_BUTTON_CSS)
-            a_tag.text = LANGUAGES[lang]
-            p_languages_tag.append(a_tag)
-        # write the file
-        result2 = etree.tostring(p_languages_tag, pretty_print = True)
+        button_tag = etree.Element("div")
+        button_tag.set('style', LANG_BUTTON_CSS)
+        button_tag.set('onclick', 'selLang("none")')
+        button_tag.text = 'None'
+        p_languages_tag.append(button_tag)
+        div_tag =  etree.Element("div")
+        for lang in list(LANGUAGES.keys())[1:]:
+            # p with row of buttons
+            if lang != 'en':
+                button_tag = etree.Element("div")
+                button_tag.set('style', LANG_BUTTON_CSS)
+                button_tag.set('onclick', 'selLang("' + lang + '")')
+                button_tag.text = LANGUAGES[lang]
+                p_languages_tag.append(button_tag)
+            # videos
+            video_tag = etree.Element("video")
+            div_tag.append(video_tag)
+            video_tag.set('id', lang)
+            video_tag.set('style', 'display:none')
+            video_tag.set('width', '100%')
+            video_tag.set('controls', '')
+            # source tag 
+            source_tag = etree.Element("source")
+            video_tag.append(source_tag)
+            source_tag.set('src', html5_sources_list[0][:-4] + '_' + lang + html5_sources_list[0][-4:])
+            source_tag.set('type', 'video/mp4')
+            source_tag.text = 'Your browser does not support the video tag.'
+        # write the html file for video languages
+        xml_out_path = os.path.join(out_folder, COMP_HTML_FOLDER, filename + '.html')
+        with open(xml_out_path, 'wb') as fout:
+            fout.write(etree.tostring(script_tag, pretty_print = True))
+            fout.write(etree.tostring(p_languages_tag, pretty_print = True))
+            fout.write(etree.tostring(div_tag, pretty_print = True))
+        # create the xml file for video languages
+        html_tag = etree.Element("html")
+        html_tag.set('display_name', 'View Video in Other Language')
+        html_tag.set('filename', filename)
+        # write the xml file for video languages
         xml_out_path = os.path.join(out_folder, COMP_HTML_FOLDER, filename + '.xml')
         with open(xml_out_path, 'wb') as fout:
-            fout.write(result2)
-    
+            fout.write(etree.tostring(html_tag, pretty_print = True))
 #--------------------------------------------------------------------------------------------------
 # this is just in case there are some html files
 # write to units to the correct folder

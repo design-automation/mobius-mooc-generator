@@ -1,1 +1,1 @@
-display_name: Week 1 Ungraded Quiz
+display_name: Unit 2 Ungraded Quiz

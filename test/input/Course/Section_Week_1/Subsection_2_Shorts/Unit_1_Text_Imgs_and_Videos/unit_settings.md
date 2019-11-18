@@ -1,1 +1,0 @@
-display_name: Week 1 Text, Images, and Videos

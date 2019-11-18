@@ -1,8 +1,12 @@
 type: html
-display_name: Testing a Local Image
+display_name: A Mobius Model
 
-# Local Images
+# A mobius Model
 
-Here is an image that is stored locally.
+Here is a mobius model embedded as an iframe:
 
-![This is the alt text.](edx_image.png "A test image.")
+<iframe width="100%" height="600px" style="border: 1px solid black;" src="https://mobius.design-automation.net/publish?file=https://raw.githubusercontent.com/design-automation-edu/spatial-computational-thinking/master/2019_sem2/edx_assignments/SCT_W6_Assignment_giModel_4.mob&amp;defaultViewer=2"></iframe>
+
+
+[mobius](example.mob)
+

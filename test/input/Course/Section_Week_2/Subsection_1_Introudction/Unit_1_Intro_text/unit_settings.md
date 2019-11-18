@@ -1,1 +1,1 @@
-display_name: Week 2 Intro
+display_name: Unit 1 Mobius Model
