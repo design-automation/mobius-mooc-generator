@@ -5,13 +5,20 @@ import urllib
 from lxml import etree
 import markdown
 import html
+from __CONSTS__ import COURSE_PATH, OUTPUT_PATH, SETTINGS_FILENAME, ASSET_FILE_EXTENSIONS, LANGUAGES, S3_FILE_EXTENSIONS, S3_ANSWERS_BUCKET, S3_EXAMPLES_BUCKET, S3_ANSWER_FILENAME
 # create the markdow instance
 md = markdown.Markdown(extensions = ['extra', 'meta', 'sane_lists'])
 #--------------------------------------------------------------------------------------------------
-IN_FOLDER = './test/input'
-OUT_FOLDER = './test/output'
-#--------------------------------------------------------------------------------------------------
-LANGUAGES = {'en': 'English', 'zh': 'Mandarin', 'pt': 'Portuguese', 'fr': 'French'}
+# available languages: ["us", "uk", "pt", "es", "zh", "fr", "de", "nl"]
+ALL_LANGUAGES = {
+    'en': 'English',
+    'zh': 'Mandarin',
+    'pt': 'Portuguese',
+    'fr': 'French',
+    'es': 'Spanish',
+    'de': 'German',
+    'nl': 'Dutch'
+} 
 #--------------------------------------------------------------------------------------------------
 # Folders
 # Hierarchical Terminology (very confusing)
@@ -32,17 +39,9 @@ COMP_PROBS_FOLDER = "problem"
 # Others
 STATIC_FOLDER = "static"
 #--------------------------------------------------------------------------------------------------
-# Repo settings
-# Example Repo, Github, where examples can be uploaded
-# These examples can be viewed by anyone
-# Answer to graded questions should not be uploaded here
-EXAMPLE_REPO = {'url': 'https://github-examples.com', 'id': '123', 'key': 'xxx'}
-# Answer Repo, AWS, where answers to graded questions can be uploaded
-ANSWER_REPO = {'url': 'https://aws-answers.com', 'id': '123', 'key': 'xxx'}
-#--------------------------------------------------------------------------------------------------
 # File extensions used for different types of assets
 # Images, PDFs, Video captions, these will be copied to the STATIC_FOLDER
-ASSET_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'srt']
+ASSET_FILE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'srt']
 # Upload extensions
 UPLOAD_EXTENSIONS = ['mob']
 #--------------------------------------------------------------------------------------------------
@@ -139,10 +138,10 @@ function myFunction(lang) {
 #--------------------------------------------------------------------------------------------------
 # Iframe settings
 # Any <a> tags with files with these extension will be replaced with iframes
-IFRAME_URLS = {'mob': 'https://mobius.design-automation.net/publish?file='}
-IFRAME_WIDTH = '100%' 
-IFRAME_HEIGHT ='600px' 
-IFRAME_STYLE = 'border: 1px solid black;'
+MOB_IFRAME_EXTENSIONS = ['mob']
+MOB_IFRAME_WIDTH = '100%' 
+MOB_IFRAME_HEIGHT ='600px' 
+MOB_IFRAME_STYLE = 'border: 1px solid black;'
 #--------------------------------------------------------------------------------------------------
 WARNING = "      WARNING:"
 #--------------------------------------------------------------------------------------------------
@@ -208,38 +207,47 @@ def setHrefHtml(component_path, a_elems, unit_filename):
         if href_path and '.' in href_path:
             href_file = href_path.split('/')[-1]
             href_file_ext = href_path.split('.')[-1]
-        new_tag = None
+        iframe_tag = None
         # create the new href
         # either the file needs to be uploaded to a repo
         # or the file has already been copied to the STATIC_FOLDER
         new_href = None
         if href_file_ext == None or href_file_ext == '':
             new_href = href
-        elif href_file_ext in UPLOAD_EXTENSIONS:
-            component_folder = os.path.dirname(component_path)
-            new_href = processUploadsToRepo(component_folder, href_file, EXAMPLE_REPO, unit_filename + '_' + href)
-        elif href_file_ext in ASSET_EXTENSIONS:
+        elif href_file_ext in ASSET_FILE_EXTENSIONS:
             new_href = '/' + STATIC_FOLDER + '/' + unit_filename + '_' + href_file
+        elif href_file_ext in S3_FILE_EXTENSIONS:
+            # for example https://sct-mooc-examples.s3.amazonaws.com/hello.txt
+            new_href = 'https://' + S3_EXAMPLES_BUCKET + '.s3.amazonaws.com/' + unit_filename + '_' + href_file
         else:
             new_href = href
             print(WARNING, 'Found an unrecognised href:', href, href_file_ext)
         # create the new tag, either an <iframe/> or a <a/>
-        if href_file_ext in IFRAME_URLS.keys():
-            # create new image
-            new_tag = etree.Element('iframe')
-            new_tag.set('width', IFRAME_WIDTH)
-            new_tag.set('height', IFRAME_HEIGHT)
-            new_tag.set('style', IFRAME_STYLE)
-            new_src = IFRAME_URLS[href_file_ext] + new_href
-            new_tag.set('src', new_src)
+        if href_file_ext in MOB_IFRAME_EXTENSIONS:
+            # create iframe
+            mob_settings = dict([[item.strip() for item in pair.split('=')] for pair in a_elem.text.split(',')])
+            iframe_src = 'https://mobius.design-automation.net/'
+            if 'mobius' in mob_settings:
+                iframe_src += mob_settings['mobius'] + '?file=' + new_href
+                del mob_settings['mobius']
+                for key in mob_settings:
+                    iframe_src += '&' +  key + '=' + mob_settings[key]
+            else:
+                print(WARNING, 'Mobius Iframe data is missing the "publish" setting:', mob_settings)
+                print(WARNING, 'Possible options include "mobius = publish" and "mobius = dashboard".')
+            iframe_tag = etree.Element('iframe')
+            iframe_tag.set('width', MOB_IFRAME_WIDTH)
+            iframe_tag.set('height', MOB_IFRAME_HEIGHT)
+            iframe_tag.set('style', MOB_IFRAME_STYLE)
+            iframe_tag.set('src', iframe_src)
         else:
-            new_tag = etree.Element('a')
+            iframe_tag = etree.Element('a')
             for key in a_elem:
                 if key not in ['href']:
-                    new_tag.set(key, a_elem.get(key))
-            new_tag.set('src', new_href)
+                    iframe_tag.set(key, a_elem.get(key))
+            iframe_tag.set('src', new_href)
         # replace the existing a with the new tag
-        a_elem.getparent().replace(a_elem, new_tag)
+        a_elem.getparent().replace(a_elem, iframe_tag)
 #--------------------------------------------------------------------------------------------------
 # get the settings from a component or a folder
 # returns a dict of settings
@@ -314,28 +322,28 @@ def getComponentContentMeta(in_path):
     return [content, meta]
 #--------------------------------------------------------------------------------------------------
 # generate xml for a course
-def writeXmlForRoot(in_folder, out_folder):
+def writeXmlForRoot():
     # create a file in the root folder
     # ----  ----  ----
     # <course url_name="1234" org="abc" course="online101"/>
     # ----  ----  ----
     print("writing root xml")
     # get settings
-    root_folder_settings = getFolderMetaSettings(in_folder, ROOT_FOLDER_REQ, ROOT_FOLDER_OPT)
+    root_folder_settings = getFolderMetaSettings(COURSE_PATH, ROOT_FOLDER_REQ, ROOT_FOLDER_OPT)
     # create xml
     course_tag = etree.Element("course")
     for key in root_folder_settings:
         course_tag.set(key, root_folder_settings[key])
     result = etree.tostring(course_tag, pretty_print=True)
     # write the file
-    root_xml_out_path = os.path.join(out_folder, 'course.xml')
+    root_xml_out_path = os.path.join(OUTPUT_PATH, 'course.xml')
     with open(root_xml_out_path, 'wb') as fout:
         fout.write(result)
     # return the url_name, this is needed for the next level, the filename for course
     return root_folder_settings['url_name']
 #--------------------------------------------------------------------------------------------------
 # generate xml for a course
-def writeXmlForCourse(in_folder, out_folder, filename, sections):
+def writeXmlForCourse(in_folder, filename, sections):
     # create a file in the 'course' folder
     # ----  ----  ----
     # <course cert_html_view_enabled="true" display_name="My Course: Part1" language="en" 
@@ -364,14 +372,14 @@ def writeXmlForCourse(in_folder, out_folder, filename, sections):
         course_tag.append(wiki_tag)
     result = etree.tostring(course_tag, pretty_print = True)
     # write the file
-    xml_out_path = os.path.join(out_folder, COURSE_FOLDER, filename + '.xml')
+    xml_out_path = os.path.join(OUTPUT_PATH, COURSE_FOLDER, filename + '.xml')
     with open(xml_out_path, 'wb') as fout:
         fout.write(result)
 #--------------------------------------------------------------------------------------------------
 # generate xml for a section, also called a chapter
 # a section contains subsections
 # examples, week 1, week 2
-def writeXmlForSection(in_folder, out_folder, filename, subsections):
+def writeXmlForSection(in_folder, filename, subsections):
     # ----  ----  ----
     # <chapter display_name="Section">
     #     <sequential url_name="c717ae712f294fe397b72be2011b4ec0"/>
@@ -392,14 +400,14 @@ def writeXmlForSection(in_folder, out_folder, filename, subsections):
         chapter_tag.append(sequential_tag)
     result = etree.tostring(chapter_tag, pretty_print = True)
     # write the file
-    xml_out_path = os.path.join(out_folder, SECTION_FOLDER, filename + '.xml')
+    xml_out_path = os.path.join(OUTPUT_PATH, SECTION_FOLDER, filename + '.xml')
     with open(xml_out_path, 'wb') as fout:
         fout.write(result)
 #--------------------------------------------------------------------------------------------------
 # generate xml for a subsection, also called a sequence
 # a subsection can contain units
 # example, intorduction, shorts, assignments
-def writeXmlForSubsection(in_folder, out_folder, filename, units):
+def writeXmlForSubsection(in_folder, filename, units):
     # ----  ----  ----
     # <sequential display_name="Section Title">
     #   <vertical url_name="fbb654358e4a4c0f8cc5bce4627ec82b"/>
@@ -431,13 +439,13 @@ def writeXmlForSubsection(in_folder, out_folder, filename, units):
         sequential_tag.append(vertical_tag)
     result = etree.tostring(sequential_tag, pretty_print=True)
     # write the file
-    xml_out_path = os.path.join(out_folder, SUBSECTION_FOLDER, filename + '.xml')
+    xml_out_path = os.path.join(OUTPUT_PATH, SUBSECTION_FOLDER, filename + '.xml')
     with open(xml_out_path, 'wb') as fout:
         fout.write(result)
 #--------------------------------------------------------------------------------------------------
 # generate xml for a unit, also called a vertical
 # a unit can contain many componets
-def writeXmlForUnit(in_folder, out_folder, filename, components):
+def writeXmlForUnit(in_folder, filename, components):
     # ----  ----  ----
     # <vertical display_name="Unit Title">
     #     <html url_name="7d3ba88c180745e5baf29084667409b2"/>
@@ -464,13 +472,13 @@ def writeXmlForUnit(in_folder, out_folder, filename, components):
             vertical_tag.append(video_lang_tag)
     result = etree.tostring(vertical_tag, pretty_print = True)
     # write file
-    xml_out_path = os.path.join(out_folder, UNIT_FOLDER, filename + '.xml')
+    xml_out_path = os.path.join(OUTPUT_PATH, UNIT_FOLDER, filename + '.xml')
     with open(xml_out_path, 'wb') as fout:
         fout.write(result)
 #--------------------------------------------------------------------------------------------------
 # read md
 # write to either units folder or problems folder, depending on the type
-def processMd(component_path, out_folder, component_filename, unit_filename):
+def processMd(component_path, component_filename, unit_filename):
     # print("component_path", component_path)
     # generate the files in the right folders
     [content, meta] = getComponentContentMeta(component_path)
@@ -484,17 +492,16 @@ def processMd(component_path, out_folder, component_filename, unit_filename):
     # generate xml files
     if comp_type == 'html':
         settings = getMetaSettings(component_path, meta, COMP_HTML_REQ, COMP_HTML_OPT )
-        writeXmlForHtmlComp(component_path, out_folder, component_filename, content, settings, unit_filename)
+        writeXmlForHtmlComp(component_path, component_filename, content, settings, unit_filename)
     elif comp_type == 'problem-checkboxes':
         settings = getMetaSettings(component_path, meta, COMP_PROB_CHECKBOXES_REQ, COMP_PROB_CHECKBOXES_OPT )
-        writeXmlForProbCheckboxesComp(component_path, out_folder, component_filename, content, settings, unit_filename)
+        writeXmlForProbCheckboxesComp(component_path, component_filename, content, settings, unit_filename)
     elif comp_type == 'problem-submit':
         settings = getMetaSettings(component_path, meta, COMP_PROB_SUBMIT_REQ , COMP_PROB_SUBMIT_OPT )
-        writeXmlForSubmitComp(component_path, out_folder, component_filename, content, settings, unit_filename)
-        uploadAnswers(component_path, settings, unit_filename)
+        writeXmlForSubmitComp(component_path, component_filename, content, settings, unit_filename)
     elif comp_type == 'video':
         settings = getMetaSettings(component_path, meta, COMP_VIDEO_REQ, COMP_VIDEO_OPT )
-        writeXmlForVidComp(out_folder, component_filename, content, settings, unit_filename)
+        writeXmlForVidComp(component_filename, content, settings, unit_filename)
     else:
         print(WARNING, 'Error: Component type not recognised:', comp_type, "in", component_path)
     # return the component type, which is needed for generating the xml for the subsection
@@ -503,7 +510,7 @@ def processMd(component_path, out_folder, component_filename, unit_filename):
     return comp_type
 #--------------------------------------------------------------------------------------------------
 # write xml for Html component
-def writeXmlForHtmlComp(component_path, out_folder, filename, content, settings, unit_filename):
+def writeXmlForHtmlComp(component_path, filename, content, settings, unit_filename):
     # ---- Html file ----
     # <p>
     #   <span style="text-decoration: underline;">Objective:</span>
@@ -533,7 +540,7 @@ def writeXmlForHtmlComp(component_path, out_folder, filename, content, settings,
     img_elems = list(content_root_tag.iter('img'))
     setImageHtml(img_elems, unit_filename)
     # write the html file
-    html_out_path = os.path.join(out_folder, COMP_HTML_FOLDER, filename + '.html')
+    html_out_path = os.path.join(OUTPUT_PATH, COMP_HTML_FOLDER, filename + '.html')
     with open(html_out_path, 'wb') as fout:
         for tag in content_root_tag:
             tag_result = etree.tostring(tag, pretty_print = True)
@@ -546,12 +553,12 @@ def writeXmlForHtmlComp(component_path, out_folder, filename, content, settings,
     html_tag.set('filename', filename)
     result = etree.tostring(html_tag, pretty_print = True)
     # write the xml file
-    xml_out_path = os.path.join(out_folder, COMP_HTML_FOLDER, filename + '.xml')
+    xml_out_path = os.path.join(OUTPUT_PATH, COMP_HTML_FOLDER, filename + '.xml')
     with open(xml_out_path, 'wb') as fout:
         fout.write(result)
 #--------------------------------------------------------------------------------------------------
 # write xml for problem Checkboxescomponent
-def writeXmlForProbCheckboxesComp(component_path, out_folder, filename, content, settings, unit_filename):
+def writeXmlForProbCheckboxesComp(component_path, filename, content, settings, unit_filename):
     # ----  ----  ----
     # <problem 
     #   display_name="Q2" 
@@ -654,12 +661,12 @@ def writeXmlForProbCheckboxesComp(component_path, out_folder, filename, content,
     # convert problem_tag to string
     result = etree.tostring(problem_tag, pretty_print=True)
     # write the file
-    xml_out_path = os.path.join(out_folder, COMP_PROBS_FOLDER, filename + '.xml')
+    xml_out_path = os.path.join(OUTPUT_PATH, COMP_PROBS_FOLDER, filename + '.xml')
     with open(xml_out_path, 'wb') as fout:
         fout.write(result)
 #--------------------------------------------------------------------------------------------------
 # write xml for problem submit
-def writeXmlForSubmitComp(component_path, out_folder, filename, content, settings, unit_filename):
+def writeXmlForSubmitComp(component_path, filename, content, settings, unit_filename):
     # ----  ----  ----
     # <problem 
     #       attempts_before_showanswer_button="1" 
@@ -756,12 +763,12 @@ def writeXmlForSubmitComp(component_path, out_folder, filename, content, setting
     # convert problem_tag to string
     result = etree.tostring(problem_tag, pretty_print=True)
     # write the file
-    xml_out_path = os.path.join(out_folder, COMP_PROBS_FOLDER, filename + '.xml')
+    xml_out_path = os.path.join(OUTPUT_PATH, COMP_PROBS_FOLDER, filename + '.xml')
     with open(xml_out_path, 'wb') as fout:
         fout.write(result)
 #--------------------------------------------------------------------------------------------------
 # write xml for video component
-def writeXmlForVidComp(out_folder, filename, content, settings, unit_filename):
+def writeXmlForVidComp(filename, content, settings, unit_filename):
     # ----  ----  ----
     # Youtube Video
     # <video 
@@ -827,7 +834,7 @@ def writeXmlForVidComp(out_folder, filename, content, settings, unit_filename):
         video_tag.set('youtube_id_1_0', '')
     # set the transcript object
     transcripts_obj = {}
-    for lang in LANGUAGES.keys():
+    for lang in LANGUAGES:
         transcripts_obj[lang] = filename + '_sub_' + lang + '.srt'
     # escape this dict so that we get &quot; but do not escale the &
     video_tag_transcripts_list = []
@@ -848,7 +855,7 @@ def writeXmlForVidComp(out_folder, filename, content, settings, unit_filename):
     video_asset_tag.set('image', '')
     video_tag.append(video_asset_tag)
     transcripts_tag = etree.Element('transcripts')
-    for lang in LANGUAGES.keys():
+    for lang in LANGUAGES:
         transcript_tag = etree.Element('transcript')
         transcript_tag.set('file_format', 'srt')
         transcript_tag.set('language_code', lang)
@@ -856,14 +863,14 @@ def writeXmlForVidComp(out_folder, filename, content, settings, unit_filename):
         transcripts_tag.append(transcript_tag)
     video_asset_tag.append(transcripts_tag)
     # add the transcript tags
-    for lang in LANGUAGES.keys():
+    for lang in LANGUAGES:
         transcript2_tag = etree.Element('transcript')
         transcript2_tag.set('language', lang)
         transcript2_tag.set('src', transcripts_obj[lang])
         video_tag.append(transcript2_tag)
     # write the file
     result = etree.tostring(video_tag, pretty_print = True)
-    xml_out_path = os.path.join(out_folder, COMP_VIDS_FOLDER, filename + '.xml')
+    xml_out_path = os.path.join(OUTPUT_PATH, COMP_VIDS_FOLDER, filename + '.xml')
     with open(xml_out_path, 'wb') as fout:
         fout.write(result)
     # generate the language options
@@ -871,7 +878,7 @@ def writeXmlForVidComp(out_folder, filename, content, settings, unit_filename):
         # create the html file for video languages
         # create script str
         script_str = '\nfunction selLang(lang) {\n'
-        for lang in list(LANGUAGES.keys())[1:]:
+        for lang in LANGUAGES[1:]:
             script_str += '  document.getElementById("' + lang + '").style="display:none";\n'
         script_str += '  if (lang !== "none") { \n'
         script_str += '    document.getElementById(lang).style="display:block";\n'
@@ -890,13 +897,13 @@ def writeXmlForVidComp(out_folder, filename, content, settings, unit_filename):
         button_tag.text = 'None'
         p_languages_tag.append(button_tag)
         div_tag =  etree.Element("div")
-        for lang in list(LANGUAGES.keys())[1:]:
+        for lang in LANGUAGES[1:]:
             # p with row of buttons
             if lang != 'en':
                 button_tag = etree.Element("div")
                 button_tag.set('style', LANG_BUTTON_CSS)
                 button_tag.set('onclick', 'selLang("' + lang + '")')
-                button_tag.text = LANGUAGES[lang]
+                button_tag.text = ALL_LANGUAGES[lang]
                 p_languages_tag.append(button_tag)
             # videos
             video_tag = etree.Element("video")
@@ -912,7 +919,7 @@ def writeXmlForVidComp(out_folder, filename, content, settings, unit_filename):
             source_tag.set('type', 'video/mp4')
             source_tag.text = 'Your browser does not support the video tag.'
         # write the html file for video languages
-        xml_out_path = os.path.join(out_folder, COMP_HTML_FOLDER, filename + '.html')
+        xml_out_path = os.path.join(OUTPUT_PATH, COMP_HTML_FOLDER, filename + '.html')
         with open(xml_out_path, 'wb') as fout:
             fout.write(etree.tostring(script_tag, pretty_print = True))
             fout.write(etree.tostring(p_languages_tag, pretty_print = True))
@@ -922,66 +929,33 @@ def writeXmlForVidComp(out_folder, filename, content, settings, unit_filename):
         html_tag.set('display_name', 'View Video in Other Language')
         html_tag.set('filename', filename)
         # write the xml file for video languages
-        xml_out_path = os.path.join(out_folder, COMP_HTML_FOLDER, filename + '.xml')
+        xml_out_path = os.path.join(OUTPUT_PATH, COMP_HTML_FOLDER, filename + '.xml')
         with open(xml_out_path, 'wb') as fout:
             fout.write(etree.tostring(html_tag, pretty_print = True))
 #--------------------------------------------------------------------------------------------------
 # this is just in case there are some html files
 # write to units to the correct folder
 # returns void
-def processHtml(component_path, out_folder, filename):
+def processHtml(component_path, filename):
     with open(component_path, 'r') as f_read:
         contents = f_read.read()
         xml_path = ''
         if (contents.startswith('<html')):
-            xml_path = os.path.join(out_folder, COMP_HTML_FOLDER, filename + '.xml')
+            xml_path = os.path.join(OUTPUT_PATH, COMP_HTML_FOLDER, filename + '.xml')
         elif (contents.startswith('<problem')):
-            xml_path = os.path.join(out_folder, COMP_PROBS_FOLDER, filename + '.xml')
+            xml_path = os.path.join(OUTPUT_PATH, COMP_PROBS_FOLDER, filename + '.xml')
         elif (contents.startswith('<video')):
-            xml_path = os.path.join(out_folder, COMP_VIDS_FOLDER, filename + '.xml')
+            xml_path = os.path.join(OUTPUT_PATH, COMP_VIDS_FOLDER, filename + '.xml')
         # write the content
         with open(xml_path, 'w') as f:
             f.write(contents)
 #--------------------------------------------------------------------------------------------------
 # write the image to the assets folder
 # returns void
-def processAsset(component_path, out_folder, component, unit_filename):
+def processAsset(component_path, component, unit_filename):
     # copy the image to the assets folder
-    out_path = os.path.join(out_folder, STATIC_FOLDER, unit_filename + '_' + component)
+    out_path = os.path.join(OUTPUT_PATH, STATIC_FOLDER, unit_filename + '_' + component)
     shutil.copyfile(component_path, out_path)
-#--------------------------------------------------------------------------------------------------
-# upload the file to an online repository
-# out_repo is a dictionary, { url, id, key }
-# returns the url
-def processUploadsToRepo(in_folder, in_filename, out_repo, out_filename):
-    # print(WARNING, 'out_repo', out_repo)
-    # print(WARNING, 'out_filename', out_filename)
-    repo_url = out_repo.get('url')
-    auth_id = out_repo.get('id')
-    auth_key = out_repo.get('key')
-    cloud_answer_url = repo_url + '/' + out_filename
-    # read the file
-    in_path = os.path.join(in_folder, in_filename)
-    if os.path.isfile(in_path):
-        pass
-        # TODO Upload to Repo
-        # TODO
-        # TODO
-    else:
-        print(WARNING, 'Answer does not exist: ' + in_path)
-        print(WARNING, 'in_folder', in_folder)
-        print(WARNING, 'in_filename', in_filename)
-    return cloud_answer_url
-#--------------------------------------------------------------------------------------------------
-# upload files for problem submit
-def uploadAnswers(component_path, settings, unit_filename):
-    # upload the answer to the answer repository (this repo is private)
-    component_folder = os.path.dirname(component_path)
-    if 'answer' in settings.keys():
-        answer_filename = settings['answer']
-        processUploadsToRepo(component_folder, answer_filename, ANSWER_REPO, unit_filename + '_' + answer_filename)
-    else:
-        print(WARNING, 'Settings does not contain the answer file: ' + component_folder)
 #--------------------------------------------------------------------------------------------------
 # get all the sub folders in a folder
 # return the folder names and folder paths, like this 
@@ -1010,24 +984,24 @@ def getFiles(folder_path):
     return files
 #--------------------------------------------------------------------------------------------------
 # process one course
-def processCourse(in_folder, out_folder):
+def processCourse():
     # get the main mooc input folder, which we assume is the first folder
-    courses = getSubFolders(in_folder)
+    courses = getSubFolders(COURSE_PATH)
     if (len(courses) != 1):
         print(WARNING, 'There should only be one folder in the root folder.')
         return
     course_path = courses[0][1]
     # make the folders inside dist
-    os.mkdir(os.path.join(out_folder, COURSE_FOLDER))
-    os.mkdir(os.path.join(out_folder, SECTION_FOLDER))
-    os.mkdir(os.path.join(out_folder, SUBSECTION_FOLDER))
-    os.mkdir(os.path.join(out_folder, UNIT_FOLDER))
-    os.mkdir(os.path.join(out_folder, COMP_HTML_FOLDER))
-    os.mkdir(os.path.join(out_folder, COMP_VIDS_FOLDER))
-    os.mkdir(os.path.join(out_folder, COMP_PROBS_FOLDER))
-    os.mkdir(os.path.join(out_folder, STATIC_FOLDER))
+    os.mkdir(os.path.join(OUTPUT_PATH, COURSE_FOLDER))
+    os.mkdir(os.path.join(OUTPUT_PATH, SECTION_FOLDER))
+    os.mkdir(os.path.join(OUTPUT_PATH, SUBSECTION_FOLDER))
+    os.mkdir(os.path.join(OUTPUT_PATH, UNIT_FOLDER))
+    os.mkdir(os.path.join(OUTPUT_PATH, COMP_HTML_FOLDER))
+    os.mkdir(os.path.join(OUTPUT_PATH, COMP_VIDS_FOLDER))
+    os.mkdir(os.path.join(OUTPUT_PATH, COMP_PROBS_FOLDER))
+    os.mkdir(os.path.join(OUTPUT_PATH, STATIC_FOLDER))
     # create the root xml file
-    course_filename = writeXmlForRoot(in_folder, out_folder)
+    course_filename = writeXmlForRoot()
     # loop
     sections = []
     for [section, section_path] in getSubFolders(course_path):
@@ -1053,58 +1027,46 @@ def processCourse(in_folder, out_folder):
                         if not component_path.endswith('settings.md'):
                             # this is md, not a settings file
                             # this can be html, problem, or video
-                            component_type = processMd(component_path, out_folder, component_filename, unit_filename)
+                            component_type = processMd(component_path, component_filename, unit_filename)
                             components.append([component_filename, component_type])
                     elif component_ext in ['htm','html']:
                         # this is an html snippet, only used in special cases
-                        processHtml(component_path, out_folder, component_filename)
+                        processHtml(component_path, component_filename)
                         components.append([component_filename, 'html'])
-                    elif component_ext in ASSET_EXTENSIONS:
+                    elif component_ext in ASSET_FILE_EXTENSIONS:
                         # this is an asset that needs to get copied to the STATIC folder
-                        processAsset(component_path, out_folder, component, unit_filename)
+                        processAsset(component_path, component, unit_filename)
                     else:
                         pass
                         # could be any other file, just ignore and continue
                         # print("Warning: File extension not recognised. Expecting either .md or .xml:", component_path)
-                writeXmlForUnit(unit_path, out_folder, unit_filename, components)
-            writeXmlForSubsection(subsection_path, out_folder, subsection_filename, units)
-        writeXmlForSection(section_path, out_folder, section_filename, subsections)
-    writeXmlForCourse(course_path, out_folder, course_filename, sections)
+                writeXmlForUnit(unit_path, unit_filename, components)
+            writeXmlForSubsection(subsection_path, subsection_filename, units)
+        writeXmlForSection(section_path, section_filename, subsections)
+    writeXmlForCourse(course_path, course_filename, sections)
 #--------------------------------------------------------------------------------------------------
 def main():
     print("Start compiling")
 
-    # get the args
-    if (len(sys.argv) != 3):
-        print("Incorrect number of arguments")
-        print("Usage: python genedx.py in_folder out_folder.")
-        print("Example: python genedx.py ./my_input ./my_output.")
-        print("Warning: everything in the out folder will be deleted.")
-        return
-
-    # get the paths
-    in_folder = os.path.normpath(sys.argv[1])
-    out_folder = os.path.normpath(sys.argv[2])
-
     # check the input and output folders
-    print("in", in_folder)
-    if (not os.path.isdir(in_folder)):
+    print("in", COURSE_PATH)
+    if (not os.path.isdir(COURSE_PATH)):
         print("The input path is not a valid path")
         return
-    print("out", out_folder)
+    print("out", OUTPUT_PATH)
     try:
-        if (os.path.isdir(out_folder)):
-            print("Deleting contents in " + out_folder)
-            shutil.rmtree(out_folder)
-        os.mkdir(out_folder)
+        if (os.path.isdir(OUTPUT_PATH)):
+            print("Deleting contents in " + OUTPUT_PATH)
+            shutil.rmtree(OUTPUT_PATH)
+        os.mkdir(OUTPUT_PATH)
     except:
-        print("Failed to create the output folder: " + out_folder)
+        print("Failed to create the output folder: " + OUTPUT_PATH)
     
     # create content
-    processCourse(in_folder, out_folder)
+    processCourse()
 
     # create the tar file
-    [out_folder_path, out_folder_name] = os.path.split(out_folder)
+    [out_folder_path, out_folder_name] = os.path.split(OUTPUT_PATH)
     tar = tarfile.open(out_folder_name + ".tar.gz", "w:gz")
     os.chdir(out_folder_path)
     tar.add(out_folder_name, recursive=True)
