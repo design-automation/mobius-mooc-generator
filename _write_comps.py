@@ -4,9 +4,26 @@ import __CONSTS__
 import _edx_consts
 import _process_html
 import _css_settings
+import _mob_iframe
 #--------------------------------------------------------------------------------------------------
 WARNING = "      WARNING:"
-INSTRUCTIONS_CHECKBOXES = 'Please select all applicable options from the list below. Multiple selections are allowed. '
+
+CHECKBOXES_INSTRUCTIONS = [
+    'Please select all applicable options from the list below. ' + 
+    'Multiple selections are allowed.'][0]
+
+SUBMIT_EXAMPLE_DESCRIPTION = [
+    'Below is an example of the output that you need to submit. ' + 
+    'This model does not include the procedure. ' + 
+    'That is the part you need to figure out.' +
+    'If you look at the paremeters, you will see the values that were used to generate this version of the model.'][0]
+
+SUBMIT_INSTRUCTIONS = [
+    'Please submit your Mobius Model. ' + 
+    'First create your answer model and save it to your local drive. ' + 
+    'Then click Submit and select your .mob file. ' + 
+    'Your submission will be auto-graded and you should receiev the results within a few seconds.'][0]
+
 #--------------------------------------------------------------------------------------------------
 # write xml for Html component
 def writeXmlForHtmlComp(component_path, filename, content, settings, unit_filename):
@@ -36,13 +53,8 @@ def writeXmlForHtmlComp(component_path, filename, content, settings, unit_filena
     # read content
     content_root_tag = etree.fromstring(content)
 
-    # process hrefs
-    a_elems = list(content_root_tag.iter('a'))
-    _process_html.setHrefHtml(component_path, a_elems, unit_filename)
-
-    # process images
-    img_elems = list(content_root_tag.iter('img'))
-    _process_html.setImageHtml(img_elems, unit_filename)
+    # process html
+    _process_html.processHtml(component_path, content_root_tag, unit_filename)
 
     # write the html file
     html_out_path = os.path.join(__CONSTS__.OUTPUT_PATH, _edx_consts.COMP_HTML_FOLDER, filename + '.html')
@@ -106,13 +118,8 @@ def writeXmlForProbCheckboxesComp(component_path, filename, content, settings, u
     # process the html
     content_root_tag = etree.fromstring(content)
 
-    # process hrefs
-    a_elems = list(content_root_tag.iter('a'))
-    _process_html.setHrefHtml(component_path, a_elems, unit_filename)
-
-    # process images
-    img_elems = list(content_root_tag.iter('img'))
-    _process_html.setImageHtml(img_elems, unit_filename)
+    # process html
+    _process_html.processHtml(component_path, content_root_tag, unit_filename)
 
     # process the elements
     # these will be converted to <label>, and solution <p> elements
@@ -153,10 +160,10 @@ def writeXmlForProbCheckboxesComp(component_path, filename, content, settings, u
             label_tag.append(label)
     else:
         print(WARNING, 'Choice problem seems to have no text that describes the question.', filename)
-    if INSTRUCTIONS_CHECKBOXES:
+    if CHECKBOXES_INSTRUCTIONS:
         description_tag = etree.Element("description")
         choiceresponse_tag.append(description_tag)
-        description_tag.text = INSTRUCTIONS_CHECKBOXES
+        description_tag.text = CHECKBOXES_INSTRUCTIONS
     if choices:
         checkboxgroup_tag = etree.Element("checkboxgroup")
         choiceresponse_tag.append(checkboxgroup_tag)
@@ -218,14 +225,21 @@ def writeXmlForSubmitComp(component_path, filename, content, settings, unit_file
 
     # process the settings
     for key in settings:
-        if key not in ['type', 'question', 'queuename', 'answer']:
+        if key not in ['type', 'question', 'queuename', 'answer', 'example', 'display_name']:
             problem_tag.set(key, settings[key])
+
+    # override display name
+    problem_tag.set('display_name', 'Submit Your Mobius File')
+
+    # grader queue
     queuename = 'Dummy_Queuename'
     if 'queuename' in settings:
         queuename = settings.get('queuename')
     else:
         print(WARNING, 'Submit problem is missing metadata: queuename.', filename)
     coderesponse_tag.set('queuename', queuename)
+
+    # problem question and pauload
     question = 'Dummy_Question'
     if 'question' in settings:
         question = settings.get('question')
@@ -237,21 +251,30 @@ def writeXmlForSubmitComp(component_path, filename, content, settings, unit_file
     # read content
     content_root_tag = etree.fromstring(content)
 
-    # process hrefs
-    a_elems = list(content_root_tag.iter('a'))
-    _process_html.setHrefHtml(component_path, a_elems, unit_filename)
+    # process html
+    _process_html.processHtml(component_path, content_root_tag, unit_filename)
 
-    # process images
-    img_elems = list(content_root_tag.iter('img'))
-    _process_html.setImageHtml(img_elems, unit_filename)
+    # create tags for description and solution
+    problem_description_tag = etree.Element("div")
+    problem_solutions_tag = etree.Element("div") 
+
+    # set the display name for the description tag
+    display_name = 'Mobius Modelling Assignment'
+    if 'display_name' in settings:
+        display_name = settings['display_name']
+    problem_description_tag.set('display_name', display_name)
+
+    # add an h1 heading to the description tag
+    h1_tag = etree.Element("h1")
+    h1_tag.text = display_name
+    problem_description_tag.append(h1_tag)
 
     # process the elements
-    # these will be converted to <label>, and solution <p> elements
+    # these will be saved in the problem_description_tag and as solution <p> elements
     # the elements are spli using '==='
     # everything before the split is added to <label>
     # everything after the split is added to 
-    labels = []
-    solutions = []
+
     found_splitter = 0 # found ===
     elems = content_root_tag.getchildren()
     if elems:
@@ -260,20 +283,50 @@ def writeXmlForSubmitComp(component_path, filename, content, settings, unit_file
                 found_splitter += 1
             else:
                 if found_splitter == 0:
-                    labels.append(elem)
+                    problem_description_tag.append(elem)
                 else:
-                    solutions.append(elem)
+                    problem_solutions_tag.append(elem)
     else:
         print(WARNING, 'Submit problem is missing content.', filename)
 
+    # if there is an example model, add a mobius iframe
+    if 'example' in settings:
+
+        # heading
+        h2_tag = etree.Element("h2")
+        h2_tag.text = 'Example Model'
+        problem_description_tag.append(h2_tag)
+        
+        # the example model description text
+        example_descr_p_tag = etree.Element("p")
+        example_descr_p_tag.text = SUBMIT_EXAMPLE_DESCRIPTION
+        problem_description_tag.append(example_descr_p_tag)
+
+        # the example model iframe
+        example_model = settings['example']
+        mob_settings = {
+            'mobius':'publish',
+            'showView':'1'
+        }
+        iframe_tag = _mob_iframe.createMobIframe(example_model, mob_settings, unit_filename)
+        problem_description_tag.append(iframe_tag)
+
+    # convert problem_description_data to string
+    problem_description_data = etree.tostring(problem_description_tag, pretty_print=True)
+
+    # write the file for the problem_description
+    xml_out_path = os.path.join(__CONSTS__.OUTPUT_PATH, _edx_consts.COMP_HTML_FOLDER, filename + '.xml')
+    with open(xml_out_path, 'wb') as fout:
+        fout.write(problem_description_data)
+
     # add labels to the coderesponse_tag
-    if labels:
-        label_tag = etree.Element("label") 
-        coderesponse_tag.append(label_tag)
-        for label in labels:
-            label_tag.append(label)
-    else:
-        print(WARNING, 'Submit problem is missing a description of the problem.', filename)
+    label_tag = etree.Element("label") 
+    coderesponse_tag.append(label_tag)
+
+    # add the instruction text
+    instruct_p_tag = etree.Element("div") # dont use p, it results in small text
+    instruct_p_tag.text = SUBMIT_INSTRUCTIONS
+    label_tag.append(instruct_p_tag)
 
     # add <filesubmission> and <codeparam> to the coderesponse_tag
     coderesponse_tag.append(etree.Element("filesubmission") )
@@ -282,21 +335,17 @@ def writeXmlForSubmitComp(component_path, filename, content, settings, unit_file
     coderesponse_tag.append(codeparam_tag)
 
     # add <solution> to the coderesponse_tag
-    if solutions:
-        solution_tag = etree.Element("solution")
-        coderesponse_tag.append(solution_tag)
-        for solution in solutions:
-            solution_tag.append(solution)
-    else:
-        print(WARNING, 'Submit problem is missing a description of the solution.', filename)
+    solution_tag = etree.Element("solution")
+    coderesponse_tag.append(solution_tag)
+    solution_tag.append(problem_solutions_tag)
 
     # convert problem_tag to string
-    result = etree.tostring(problem_tag, pretty_print=True)
+    problem_data = etree.tostring(problem_tag, pretty_print=True)
 
     # write the file
     xml_out_path = os.path.join(__CONSTS__.OUTPUT_PATH, _edx_consts.COMP_PROBS_FOLDER, filename + '.xml')
     with open(xml_out_path, 'wb') as fout:
-        fout.write(result)
+        fout.write(problem_data)
 
 #--------------------------------------------------------------------------------------------------
 # write xml for video component

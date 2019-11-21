@@ -42,6 +42,8 @@ extensions = ['extra', 'meta', 'sane_lists']
 
 In order to create the edx course, the instructors need to organise their files in a specific folder structure that is four levels deep. All other assets, such as images and videos, can be placed in context, in teh same folder as where they are being used.
 
+The content is defined using markdown files with an .md extension. Here is a [markdown cheatsheet](https://devhints.io/markdown) that gives a quick overview of the things you can do.
+
 There are three types of files:
 
 - Settings files (.md)

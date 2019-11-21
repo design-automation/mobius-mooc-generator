@@ -186,20 +186,37 @@ def writeXmlForUnit(in_folder, filename, components):
     for key in unit_folder_settings:
         vertical_tag.set(key, unit_folder_settings[key])
     for component in components:
+
+        # get the component data
         component_filename = component[0]
         component_type = component[1] # 'html' or 'video' or 'quiz'
-        component_tag = etree.Element(component_type)
+        component_cat = component_type
+        if component_cat.startswith('problem'):
+            component_cat = 'problem'
+
+        # additinal processing for submit problems to add descriptio and language
+        if component_type == 'problem-submit':
+            prob_descr_tag = etree.Element('html')
+            prob_descr_tag.set('url_name', component_filename)
+            vertical_tag.append(prob_descr_tag)
+
+        # add the main component
+        component_tag = etree.Element(component_cat)
         component_tag.set('url_name', component_filename)
         vertical_tag.append(component_tag)
+
+        # additional processing for videos to add language bar below
         if component_type == 'video' and len( __CONSTS__.LANGUAGES) > 1:
             video_lang_tag = etree.Element('html')
             video_lang_tag.set('url_name', component_filename)
             vertical_tag.append(video_lang_tag)
-    result = etree.tostring(vertical_tag, pretty_print = True)
+
+    # convert the component data to string
+    component_data = etree.tostring(vertical_tag, pretty_print = True)
 
     # write file
     xml_out_path = os.path.join(__CONSTS__.OUTPUT_PATH, _edx_consts.UNIT_FOLDER, filename + '.xml')
     with open(xml_out_path, 'wb') as fout:
-        fout.write(result)
+        fout.write(component_data)
 
 #--------------------------------------------------------------------------------------------------

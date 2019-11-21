@@ -65,9 +65,12 @@ def processMd(component_path, component_filename, unit_filename):
     
     else:
         print(WARNING, 'Error: Component type not recognised:', comp_type, "in", component_path)
+
     # return the component type, which is needed for generating the xml for the subsection
-    if comp_type.startswith('problem'):
-        comp_type = 'problem'
+    # if comp_type.startswith('problem'):
+    #     comp_type = 'problem'
+
+    # return the type
     return comp_type
 
 #--------------------------------------------------------------------------------------------------

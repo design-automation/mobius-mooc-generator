@@ -3,12 +3,25 @@ import urllib
 import __CONSTS__
 import _edx_consts
 import _css_settings
+import _mob_iframe
 #--------------------------------------------------------------------------------------------------
 # Text strings
 WARNING = "      WARNING:"
 #--------------------------------------------------------------------------------------------------
+# process a hrefs
+def processHtml(component_path, content_root_tag, unit_filename):
+
+    # process hrefs
+    a_tags = list(content_root_tag.iter('a'))
+    _processHtmlATags(component_path, a_tags, unit_filename)
+
+    # process images
+    img_tags = list(content_root_tag.iter('img'))
+    _processHtmlImgTags(img_tags, unit_filename)
+
+#--------------------------------------------------------------------------------------------------
 # process images
-def setImageHtml(img_elems, unit_filename):
+def _processHtmlImgTags(img_elems, unit_filename):
 
     for img_elem in img_elems:
 
@@ -54,14 +67,14 @@ def setImageHtml(img_elems, unit_filename):
 
 #--------------------------------------------------------------------------------------------------
 # process a hrefs
-def setHrefHtml(component_path, a_elems, unit_filename):
+def _processHtmlATags(component_path, a_elems, unit_filename):
 
     for a_elem in a_elems:
 
         # get the href
         href = a_elem.get('href')
         if not href:
-            print(WARNING, 'An <a/> tag has no "href" attribute:', a_elem)
+            print(WARNING, 'An <a/> tag has no "href" attribute:', component_path)
             return
 
         # break down the url
@@ -72,50 +85,52 @@ def setHrefHtml(component_path, a_elems, unit_filename):
         if href_path and '.' in href_path:
             href_file = href_path.split('/')[-1]
             href_file_ext = href_path.split('.')[-1]
-        iframe_tag = None
-
+        
         # create the new href
-        # either the file needs to be uploaded to a repo
-        # or the file has already been copied to the STATIC_FOLDER
         new_href = None
+
+        # no extension, so must be a url like http://google.com
         if href_file_ext == None or href_file_ext == '':
             new_href = href
+
+        # an asset that goes to the edx static folder
         elif href_file_ext in __CONSTS__.ASSET_FILE_EXTENSIONS:
             new_href = '/' + _edx_consts.STATIC_FOLDER + '/' + unit_filename + '_' + href_file
-        elif href_file_ext in __CONSTS__.S3_FILE_EXTENSIONS:
-            # for example https://sct-mooc-examples.s3.amazonaws.com/hello.txt
-            new_href = 'https://' + __CONSTS__.S3_EXAMPLES_BUCKET + '.s3.amazonaws.com/' + unit_filename + '_' + href_file
+
+        # an example that gets uploaded to a s3 examples bucket
+        elif href_path.endswith(__CONSTS__.MOB_EXAMPLE_FILENAME):
+            new_href = href
+
+        # an answer! this should not happen
+        elif href_path.endswith(__CONSTS__.MOB_ANSWER_FILENAME):
+            new_href = href
+            print(WARNING, 'Found an answer being displayed to the learners:', component_path)
+
+        # something unknown
         else:
             new_href = href
-            print(WARNING, 'Found an unrecognised href:', href, href_file_ext)
+            print(WARNING, 'Found an unrecognised href:', href, href_file_ext, component_path)
 
-        # create the new tag, either an <iframe/> or a <a/>
-        if href_file_ext in __CONSTS__.MOB_IFRAME_EXTENSIONS:
+        # create the new tag, either an <iframe/> or an image <a/>
+        new_tag = None
+        if href_path.endswith(__CONSTS__.MOB_EXAMPLE_FILENAME):
 
-            # create iframe
+            # create mobius iframe
             mob_settings = dict([[item.strip() for item in pair.split('=')] for pair in a_elem.text.split(',')])
-            iframe_src = 'https://mobius.design-automation.net/'
-            if 'mobius' in mob_settings:
-                iframe_src += mob_settings['mobius'] + '?file=' + new_href
-                del mob_settings['mobius']
-                for key in mob_settings:
-                    iframe_src += '&' +  key + '=' + mob_settings[key]
-            else:
-                print(WARNING, 'Mobius Iframe data is missing the "publish" setting:', mob_settings)
-                print(WARNING, 'Possible options include "mobius = publish" and "mobius = dashboard".')
-            iframe_tag = etree.Element('iframe')
-            iframe_tag.set('width', _css_settings.MOB_IFRAME_WIDTH)
-            iframe_tag.set('height', _css_settings.MOB_IFRAME_HEIGHT)
-            iframe_tag.set('style', _css_settings.MOB_IFRAME_STYLE)
-            iframe_tag.set('src', iframe_src)
+
+            # create the iframe
+            new_tag = _mob_iframe.createMobIframe(href, mob_settings, unit_filename)
+
         else:
-            iframe_tag = etree.Element('a')
+
+            # create the image
+            new_tag = etree.Element('a')
             for key in a_elem:
                 if key not in ['href']:
-                    iframe_tag.set(key, a_elem.get(key))
-            iframe_tag.set('src', new_href)
+                    new_tag.set(key, a_elem.get(key))
+            new_tag.set('src', new_href)
 
         # replace the existing a with the new tag
-        a_elem.getparent().replace(a_elem, iframe_tag)
+        a_elem.getparent().replace(a_elem, new_tag)
 
 #--------------------------------------------------------------------------------------------------

@@ -37,18 +37,19 @@ def main():
                 for [component, component_path] in _util.getFiles(unit_path):
                     [component_name, component_ext] = component.lower().split('.')
                     component_filename = unit_filename + '_' + component_name
-                    s3_object_name = component_filename + '.' + component_ext
+                    new_name = component_filename + '.' + component_ext
 
-                    # upload mob files to aws s3
-                    if component_ext in __CONSTS__.S3_FILE_EXTENSIONS:
+                    # upload an answer to a private repo
+                    if new_name.endswith(__CONSTS__.MOB_ANSWER_FILENAME):
+                        _util.upload_s3_answer(component_path, new_name)
 
-                        # upload an answer to a private repo
-                        if component_name.endswith(__CONSTS__.S3_ANSWER_FILENAME):
-                            _util.upload_s3_answer(component_path, s3_object_name)
+                    # upload an example to a public repo
+                    elif new_name.endswith(__CONSTS__.MOB_EXAMPLE_FILENAME):
+                        _util.upload_s3_example(component_path, new_name)
 
-                        # upload an example to a public repo
-                        else:
-                            _util.upload_s3_example(component_path, s3_object_name)
+                    # ignore files with wrong extension
+                    else:
+                        pass
 
     print("Finished processing")
 

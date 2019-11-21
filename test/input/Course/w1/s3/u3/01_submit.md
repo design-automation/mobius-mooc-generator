@@ -7,8 +7,9 @@ max_attempts: 1
 showanswer: finished
 weight: 1.0
 answer: 01_submit_ans.mob
+example: 01_submit_exp.mob
 
-Please submit your Mobius Model. Click 'Submit' and select your '.mob' file. Your submission will be auto-graded.
+In this assignment, you will model .... 
 
 ===
 
