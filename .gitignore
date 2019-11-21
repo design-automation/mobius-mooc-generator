@@ -1,12 +1,9 @@
-## tests
-test/
-
-## YouTube client secret and user auth token
-client_secret.json
-auth_user_file.json
-__AWS__.py
-
 ##pycache
 __pycache__/
 
+## User auth token
+__AWS__.py
+__GITHUB__.py
+
+## Output data
 test/output/
