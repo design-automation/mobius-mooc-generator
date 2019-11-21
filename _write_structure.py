@@ -4,6 +4,7 @@ from lxml import etree
 import __CONSTS__
 import _edx_consts
 import _read_metadata
+
 #--------------------------------------------------------------------------------------------------
 # generate xml for a course
 def writeXmlForRoot():
@@ -73,6 +74,7 @@ def writeXmlForCourse(in_folder, filename, sections):
     xml_out_path = os.path.join(__CONSTS__.OUTPUT_PATH, _edx_consts.COURSE_FOLDER, filename + '.xml')
     with open(xml_out_path, 'wb') as fout:
         fout.write(result)
+
 #--------------------------------------------------------------------------------------------------
 # generate xml for a section, also called a chapter
 # a section contains subsections
@@ -199,3 +201,5 @@ def writeXmlForUnit(in_folder, filename, components):
     xml_out_path = os.path.join(__CONSTS__.OUTPUT_PATH, _edx_consts.UNIT_FOLDER, filename + '.xml')
     with open(xml_out_path, 'wb') as fout:
         fout.write(result)
+
+#--------------------------------------------------------------------------------------------------

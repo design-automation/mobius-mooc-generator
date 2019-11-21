@@ -10,6 +10,7 @@ INSTRUCTIONS_CHECKBOXES = 'Please select all applicable options from the list be
 #--------------------------------------------------------------------------------------------------
 # write xml for Html component
 def writeXmlForHtmlComp(component_path, filename, content, settings, unit_filename):
+
     # ---- Html file ----
     # <p>
     #   <span style="text-decoration: underline;">Objective:</span>
@@ -23,6 +24,7 @@ def writeXmlForHtmlComp(component_path, filename, content, settings, unit_filena
     #   style="display: block; margin-left: auto; margin-right: auto;" />
     # </p>
     # ----  ----  ----
+
     # ---- XML file ----
     # <html 
     #   filename="1c870c63861749dbb45ea16ace9fbe24" 
@@ -65,6 +67,7 @@ def writeXmlForHtmlComp(component_path, filename, content, settings, unit_filena
 #--------------------------------------------------------------------------------------------------
 # write xml for problem Checkboxescomponent
 def writeXmlForProbCheckboxesComp(component_path, filename, content, settings, unit_filename):
+
     # ----  ----  ----
     # <problem 
     #   display_name="Q2" 
@@ -183,6 +186,7 @@ def writeXmlForProbCheckboxesComp(component_path, filename, content, settings, u
 #--------------------------------------------------------------------------------------------------
 # write xml for problem submit
 def writeXmlForSubmitComp(component_path, filename, content, settings, unit_filename):
+
     # ----  ----  ----
     # <problem 
     #       attempts_before_showanswer_button="1" 
@@ -297,6 +301,7 @@ def writeXmlForSubmitComp(component_path, filename, content, settings, unit_file
 #--------------------------------------------------------------------------------------------------
 # write xml for video component
 def writeXmlForVidComp(filename, content, settings, unit_filename):
+
     # ----  ----  ----
     # Youtube Video
     # <video 
@@ -314,6 +319,8 @@ def writeXmlForVidComp(filename, content, settings, unit_filename):
     #   <transcript language="en" src="7d76f250-0000-42ea-8aba-c0c0ce845280-en.srt"/>
     # </video>
     # ----  ----  ----
+
+    # ----  ----  ----
     # Non-Youtube video
     # <video 
     #   url_name="section_week_1_subsection_2_shorts_unit_1_text_and_videos_02_video" 
@@ -329,6 +336,8 @@ def writeXmlForVidComp(filename, content, settings, unit_filename):
     #   </video_asset>
     #   <transcript language="en" src="7d76f250-0000-42ea-8aba-c0c0ce845280-en.srt"/>
     # </video>
+    # ----  ----  ----
+
     # ----  ----  ----
     # Video with multiple transcripts in different languages
     # <video url_name="section_week_1_subsection_2_shorts_unit_1_02_video" 
@@ -502,3 +511,5 @@ def processRawHtmlComp(component_path, filename):
         # write the content
         with open(xml_path, 'w') as f:
             f.write(contents)
+
+#--------------------------------------------------------------------------------------------------

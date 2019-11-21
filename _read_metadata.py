@@ -111,3 +111,5 @@ def getComponentContentMeta(in_path):
 
     # return the meta
     return [content, meta]
+    
+#--------------------------------------------------------------------------------------------------
