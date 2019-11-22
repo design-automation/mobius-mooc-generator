@@ -22,6 +22,10 @@ def processMd(component_path, component_filename, unit_filename):
     # generate the files in the right folders
     [content, meta] = _read_metadata.getComponentContentMeta(component_path)
 
+    if not 'type' in meta:
+        print(WARNING, 'Error: Could not find "type":', component_path)
+        return
+
     # get component type
     comp_type = meta['type']
     if comp_type:
@@ -138,7 +142,6 @@ def processCourse():
 
                     # write the files
                     if component_ext == 'md':
-
                         if not component_path.endswith(__CONSTS__.SETTINGS_FILENAME):
                             # this is md, not a settings file
                             # this can be html, problem, or video

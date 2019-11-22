@@ -6,6 +6,10 @@ import _edx_consts
 import _read_metadata
 
 #--------------------------------------------------------------------------------------------------
+# Text strings
+WARNING = "      WARNING:"
+
+#--------------------------------------------------------------------------------------------------
 # generate xml for a course
 def writeXmlForRoot():
     # create a file in the root folder
@@ -50,6 +54,9 @@ def writeXmlForCourse(in_folder, filename, sections):
     # ----  ----  ----
 
     print("writing course xml")
+    if not sections:
+        print(WARNING, 'There seem to be no sections:', in_folder)
+        return
 
     # get settings
     course_folder_settings = _read_metadata.getFolderMetaSettings(
@@ -91,6 +98,9 @@ def writeXmlForSection(in_folder, filename, subsections):
     # ----  ----  ----
 
     print("- writing section xml")
+    if not subsections:
+        print(WARNING, 'There seem to be no subsections:', in_folder)
+        return
 
     # get settings
     section_folder_settings = _read_metadata.getFolderMetaSettings(
@@ -136,6 +146,9 @@ def writeXmlForSubsection(in_folder, filename, units):
     # ----  ----  ----
 
     print("-- writing subsection xml")
+    if not units:
+        print(WARNING, 'There seem to be no units:', in_folder)
+        return
 
     # get settings
     subsection_folder_settings = _read_metadata.getFolderMetaSettings(
@@ -176,6 +189,9 @@ def writeXmlForUnit(in_folder, filename, components):
     # ----  ----  ----
 
     print("--- writing unit xml")
+    if not components:
+        print(WARNING, 'There seem to be no components:', in_folder)
+        return
 
     # get settings
     unit_folder_settings = _read_metadata.getFolderMetaSettings(
@@ -185,11 +201,14 @@ def writeXmlForUnit(in_folder, filename, components):
     vertical_tag = etree.Element("vertical")
     for key in unit_folder_settings:
         vertical_tag.set(key, unit_folder_settings[key])
+
     for component in components:
 
         # get the component data
         component_filename = component[0]
         component_type = component[1] # 'html' or 'video' or 'quiz'
+        if not component_type:
+            continue # something went wrong
         component_cat = component_type
         if component_cat.startswith('problem'):
             component_cat = 'problem'

@@ -15,7 +15,7 @@ OUTPUT_PATH = "test\\output"
 ASSET_FILE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'srt'] 
 
 # FILENAMES
-SETTINGS_FILENAME = "_settings" # settings files should end with this
+SETTINGS_FILENAME = "_settings.md" # settings files should end with this
 
 # SETTINGS FOR MOBIUS FILES
 MOB_ANSWER_FILENAME = "_ans.mob" # files that are answers should end with this
