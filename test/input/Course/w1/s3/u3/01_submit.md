@@ -1,7 +1,5 @@
 type: problem-submit
 display_name: Submit Problem
-queuename: fsdjg
-question: hdausdui
 attempts_before_showanswer_button: 1 
 max_attempts: 1
 showanswer: finished

@@ -36,11 +36,11 @@ def getFiles(folder_path):
 
 # upload a file to the s3 answers bucket
 def upload_s3_answer(file_name, object_name=None):
-    upload_s3(file_name, __CONSTS__.MOB_S3_ANSWERS_BUCKET, object_name)
+    upload_s3(file_name, __CONSTS__.S3_ANSWERS_BUCKET, object_name)
     
 # upload a file to the s3 examples bucket
 def upload_s3_example(file_name, object_name=None):
-    upload_s3(file_name, __CONSTS__.MOB_S3_EXAMPLES_BUCKET, object_name, {'ACL': 'public-read'})
+    upload_s3(file_name, __CONSTS__.S3_EXAMPLES_BUCKET, object_name, {'ACL': 'public-read'})
 
 # upload a file to an s3 bucket
 def upload_s3(file_name, bucket, object_name=None, extra=None):

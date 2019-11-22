@@ -1,5 +1,11 @@
 import os
 
+#MOOC_NAME
+EDX_ORG = "NUS" 
+EDX_COURSE = "SCT04" 
+EDX_URL_NAME = "20192020S2"
+EDX_EXTERNAL_GRADER_QUEUENAME = 'spatial_computational_thinking'
+
 ## Course Relative Path
 COURSE_PATH = "test\\input"
 OUTPUT_PATH = "test\\output"
@@ -10,16 +16,19 @@ ASSET_FILE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'srt']
 
 # FILENAMES
 SETTINGS_FILENAME = "_settings" # settings files should end with this
+
+# SETTINGS FOR MOBIUS FILES
 MOB_ANSWER_FILENAME = "_ans.mob" # files that are answers should end with this
 MOB_EXAMPLE_FILENAME = "_exp.mob" # files that are examples should end with this
-
-# SETTINGS FOR AMAZON BUCKET FOR ANSWERS
-MOB_S3_ANSWERS_BUCKET = "sct-mooc-answers" # the s3 bucket where answers will be uploaded (private)
-MOB_S3_EXAMPLES_BUCKET = "sct-mooc-examples" # the s3 bucket where examples will be uploaded (public)
-
-# MOBIUS URL
-#MOB_URL = 'https://mobius.design-automation.net/' # the stable version
 MOB_URL = 'https://design-automation.github.io/mobius-parametric-modeller-dev' # the dev version
+#MOB_URL = 'https://mobius.design-automation.net/' # the stable version
+
+# AMAZON S3 SETTINGS
+S3_VIDEOS_BUCKET_URL = "https://mooc-s3cf.s3-ap-southeast-1.amazonaws.com/"
+S3_ANSWERS_BUCKET_URL =  'https://sct-mooc-answers.s3.amazonaws.com/'
+S3_EXAMPLES_BUCKET_URL =  'https://sct-mooc-answers.s3.amazonaws.com/'
+S3_ANSWERS_BUCKET = "sct-mooc-answers" # the s3 bucket where answers will be uploaded (private)
+S3_EXAMPLES_BUCKET = "sct-mooc-examples" # the s3 bucket where examples will be uploaded (public)
 
 # LANGUAGES
 # available languages: ["us", "uk", "pt", "es", "zh", "fr", "de", "nl"]
@@ -33,3 +42,4 @@ ALL_LANGUAGES = {
     'de': 'German',
     'nl': 'Dutch'
 } 
+

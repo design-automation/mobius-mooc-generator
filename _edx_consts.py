@@ -57,8 +57,8 @@ COMP_VIDEO_REQ = ['type']
 COMP_VIDEO_OPT = ['voice', 'display_name', 'edx_video_id', 'visible_to_staff_only', 'start', 'download_video', 
     'show_captions', 'sub', 'html5_sources', 'youtube_id_1_0']
 
-COMP_PROB_SUBMIT_REQ = ['type', 'question', 'queuename']
-COMP_PROB_SUBMIT_OPT = ['example', 'answer', 'display_name', 'visible_to_staff_only', 'start', 'max_attempts', 'weight', 
+COMP_PROB_SUBMIT_REQ = ['type', 'answer' ]
+COMP_PROB_SUBMIT_OPT = ['example', 'display_name', 'visible_to_staff_only', 'start', 'max_attempts', 'weight', 
     'showanswer', 'attempts_before_showanswer_button']
 
 COMP_PROB_CHECKBOXES_REQ = ['type']

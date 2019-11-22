@@ -14,7 +14,7 @@ MODES = ['gallery', 'dashboard', 'flowchart', 'editor', 'publish']
 def createMobIframe(mob_filename, mob_settings, unit_filename):
  
     # constcat the mob file url
-    mob_file_url = 'https://' + __CONSTS__.MOB_S3_EXAMPLES_BUCKET + '.s3.amazonaws.com/' + unit_filename + '_' + mob_filename
+    mob_file_url = __CONSTS__.S3_EXAMPLES_BUCKET_URL + unit_filename + '_' + mob_filename
 
     # the mobius src
     iframe_src = __CONSTS__.MOB_URL

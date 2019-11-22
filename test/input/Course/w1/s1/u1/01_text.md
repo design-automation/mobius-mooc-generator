@@ -20,3 +20,6 @@ pos2 = make.Position([1,2,3])
 line = make.Polyline([pos1, pos2])
 ~~~~~~~~~~~~~~~~~~~~~
 
+
+Youc an add extra attribute to your html like this.
+{: aaa=bbb }

@@ -225,26 +225,25 @@ def writeXmlForSubmitComp(component_path, filename, content, settings, unit_file
 
     # process the settings
     for key in settings:
-        if key not in ['type', 'question', 'queuename', 'answer', 'example', 'display_name']:
+        if key not in ['type', 'answer', 'example', 'display_name']:
             problem_tag.set(key, settings[key])
 
     # override display name
     problem_tag.set('display_name', 'Submit Your Mobius File')
 
     # grader queue
-    queuename = 'Dummy_Queuename'
-    if 'queuename' in settings:
-        queuename = settings.get('queuename')
-    else:
-        print(WARNING, 'Submit problem is missing metadata: queuename.', filename)
+    queuename = __CONSTS__.EDX_EXTERNAL_GRADER_QUEUENAME
     coderesponse_tag.set('queuename', queuename)
 
-    # problem question and pauload
-    question = 'Dummy_Question'
-    if 'question' in settings:
-        question = settings.get('question')
+    # construct the question name from the answer file name
+    answer_filename = ''
+    if settings['answer']:
+        answer_filename = settings['answer'].split('.')[0]
     else:
-        print(WARNING, 'Submit problem is missing metadata: question.', filename)
+        print(WARNING, 'Submit problem is missing "answer".', unit_filename)
+    question = __CONSTS__.EDX_COURSE + '/' + unit_filename + '_' + answer_filename
+
+    # payload for grader
     grader_payload_tag = etree.Element("grader_payload")
     grader_payload_tag.text = '{"question": "' + question + '"}'
 
@@ -287,7 +286,7 @@ def writeXmlForSubmitComp(component_path, filename, content, settings, unit_file
                 else:
                     problem_solutions_tag.append(elem)
     else:
-        print(WARNING, 'Submit problem is missing content.', filename)
+        print(WARNING, 'Submit problem is missing content.', unit_filename)
 
     # if there is an example model, add a mobius iframe
     if 'example' in settings:
@@ -433,6 +432,7 @@ def writeXmlForVidComp(filename, content, settings, unit_filename):
     video_tag.set('transcripts', '{' + ','.join(video_tag_transcripts_list) + '}')
 
     # add the source tag
+    # "https://mooc-s3cf.s3-ap-southeast-1.amazonaws.com/Fruit+basket_uk.mp4"]
     html5_sources_list = []
     if 'html5_sources' in settings:
         html5_sources_list = eval(bytes(settings['html5_sources'], "utf-8").decode("unicode_escape"))

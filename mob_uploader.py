@@ -37,15 +37,17 @@ def main():
                 for [component, component_path] in _util.getFiles(unit_path):
                     [component_name, component_ext] = component.lower().split('.')
                     component_filename = unit_filename + '_' + component_name
-                    new_name = component_filename + '.' + component_ext
+
+                    # create the filename on s3
+                    s3_filename = __CONSTS__.EDX_COURSE + '/' + component_filename + '.' + component_ext
 
                     # upload an answer to a private repo
-                    if new_name.endswith(__CONSTS__.MOB_ANSWER_FILENAME):
-                        _util.upload_s3_answer(component_path, new_name)
+                    if s3_filename.endswith(__CONSTS__.MOB_ANSWER_FILENAME):
+                        _util.upload_s3_answer(component_path, s3_filename)
 
                     # upload an example to a public repo
-                    elif new_name.endswith(__CONSTS__.MOB_EXAMPLE_FILENAME):
-                        _util.upload_s3_example(component_path, new_name)
+                    elif s3_filename.endswith(__CONSTS__.MOB_EXAMPLE_FILENAME):
+                        _util.upload_s3_example(component_path, s3_filename)
 
                     # ignore files with wrong extension
                     else:

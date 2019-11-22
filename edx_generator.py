@@ -139,7 +139,7 @@ def processCourse():
                     # write the files
                     if component_ext == 'md':
 
-                        if not component_path.endswith('settings.md'):
+                        if not component_path.endswith(__CONSTS__.SETTINGS_FILENAME):
                             # this is md, not a settings file
                             # this can be html, problem, or video
                             component_type = processMd(component_path, component_filename, unit_filename)
