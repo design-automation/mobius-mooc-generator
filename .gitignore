@@ -1,6 +1,9 @@
 ##pycache
 __pycache__/
 
+##vscode
+.vscode/
+
 ## User auth token
 __AWS__.py
 __GITHUB__.py
