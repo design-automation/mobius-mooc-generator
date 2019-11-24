@@ -23,20 +23,19 @@ In the edx UI for the course, under the menu 'Settings > Schedule & Details', th
 
 This script requires two python modules, 'python-markdown' and 'lxml'. These can be installed with pip as follows:
 
-pip install markdown
-pip install lxml
+`pip install markdown`
+
+`pip install lxml`
 
 Markdown is processes using the python markdown module.
 - https://python-markdown.github.io
-- pip install markdown
 
 The following extensions are used:
 - https://python-markdown.github.io/extensions/extra/
   - https://python-markdown.github.io/extensions/fenced_code_blocks/
   - https://python-markdown.github.io/extensions/tables/
-- https://python-markdown.github.io/extensions/meta_data/
 
-extensions = ['extra', 'meta', 'sane_lists']
+extensions = ['extra', 'sane_lists']
 
 ## Files
 
@@ -44,19 +43,15 @@ In order to create the edx course, the instructors need to organise their files 
 
 The content is defined using markdown files with an .md extension. Here is a [markdown cheatsheet](https://devhints.io/markdown) that gives a quick overview of the things you can do.
 
-There are three types of files:
+There are two types of files:
 
-- Settings files (.md)
+- Settings and content files (.md)
   - Markdown files
   - Contains the settings for the parent folder.
-- Unit files (.md)
-  - Markdown files
-  - Contain all the components for one unit.
+  - Contains the content for the components that make up the units.
 - Assets (e.g. .jog, .png)
   - Images can be .png and .jpg
   - The assets should be placed in the same folder where they are used, i.e. in the unit folder.
-
-The course content (the text, images, videos, etc) is written as text files using markdown. These files have an .md extension.
 
 ## Structure of Folders and .md files
 
@@ -74,7 +69,7 @@ The folder strcture is as follows:
 Note that each folder should contaon exactly one markdown (.md) file. These files can have any name, but must always have a '.md' extension.
 
 You can explore an example input dataset here:
-https://github.com/design-automation/edx-generator/tree/master/test/input
+- https://github.com/design-automation/edx-generator/tree/master/test/input
 
 Note that the alphanumeric ordering of the folders is important, as this will reflect the ordering that will be generated in edx. In this example, the sections'_w1' (for 'week 1'), '_w2' (for 'week 2'), etc will be sorted correctly. However, the subsections 'Intro', 'Shorts', and 'Assignment' would not be sorted correctly. So, for that reason, they have been named '01_Intro', '02_Shorts', and '03_Assignment'.
 
@@ -89,10 +84,6 @@ python genedx.py
 ~~~~~~~~~~~~~~~~~~~~~
 
 The `__CONSTS__.py` file specifies a set of global that you can set for your context. 
-
-Two important global constants:
-- ./in/MOOC1 is the source folder where the script will read from
-- ./out/MOOC1 is the destination folder where the script will write to
 
 **WARNING: any existing contents in the output folder (i.e. in this case `./out/MOOC1`) will be deleted.**
 
@@ -112,5 +103,5 @@ Sections are usually named as 'Week 1'. 'Week 2', etc.
 
 For more information on writing the .md files, follow the links below.
 
-* See [Structure](markdown_structure.md) for more information on how to write the .md files.
+* See [Structure](markdown_structure.md) for more information on the overall structure of the .md files.
 * See [Settings for Folders](markdown_settings_folders.md) and [Settings for Components](markdown_settings_components.md) for more information on the settings that can be specified in each type of .md file.
