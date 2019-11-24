@@ -13,71 +13,6 @@ import _util
 WARNING = "      WARNING:"
 
 #--------------------------------------------------------------------------------------------------
-# read md
-# write to either units folder or problems folder, depending on the type
-def processMd(component_path, component_filename, unit_filename):
-
-    # print("component_path", component_path)
-
-    # generate the files in the right folders
-    [content, meta] = _read_metadata.getComponentContentMeta(component_path)
-
-    if not 'type' in meta:
-        print(WARNING, 'Error: Could not find "type":', component_path)
-        return
-
-    # get component type
-    comp_type = meta['type']
-    if comp_type:
-        comp_type = comp_type[0]
-    else:
-        print(WARNING, 'Error: Component type missing:', component_path)
-        return 
-
-    # generate xml files
-    if comp_type == 'html':
-
-        settings = _read_metadata.getMetaSettings(component_path, meta, 
-            _edx_consts.COMP_HTML_REQ, _edx_consts.COMP_HTML_OPT )
-
-        _write_comps.writeXmlForHtmlComp(
-            component_path, component_filename, content, settings, unit_filename)
-    
-    elif comp_type == 'problem-checkboxes':
-        
-        settings = _read_metadata.getMetaSettings(component_path, meta, 
-            _edx_consts.COMP_PROB_CHECKBOXES_REQ, _edx_consts.COMP_PROB_CHECKBOXES_OPT )
-            
-        _write_comps.writeXmlForProbCheckboxesComp(
-            component_path, component_filename, content, settings, unit_filename)
-    
-    elif comp_type == 'problem-submit':
-        
-        settings = _read_metadata.getMetaSettings(component_path, meta, 
-            _edx_consts.COMP_PROB_SUBMIT_REQ , _edx_consts.COMP_PROB_SUBMIT_OPT )
-
-        _write_comps.writeXmlForSubmitComp(
-            component_path, component_filename, content, settings, unit_filename)
-    
-    elif comp_type == 'video':
-        
-        settings = _read_metadata.getMetaSettings(component_path, meta, 
-            _edx_consts.COMP_VIDEO_REQ, _edx_consts.COMP_VIDEO_OPT )
-            
-        _write_comps.writeXmlForVidComp(
-            component_filename, content, settings, unit_filename)
-    
-    else:
-        print(WARNING, 'Error: Component type not recognised:', comp_type, "in", component_path)
-
-    # return the component type, which is needed for generating the xml for the subsection
-    # if comp_type.startswith('problem'):
-    #     comp_type = 'problem'
-
-    # return the type
-    return comp_type
-
-#--------------------------------------------------------------------------------------------------
 # write the image to the assets folder
 # returns void
 def writeAsset(component_path, component, unit_filename):
@@ -134,34 +69,29 @@ def processCourse():
                 print("--- unit", unit)
                 unit_filename = subsection_filename + '_' + unit.lower()
                 units.append(unit_filename)
-                components = []
+                comps = []
 
-                for [component, component_path] in _util.getFiles(unit_path):
-                    [component_name, component_ext] = component.lower().split('.')
-                    component_filename = unit_filename + '_' + component_name
-
+                # process all the files it finds
+                for [filename, filepath] in _util.getFiles(unit_path):
+                    filex = filename.lower().split('.')[1]
+                    
                     # write the files
-                    if component_ext == 'md':
-                        if not component_path.endswith(__CONSTS__.SETTINGS_FILENAME):
-                            # this is md, not a settings file
-                            # this can be html, problem, or video
-                            component_type = processMd(component_path, component_filename, unit_filename)
-                            components.append([component_filename, component_type])
+                    if filex == 'md':
+                        unit_comps = _write_comps.writeCompsForUnit(filepath, unit_filename)
+                        for [unit_comp_filename, unit_comp_type] in unit_comps:
+                            comps.append([unit_comp_filename, unit_comp_type])
 
-                    elif component_ext in ['htm','html']:
-                        # this is an html snippet, only used in special cases
-                        _write_comps.processRawHtmlComp(component_path, component_filename)
-                        components.append([component_filename, 'html'])
-
-                    elif component_ext in __CONSTS__.ASSET_FILE_EXTENSIONS:
+                    # put assets in static folder of zip
+                    elif filex in __CONSTS__.ASSET_FILE_EXTENSIONS:
                         # this is an asset that needs to get copied to the STATIC folder
-                        writeAsset(component_path, component, unit_filename)
+                        writeAsset(filepath, filename, unit_filename)
 
                     else:
                         pass
                         # could be any other file, just ignore and continue
+                        
 
-                _write_structure.writeXmlForUnit(unit_path, unit_filename, components)
+                _write_structure.writeXmlForUnit(unit_path, unit_filename, comps)
 
             _write_structure.writeXmlForSubsection(subsection_path, subsection_filename, units)
 

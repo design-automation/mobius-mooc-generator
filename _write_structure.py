@@ -1,13 +1,68 @@
 
-import os
+import os, sys
 from lxml import etree
 import __CONSTS__
 import _edx_consts
 import _read_metadata
+import _markdown
+import _util
 
 #--------------------------------------------------------------------------------------------------
 # Text strings
 WARNING = "      WARNING:"
+ 
+#--------------------------------------------------------------------------------------------------
+# get the settings from a folder
+def _getFolderMetaSettings(in_folder, req_names, opt_names=None):
+
+    # we look for a file that has a name that has an md extension
+    tree_snippets = None
+    filename = None
+    try:
+
+        # the the files
+        files = _util.getFiles(in_folder)
+
+        # get the list of files in the folder
+        for [filename, filepath] in files:
+            filex = filename.lower().split('.')[1]
+
+            # is this a settings file?
+            if filex == 'md':
+
+                tree_snippets = _markdown.convertMd(filepath)
+
+            # if we have found the file, we stop looking
+            if tree_snippets is not None and len(tree_snippets) > 0:
+                break
+
+        if tree_snippets is None or len(tree_snippets) == 0:
+            raise Exception()
+    except:
+        print(WARNING, "Failed to read settings for the folder: ", in_folder, sys.exc_info()[0])
+
+    # get the first item in the list of htmls, which would be the only thing
+    tree_snippet = tree_snippets[0]
+
+    # get the h1 tags
+    h1_tags = list(tree_snippet.iter('h1'))
+    if len(h1_tags) == 0:
+        print(WARNING, 'The snippet does not start with any settings:', in_folder, filename)
+        return
+
+    # get the meta tag
+    meta_tag = h1_tags[0] # the first h1 the should contain the meta data
+
+    # # check meta tag text
+    # meta_text = meta_tag.text.strip()
+    # if meta_text == None or not _util.starts(meta_text, _edx_consts.SETTINGS_FOLDERS):
+    #     print(WARNING, 'The markdown file must start with the folder settings:', in_folder, filename)
+    #     print(WARNING, '  Found:', meta_text)
+    #     print(WARNING, '  Valid values:', _edx_consts.SETTINGS_FOLDERS)
+
+    # return the metadata
+    settings = _read_metadata.getMetaSettings(filepath, meta_tag, req_names, opt_names)
+    return settings
 
 #--------------------------------------------------------------------------------------------------
 # generate xml for a course
@@ -21,13 +76,18 @@ def writeXmlForRoot():
     print("writing root xml")
 
     # get settings
-    root_folder_settings = _read_metadata.getFolderMetaSettings(
+    settings = _getFolderMetaSettings(
         __CONSTS__.COURSE_PATH, _edx_consts.ROOT_FOLDER_REQ, _edx_consts.ROOT_FOLDER_OPT)
+
+    # check we have settings
+    if not settings:
+        print(WARNING, 'There seem to be no settings for root folder:')
+        return
 
     # create xml
     course_tag = etree.Element("course")
-    for key in root_folder_settings:
-        course_tag.set(key, root_folder_settings[key])
+    for key in settings:
+        course_tag.set(key, settings[key])
     result = etree.tostring(course_tag, pretty_print=True)
 
     # write the file
@@ -36,7 +96,7 @@ def writeXmlForRoot():
         fout.write(result)
 
     # return the url_name, this is needed for the next level, the filename for course
-    return root_folder_settings['url_name']
+    return settings['url_name']
 
 #--------------------------------------------------------------------------------------------------
 # generate xml for a course
@@ -54,26 +114,32 @@ def writeXmlForCourse(in_folder, filename, sections):
     # ----  ----  ----
 
     print("writing course xml")
+
     if not sections:
         print(WARNING, 'There seem to be no sections:', in_folder)
         return
 
     # get settings
-    course_folder_settings = _read_metadata.getFolderMetaSettings(
+    settings = _getFolderMetaSettings(
         in_folder, _edx_consts.COURSE_FOLDER_REQ, _edx_consts.COURSE_FOLDER_OPT)
+
+    # check we have settings
+    if not settings:
+        print(WARNING, 'There seem to be no settings for course folder:', in_folder)
+        return
 
     # create xml
     course_tag = etree.Element("course")
-    for key in course_folder_settings:
+    for key in settings:
         if not key in ['wiki_slug']:
-            course_tag.set(key, course_folder_settings[key])
+            course_tag.set(key, settings[key])
     for section in sections:
         chapter_tag = etree.Element("chapter")
         chapter_tag.set('url_name', section)
         course_tag.append(chapter_tag)
-    if 'wiki_slug' in course_folder_settings:
+    if 'wiki_slug' in settings:
         wiki_tag = etree.Element("wiki")
-        wiki_tag.set('slug', course_folder_settings['wiki_slug'])
+        wiki_tag.set('slug', settings['wiki_slug'])
         course_tag.append(wiki_tag)
     result = etree.tostring(course_tag, pretty_print = True)
 
@@ -98,18 +164,24 @@ def writeXmlForSection(in_folder, filename, subsections):
     # ----  ----  ----
 
     print("- writing section xml")
+
     if not subsections:
         print(WARNING, 'There seem to be no subsections:', in_folder)
         return
 
     # get settings
-    section_folder_settings = _read_metadata.getFolderMetaSettings(
+    settings = _getFolderMetaSettings(
         in_folder, _edx_consts.SECTION_FOLDER_REQ, _edx_consts.SECTION_FOLDER_OPT)
     
+    # check we have settings
+    if not settings:
+        print(WARNING, 'There seem to be no settings for this section folder:', in_folder)
+        return
+
     # create xml
     chapter_tag = etree.Element("chapter")
-    for key in section_folder_settings:
-        chapter_tag.set(key, section_folder_settings[key])
+    for key in settings:
+        chapter_tag.set(key, settings[key])
     for subsection in subsections:
         sequential_tag = etree.Element("sequential")
         sequential_tag.set('url_name',subsection)
@@ -146,21 +218,29 @@ def writeXmlForSubsection(in_folder, filename, units):
     # ----  ----  ----
 
     print("-- writing subsection xml")
+
     if not units:
         print(WARNING, 'There seem to be no units:', in_folder)
         return
 
     # get settings
-    subsection_folder_settings = _read_metadata.getFolderMetaSettings(
+    settings = _getFolderMetaSettings(
         in_folder, _edx_consts.SUBSECTION_FOLDER_REQ, _edx_consts.SUBSECTION_FOLDER_OPT)
-    if 'graded' in subsection_folder_settings:
-        if subsection_folder_settings['graded'] == 'true':
-            subsection_folder_settings['format'] = 'Assignment'
+
+    # check we have settings
+    if not settings:
+        print(WARNING, 'There seem to be no settings for this subsection folder:', in_folder)
+        return
+
+    # graded ?
+    if 'graded' in settings:
+        if settings['graded'] == 'true':
+            settings['format'] = 'Assignment'
 
     # create the root tag
     sequential_tag = etree.Element("sequential")
-    for key in subsection_folder_settings:
-        sequential_tag.set(key, subsection_folder_settings[key])
+    for key in settings:
+        sequential_tag.set(key, settings[key])
 
     # add the units
     for unit in units:
@@ -189,46 +269,42 @@ def writeXmlForUnit(in_folder, filename, components):
     # ----  ----  ----
 
     print("--- writing unit xml")
+
+    # print(in_folder, filename, components)
+
     if not components:
         print(WARNING, 'There seem to be no components:', in_folder)
         return
 
     # get settings
-    unit_folder_settings = _read_metadata.getFolderMetaSettings(
+    settings = _getFolderMetaSettings(
         in_folder, _edx_consts.UNIT_FOLDER_REQ, _edx_consts.UNIT_FOLDER_OPT)
     
+    # check we have settings
+    if not settings:
+        print(WARNING, 'There seem to be no settings for this unit folder:', in_folder)
+        return
+
     # create xml
     vertical_tag = etree.Element("vertical")
-    for key in unit_folder_settings:
-        vertical_tag.set(key, unit_folder_settings[key])
+    for key in settings:
+        vertical_tag.set(key, settings[key])
 
     for component in components:
 
         # get the component data
-        component_filename = component[0]
-        component_type = component[1] # 'html' or 'video' or 'quiz'
-        if not component_type:
-            continue # something went wrong
-        component_cat = component_type
-        if component_cat.startswith('problem'):
-            component_cat = 'problem'
+        comp_filename = component[0]
+        comp_type = component[1] # 'html' or 'video' or 'problem'
 
-        # additinal processing for submit problems to add descriptio and language
-        if component_type == 'problem-submit':
-            prob_descr_tag = etree.Element('html')
-            prob_descr_tag.set('url_name', component_filename)
-            vertical_tag.append(prob_descr_tag)
+        # check the file exists
+        filepath = __CONSTS__.OUTPUT_PATH + '/' + comp_type + '/' + comp_filename + '.xml'
+        if not os.path.exists(filepath):
+            print(WARNING, 'Something went wrong. A file does not exist:', filepath)
 
         # add the main component
-        component_tag = etree.Element(component_cat)
-        component_tag.set('url_name', component_filename)
+        component_tag = etree.Element(comp_type)
+        component_tag.set('url_name', comp_filename)
         vertical_tag.append(component_tag)
-
-        # additional processing for videos to add language bar below
-        if component_type == 'video' and len( __CONSTS__.LANGUAGES) > 1:
-            video_lang_tag = etree.Element('html')
-            video_lang_tag.set('url_name', component_filename)
-            vertical_tag.append(video_lang_tag)
 
     # convert the component data to string
     component_data = etree.tostring(vertical_tag, pretty_print = True)

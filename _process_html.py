@@ -9,11 +9,11 @@ import _mob_iframe
 WARNING = "      WARNING:"
 #--------------------------------------------------------------------------------------------------
 # process a hrefs
-def processHtml(component_path, content_root_tag, unit_filename):
+def processHtmlTags(content_root_tag, unit_filename):
 
     # process hrefs
     a_tags = list(content_root_tag.iter('a'))
-    _processHtmlATags(component_path, a_tags, unit_filename)
+    _processHtmlATags(a_tags, unit_filename)
 
     # process images
     img_tags = list(content_root_tag.iter('img'))
@@ -67,14 +67,14 @@ def _processHtmlImgTags(img_elems, unit_filename):
 
 #--------------------------------------------------------------------------------------------------
 # process a hrefs
-def _processHtmlATags(component_path, a_elems, unit_filename):
+def _processHtmlATags(a_elems, unit_filename):
 
     for a_elem in a_elems:
 
         # get the href
         href = a_elem.get('href')
         if not href:
-            print(WARNING, 'An <a/> tag has no "href" attribute:', component_path)
+            print(WARNING, 'An <a/> tag has no "href" attribute:', unit_filename)
             return
 
         # break down the url
@@ -104,12 +104,12 @@ def _processHtmlATags(component_path, a_elems, unit_filename):
         # an answer! this should not happen
         elif href_path.endswith(__CONSTS__.MOB_ANSWER_FILENAME):
             new_href = href
-            print(WARNING, 'Found an answer being displayed to the learners:', component_path)
+            print(WARNING, 'Found an answer being displayed to the learners:', unit_filename)
 
         # something unknown
         else:
             new_href = href
-            print(WARNING, 'Found an unrecognised href:', href, href_file_ext, component_path)
+            print(WARNING, 'Found an unrecognised href:', href, href_file_ext, unit_filename)
 
         # create the new tag, either an <iframe/> or an image <a/>
         new_tag = None

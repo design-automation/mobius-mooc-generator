@@ -69,5 +69,16 @@ def upload_s3(file_name, bucket, object_name=None, extra=None):
         return False
         
     return True
-    
+
+#--------------------------------------------------------------------------------------------------
+# check if the text starts with any of the strings in the list
+def starts(text, starts_list):
+    for start in starts_list:
+
+        # print("CHECK STARTS", text, start)
+
+        if text.startswith(start):
+            return True
+    return False
+
 #--------------------------------------------------------------------------------------------------

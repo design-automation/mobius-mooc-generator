@@ -48,18 +48,15 @@ There are three types of files:
 
 - Settings files (.md)
   - Markdown files
-  - Must end in "settings.md", for example "section_settings.md", note the name is all lowercase
   - Contains the settings for the parent folder.
-- Component files (.md)
+- Unit files (.md)
   - Markdown files
-  - Can have any name, but the extension must be .md
+  - Contain all the components for one unit.
 - Assets (e.g. .jog, .png)
-  - The assets should be placed in the same folder where they are used, i.e. with the components.
   - Images can be .png and .jpg
+  - The assets should be placed in the same folder where they are used, i.e. in the unit folder.
 
 The course content (the text, images, videos, etc) is written as text files using markdown. These files have an .md extension.
-
-The .md files have metadata is important for describing the components. Metadata is defined as key-value pairs at the top of the markdown file. This is used for both settings files and for component files, as described above.
 
 ## Structure of Folders and .md files
 
@@ -72,23 +69,28 @@ The folder strcture is as follows:
     - Subsection_Folder (_3rd level_)
       - subsection_settings.md
       - Unit_Folder (_4th level_)
-        - unit_settings.md
-        - component_file.md
+        - unit_settings_and_components.md
+
+Note that each folder should contaon exactly one markdown (.md) file. These files can have any name, but must always have a '.md' extension.
 
 You can explore an example input dataset here:
 https://github.com/design-automation/edx-generator/tree/master/test/input
 
-Note that the alphanumeric ordering of the folders is important, as this will reflect the ordering that will be generated in edx. In this example, the sections'Week_1', 'Week_2', etc will be sorted correctly. However, the subsections 'Intro', 'Shorts', and 'Assignment' would not be sorted correctly. So, for that reason, they have been named '01_Intro', '02_Shorts', and '03_Assignment'.
+Note that the alphanumeric ordering of the folders is important, as this will reflect the ordering that will be generated in edx. In this example, the sections'_w1' (for 'week 1'), '_w2' (for 'week 2'), etc will be sorted correctly. However, the subsections 'Intro', 'Shorts', and 'Assignment' would not be sorted correctly. So, for that reason, they have been named '01_Intro', '02_Shorts', and '03_Assignment'.
+
+In the example, short folder names used. This is because when the final files get generated, the files names will concatenate all the folder names. So in order to avoid long file names in the final output, it is advisable to keep the folder names short. In addition, in the example, we start the filename with an '_' (underscore). This is to ensure that the markdown file will always be listed at the top of the file list. (But this is just a convenience, not a requirement.)
 
 ## Execution
 
 Execute the python script in order to generate all the MOOC file and the .tar.gz file using the following command:
 
 ~~~~~~~~~~~~~~~~~~~~~
-python genedx.py ./in/MOOC1 ./out/MOOC1
+python genedx.py
 ~~~~~~~~~~~~~~~~~~~~~
 
-You must supply two arguments to the python script:
+The `__CONSTS__.py` file specifies a set of global that you can set for your context. 
+
+Two important global constants:
 - ./in/MOOC1 is the source folder where the script will read from
 - ./out/MOOC1 is the destination folder where the script will write to
 
@@ -102,6 +104,13 @@ In  the edx interface, the hierarchy is as follows:
 In the tar file folder structure, the hierarchy is as follows
 -  course > chapter > sequence   > vertical > component
 
-In this document, we will use the first, i.e. course > section > subsection > unit > component. This mateches what users see in the user interface. However, the python script will of course generate a .tar.gz file that uses the second. 
+In this document, we will use the first, i.e. course > section > subsection > unit > component. This mateches what users see in the user interface. However, the python script will generate a .tar.gz file that uses the second. 
 
-See [here](README_MORE.md) for more information.
+Sections are usually named as 'Week 1'. 'Week 2', etc.
+
+# Writing .md Files
+
+For more information on writing the .md files, follow the links below.
+
+* See [Structure](markdown_structure.md) for more information on how to write the .md files.
+* See [Settings for Folders](markdown_settings_folders.md) and [Settings for Components](markdown_settings_components.md) for more information on the settings that can be specified in each type of .md file.

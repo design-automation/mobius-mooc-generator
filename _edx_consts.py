@@ -54,8 +54,8 @@ COMP_HTML_REQ = ['type']
 COMP_HTML_OPT = ['display_name', 'visible_to_staff_only', 'start']
 
 COMP_VIDEO_REQ = ['type']
-COMP_VIDEO_OPT = ['voice', 'display_name', 'edx_video_id', 'visible_to_staff_only', 'start', 'download_video', 
-    'show_captions', 'sub', 'html5_sources', 'youtube_id_1_0']
+COMP_VIDEO_OPT = ['video', 'voice', 'display_name', 'edx_video_id', 'visible_to_staff_only', 'start', 'download_video', 
+    'show_captions', 'sub', 'youtube_id_1_0']
 
 COMP_PROB_SUBMIT_REQ = ['type', 'answer' ]
 COMP_PROB_SUBMIT_OPT = ['example', 'display_name', 'visible_to_staff_only', 'start', 'max_attempts', 'weight', 
@@ -90,5 +90,11 @@ METADATA_ENUMS = {
     # more types: ['problem-choice', 'problem-dropdown', 'problem-numerical', 'problem-text']
 
 }
-
+#--------------------------------------------------------------------------------------------------
+SETTINGS_FOLDERS = ['ROOT', 'MOOC', 'COURSE', 'SECTION', 'SUBSECTION']
+SETTINGS_UNIT = 'UNIT'
+MD_SNIPPET_MARKERS = [
+    '# ROOT', '# MOOC', '# COURSE', '# SECTION', '# SUBSECTION', 
+    '# UNIT', 
+    '# COMPONENT', '# HTML', '# VIDEO', '# PROBLEM-SUBMIT', '# PROBLEM-CHECKBOX']
 #--------------------------------------------------------------------------------------------------
