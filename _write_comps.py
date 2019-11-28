@@ -145,7 +145,8 @@ def _writeFilesForSnippet(md_filepath, comp_filename, tree_snippet, unit_filenam
         tree_snippet.remove(meta_tag)
 
         # write the files and return the list of files
-        return _write_comp_video.writeXmlForVidComp( comp_filename, settings, unit_filename)
+        return _write_comp_video.writeXmlForVidComp(
+            md_filepath, comp_filename, settings, unit_filename)
     
     else:
         print(WARNING, 'Component type not recognised:', comp_type, "in", md_filepath)

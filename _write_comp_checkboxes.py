@@ -64,7 +64,7 @@ def writeXmlForProbCheckboxesComp(component_path, filename, content, settings, u
             problem_tag.set(key, settings[key])
 
     # process html
-    _process_html.processHtmlTags(content, unit_filename)
+    _process_html.processHtmlTags(component_path, content, unit_filename)
 
     # process the elements
     # these will be converted to <label>, and solution <p> elements

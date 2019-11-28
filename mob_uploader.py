@@ -39,8 +39,9 @@ def main():
                     component_filename = unit_filename + '_' + component_name
 
                     # create the filename on s3
+                    # this matches teh url created in _mob_iframe.py
                     s3_filename = __CONSTS__.EDX_COURSE + '/' + component_filename + '.' + component_ext
-
+                    
                     # upload an answer to a private repo
                     if s3_filename.endswith(__CONSTS__.MOB_ANSWER_FILENAME):
                         _util.upload_s3_answer(component_path, s3_filename)

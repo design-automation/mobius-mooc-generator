@@ -51,7 +51,7 @@ def writeXmlForHtmlComp(component_path, filename, content, settings, unit_filena
     # ----  ----  ----
 
     # process html
-    _process_html.processHtmlTags(content, unit_filename)
+    _process_html.processHtmlTags(component_path, content, unit_filename)
 
     # write the html file
     html_out_path = os.path.join(__CONSTS__.OUTPUT_PATH, _edx_consts.COMP_HTML_FOLDER, filename + '.html')

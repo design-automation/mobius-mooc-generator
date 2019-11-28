@@ -57,7 +57,7 @@ def writeXmlForSubmitComp(component_path, filename, content, settings, unit_file
 
     # process the settings
     for key in settings:
-        if key not in ['type', 'answer', 'example', 'display_name']:
+        if key not in ['type', 'answer_filename', 'example_filename', 'display_name']:
             problem_tag.set(key, settings[key])
 
     # override display name
@@ -67,20 +67,31 @@ def writeXmlForSubmitComp(component_path, filename, content, settings, unit_file
     queuename = __CONSTS__.EDX_EXTERNAL_GRADER_QUEUENAME
     coderesponse_tag.set('queuename', queuename)
 
-    # construct the question name from the answer file name
+    # check the file
     answer_filename = ''
-    if settings['answer']:
-        answer_filename = settings['answer'].split('.')[0]
+    if 'answer_filename' in settings:
+
+        # get the filename
+        answer_filename = settings['answer_filename'].strip()
+
+        # check that that the file exists
+        component_dir = os.path.dirname(component_path)
+        answer_filepath = os.path.normpath(component_dir + '/' + answer_filename)
+        if (not os.path.exists(answer_filepath) or not os.path.isfile(answer_filepath)):
+            print(WARNING, 'The answer file does not exist: "' + answer_filepath +'" in', component_path)
+
     else:
         print(WARNING, 'Submit problem is missing "answer".', unit_filename)
-    question = __CONSTS__.EDX_COURSE + '/' + unit_filename + '_' + answer_filename
+
+    # construct the question name from the answer file name
+    question = __CONSTS__.EDX_COURSE + '/' + unit_filename + '_' + answer_filename.split('.')[0]
 
     # payload for grader
     grader_payload_tag = etree.Element("grader_payload")
     grader_payload_tag.text = '{"question": "' + question + '"}'
 
     # process html
-    _process_html.processHtmlTags(content, unit_filename)
+    _process_html.processHtmlTags(component_path, content, unit_filename)
 
     # create tags for description and solution
     problem_description_tag = etree.Element("div")
@@ -118,7 +129,16 @@ def writeXmlForSubmitComp(component_path, filename, content, settings, unit_file
         print(WARNING, 'Submit problem is missing content.', unit_filename)
 
     # if there is an example model, add a mobius iframe
-    if 'example' in settings:
+    if 'example_filename' in settings:
+
+        # get the filename
+        example_filename = settings['example_filename'].strip()
+
+        # check that that the file exists
+        component_dir = os.path.dirname(component_path)
+        example_filepath = os.path.normpath(component_dir + '/' + example_filename)
+        if (not os.path.exists(example_filepath) or not os.path.isfile(example_filepath)):
+            print(WARNING, 'The example file does not exist: "' + example_filepath +'" in', component_path)
 
         # heading
         h2_tag = etree.Element("h2")
@@ -131,12 +151,11 @@ def writeXmlForSubmitComp(component_path, filename, content, settings, unit_file
         problem_description_tag.append(example_descr_p_tag)
 
         # the example model iframe
-        example_model = settings['example']
         mob_settings = {
             'mobius':'publish',
             'showView':'1'
         }
-        iframe_tag = _mob_iframe.createMobIframe(example_model, mob_settings, unit_filename)
+        iframe_tag = _mob_iframe.createMobIframe(example_filename, mob_settings, unit_filename)
         problem_description_tag.append(iframe_tag)
 
     # convert problem_description_data to string

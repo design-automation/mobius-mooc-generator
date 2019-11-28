@@ -47,7 +47,7 @@ Some more feedback in a seperate paragraph.
     max_attempts="1"
     showanswer="finished"
     weight="1.0"
-    answer="answer02.mob"
+    answer_filename="answer02.mob"
 }
 
 The is a description of the problem.

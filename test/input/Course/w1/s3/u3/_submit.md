@@ -11,8 +11,8 @@
     max_attempts="1"
     showanswer="finished"
     weight="1.0"
-    answer="01_submit_ans.mob"
-    example="01_submit_exp.mob"
+    answer_filename="01_submit_ans.mob"
+    example_filename="01_submit_exp.mob"
 }
 
 In this assignment, you will model .... 
@@ -30,8 +30,8 @@ Here is a more detailed description of the solution.
     max_attempts="1"
     showanswer="finished"
     weight="1.0"
-    answer="02_submit_ans.mob"
-    example="02_submit_exp.mob"
+    answer_filename="02_submit_ans.mob"
+    example_filename="02_submit_exp.mob"
 }
 
 In this assignment, you will model ....

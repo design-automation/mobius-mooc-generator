@@ -1,3 +1,4 @@
+import sys, os
 from lxml import etree
 import urllib
 import __CONSTS__
@@ -9,19 +10,19 @@ import _mob_iframe
 WARNING = "      WARNING:"
 #--------------------------------------------------------------------------------------------------
 # process a hrefs
-def processHtmlTags(content_root_tag, unit_filename):
+def processHtmlTags(component_path, content_root_tag, unit_filename):
 
     # process hrefs
     a_tags = list(content_root_tag.iter('a'))
-    _processHtmlATags(a_tags, unit_filename)
+    _processHtmlATags(component_path, a_tags, unit_filename)
 
     # process images
     img_tags = list(content_root_tag.iter('img'))
-    _processHtmlImgTags(img_tags, unit_filename)
+    _processHtmlImgTags(component_path, img_tags, unit_filename)
 
 #--------------------------------------------------------------------------------------------------
 # process images
-def _processHtmlImgTags(img_elems, unit_filename):
+def _processHtmlImgTags(component_path, img_elems, unit_filename):
 
     for img_elem in img_elems:
 
@@ -39,6 +40,13 @@ def _processHtmlImgTags(img_elems, unit_filename):
         if src.startswith('/') or src.startswith('http'):
             new_src = src
         else:
+
+            # check that that the file exists
+            component_dir = os.path.dirname(component_path)
+            image_filepath = os.path.normpath(component_dir + '/' + src)
+            if (not os.path.exists(image_filepath) or not os.path.isfile(image_filepath)):
+                print(WARNING, 'The image file does not exist: "' + image_filepath +'" in', component_path)
+            # new src
             new_src = '/' + _edx_consts.STATIC_FOLDER + '/' + unit_filename + '_' + src
         img_tag.set('src', new_src)
 
@@ -67,7 +75,7 @@ def _processHtmlImgTags(img_elems, unit_filename):
 
 #--------------------------------------------------------------------------------------------------
 # process a hrefs
-def _processHtmlATags(a_elems, unit_filename):
+def _processHtmlATags(component_path, a_elems, unit_filename):
 
     for a_elem in a_elems:
 

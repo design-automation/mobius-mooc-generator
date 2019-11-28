@@ -48,7 +48,7 @@ Additional video settings are as follows:
 
 _Required_  (either one of the two)
 - `youtube_id_1_0="3_yD_cEKoCk"`
-- `video="my_video.mp4"`
+- `video_filename="my_video.mp4"`
 
 Optional
 - `download_video="false"`
@@ -71,10 +71,10 @@ Optional
 Additional submit problem settings are as follows:
 
 _Required_
-- `answer="answer_model.mob"` (not shown to the learner)
+- `answer_filename="answer_model.mob"` (not shown to the learner)
 
 Optional
-- `example="example_model.mob"` (shown to the learner)
+- `example_filename="example_model.mob"` (shown to the learner)
 - `max_attempts="2"` 
 - `weight="1.0"`
 - `showanswer="finished"`

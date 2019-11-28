@@ -10,7 +10,7 @@ WARNING = "      WARNING:"
 
 #--------------------------------------------------------------------------------------------------
 # write xml for video component
-def writeXmlForVidComp(filename, settings, unit_filename):
+def writeXmlForVidComp(component_path, filename, settings, unit_filename):
 
     # ----  ----  ----
     # Youtube Video
@@ -73,11 +73,11 @@ def writeXmlForVidComp(filename, settings, unit_filename):
     video_tag = etree.Element("video")
     video_tag.set('url_name', filename)
     for key in settings:
-        if key not in ['type', 'transcript', 'title', 'voice', 'vodeo']:
+        if key not in ['type', 'transcript', 'title', 'video_filename']:
             video_tag.set(key, settings[key])
 
     # check we have either youtube_id_1_0 or video
-    if not 'youtube_id_1_0' in settings and not 'video' in settings:
+    if not 'youtube_id_1_0' in settings and not 'video_filename' in settings:
         print(WARNING, 'A video component must have either a "youtube_id_1_0" setting or a "video" setting:', unit_filename)
 
     # add youtube
@@ -95,7 +95,16 @@ def writeXmlForVidComp(filename, settings, unit_filename):
 
     video_urls = {}
 
-    if 'video' in settings:
+    if 'video_filename' in settings:
+
+        # get the filename
+        video_filename = settings['video_filename'].strip()
+
+        # check that that the file exists
+        component_dir = os.path.dirname(component_path)
+        video_filepath = os.path.normpath(component_dir + '/' + video_filename)
+        if (not os.path.exists(video_filepath) or not os.path.isfile(video_filepath)):
+            print(WARNING, 'The video file does not exist: "' + video_filepath +'" in', component_path)
 
         # set the transcript object
         transcripts_obj = {}
@@ -111,7 +120,7 @@ def writeXmlForVidComp(filename, settings, unit_filename):
 
         # for example "https://mooc-s3cf.s3-ap-southeast-1.amazonaws.com/Fruit+basket_uk.mp4"]
         # create the video urls
-        [video_filename, video_filex] = settings['video'].split('.')
+        [video_filename, video_filex] = video_filename.split('.')
         url_base = __CONSTS__.S3_VIDEOS_BUCKET_URL + __CONSTS__.EDX_COURSE + '/'
         for lang in __CONSTS__.LANGUAGES:
             video_urls[lang] = url_base  + video_filename + '_' + lang + '.' + video_filex
@@ -157,7 +166,7 @@ def writeXmlForVidComp(filename, settings, unit_filename):
     ]
 
     # generate the language options
-    if 'video' in settings and len(__CONSTS__.LANGUAGES) > 1:
+    if 'video_filename' in settings and len(__CONSTS__.LANGUAGES) > 1:
 
         # ['https://mooc-s3cf.s3-ap-southeast-1.amazonaws.com/SCT101X/2019/TST1.0.1.mp4']
 

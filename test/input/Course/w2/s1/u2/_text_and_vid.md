@@ -16,8 +16,7 @@ Here is avideo on AWS.
 # COMPONENT =======================================================================================
 {:
     type="video"
-    voice="1"
     display_name="a video on aws"
     show_captions="false"
-    video="video.mp4"
+    video_filename="video.mp4"
 }
