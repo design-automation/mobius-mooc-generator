@@ -1,11 +1,10 @@
 {
-    "name": "Untitled",
+    "name": "02_submit_ans",
     "author": "new_user",
-    "version": 1,
     "flowchart": {
         "id": "bd1b6524-5f93-1f40-ced5-fa15c210186f",
-        "name": "Untitled",
-        "description": "",
+        "name": "Test",
+        "description": "divs: [8, 10, 16]",
         "language": "js",
         "meta": {
             "selected_nodes": [
@@ -15,7 +14,7 @@
         "nodes": [
             {
                 "name": "Start",
-                "id": "node_hdrio2twet6",
+                "id": "node_airrcq0yhkc",
                 "position": {
                     "x": 5340,
                     "y": 5000
@@ -37,10 +36,42 @@
                         "selected": false,
                         "selectGeom": false,
                         "hasError": false
+                    },
+                    {
+                        "type": 10,
+                        "ID": "prod-0j8twws2p2zv",
+                        "enabled": true,
+                        "print": false,
+                        "argCount": 2,
+                        "meta": {
+                            "module": "Input",
+                            "name": "Constant",
+                            "inputMode": 1,
+                            "description": ""
+                        },
+                        "args": [
+                            {
+                                "name": "const_name",
+                                "value": "divs",
+                                "invalidVar": false,
+                                "jsValue": "divs_"
+                            },
+                            {
+                                "name": "__input__",
+                                "value": 12,
+                                "step": "1",
+                                "min": "6",
+                                "max": "20"
+                            }
+                        ],
+                        "selected": false,
+                        "hasError": false
                     }
                 ],
                 "state": {
-                    "procedure": []
+                    "procedure": [],
+                    "show_code": false,
+                    "show_func": false
                 },
                 "input": {
                     "name": "input",
@@ -70,7 +101,7 @@
                                 },
                                 "parentNode": {
                                     "name": "Node",
-                                    "id": "node_iaeis2tym7",
+                                    "id": "node_e4zbp34x4m",
                                     "position": {
                                         "x": 5340,
                                         "y": 5200
@@ -205,10 +236,12 @@
                                                         },
                                                         {
                                                             "name": "num_positions",
-                                                            "value": "10",
+                                                            "value": "divs",
                                                             "linked": false,
-                                                            "jsValue": "10",
-                                                            "usedVars": [],
+                                                            "jsValue": "divs_",
+                                                            "usedVars": [
+                                                                "divs"
+                                                            ],
                                                             "invalidVar": false
                                                         },
                                                         {
@@ -580,7 +613,8 @@
                                                             "linked": false
                                                         }
                                                     ],
-                                                    "selected": false
+                                                    "selected": false,
+                                                    "hasError": false
                                                 },
                                                 {
                                                     "type": 8,
@@ -690,7 +724,9 @@
                                         }
                                     ],
                                     "state": {
-                                        "procedure": []
+                                        "procedure": [],
+                                        "show_code": true,
+                                        "show_func": true
                                     },
                                     "input": "~flowchart~nodes~0~output~edges~0~target",
                                     "output": {
@@ -711,7 +747,7 @@
                                                     },
                                                     "parentNode": {
                                                         "name": "End",
-                                                        "id": "node_k6dfgb3h2rl",
+                                                        "id": "node_a8zefm2zhg",
                                                         "position": {
                                                             "x": 5340,
                                                             "y": 5400
@@ -746,12 +782,14 @@
                                                                     {
                                                                         "name": "__model__",
                                                                         "value": "",
-                                                                        "jsValue": ""
+                                                                        "jsValue": "",
+                                                                        "linked": false
                                                                     },
                                                                     {
                                                                         "name": "value",
                                                                         "value": "",
-                                                                        "jsValue": ""
+                                                                        "jsValue": "",
+                                                                        "linked": false
                                                                     }
                                                                 ],
                                                                 "print": false,
@@ -762,7 +800,9 @@
                                                             }
                                                         ],
                                                         "state": {
-                                                            "procedure": []
+                                                            "procedure": [],
+                                                            "show_code": true,
+                                                            "show_func": true
                                                         },
                                                         "input": "~flowchart~nodes~0~output~edges~0~target~parentNode~output~edges~0~target",
                                                         "output": {
@@ -775,7 +815,24 @@
                                                             "parentNode": "~flowchart~nodes~0~output~edges~0~target~parentNode~output~edges~0~target~parentNode"
                                                         },
                                                         "hasError": false,
-                                                        "hasExecuted": true
+                                                        "hasExecuted": true,
+                                                        "localFunc": [
+                                                            {
+                                                                "type": 13,
+                                                                "ID": "local_func_blank",
+                                                                "meta": {
+                                                                    "name": "",
+                                                                    "module": ""
+                                                                },
+                                                                "argCount": 0,
+                                                                "args": [],
+                                                                "print": false,
+                                                                "enabled": true,
+                                                                "selected": false,
+                                                                "selectGeom": false,
+                                                                "hasError": false
+                                                            }
+                                                        ]
                                                     }
                                                 },
                                                 "selected": false
@@ -787,7 +844,24 @@
                                         "parentNode": "~flowchart~nodes~0~output~edges~0~target~parentNode"
                                     },
                                     "hasError": false,
-                                    "hasExecuted": true
+                                    "hasExecuted": true,
+                                    "localFunc": [
+                                        {
+                                            "type": 13,
+                                            "ID": "local_func_blank",
+                                            "meta": {
+                                                "name": "",
+                                                "module": ""
+                                            },
+                                            "argCount": 0,
+                                            "args": [],
+                                            "print": false,
+                                            "enabled": true,
+                                            "selected": false,
+                                            "selectGeom": false,
+                                            "hasError": false
+                                        }
+                                    ]
                                 }
                             },
                             "selected": false
@@ -799,7 +873,24 @@
                     "parentNode": "~flowchart~nodes~0"
                 },
                 "hasError": false,
-                "hasExecuted": true
+                "hasExecuted": true,
+                "localFunc": [
+                    {
+                        "type": 13,
+                        "ID": "local_func_blank",
+                        "meta": {
+                            "name": "",
+                            "module": ""
+                        },
+                        "argCount": 0,
+                        "args": [],
+                        "print": false,
+                        "enabled": true,
+                        "selected": false,
+                        "selectGeom": false,
+                        "hasError": false
+                    }
+                ]
             },
             "~flowchart~nodes~0~output~edges~0~target~parentNode",
             "~flowchart~nodes~0~output~edges~0~target~parentNode~output~edges~0~target~parentNode"
@@ -810,7 +901,8 @@
         ],
         "functions": [],
         "ordered": true,
-        "last_updated": "2019-10-22T02:09:26.376Z"
+        "last_updated": "2019-12-04T09:48:52.818Z"
     },
-    "settings": "{\"normals\":{\"show\":false,\"size\":5},\"axes\":{\"show\":true,\"size\":50},\"grid\":{\"show\":true,\"size\":500},\"positions\":{\"show\":true,\"size\":0.5},\"tjs_summary\":{\"show\":false},\"gi_summary\":{\"show\":false},\"wireframe\":{\"show\":false},\"camera\":{\"pos\":{\"x\":-80,\"y\":-80,\"z\":80},\"pos_x\":-80,\"pos_y\":-80,\"pos_z\":80,\"target\":{\"x\":0,\"y\":0,\"z\":0}},\"colors\":{\"viewer_bg\":\"#E6E6E6\",\"position\":\"#000000\",\"position_s\":\"#0033FF\",\"vertex_s\":\"#FFCC00\",\"face_f\":\"#FFFFFF\",\"face_f_s\":\"#4949BD\",\"face_b\":\"#DDDDDD\",\"face_b_s\":\"#00006D\"},\"ambient_light\":{\"show\":true,\"color\":\"#FFFFFF\",\"intensity\":0.5},\"hemisphere_light\":{\"show\":true,\"helper\":false,\"skyColor\":\"#FFFFFF\",\"groundColor\":\"#FFFFFF\",\"intensity\":0.5},\"directional_light\":{\"show\":false,\"helper\":false,\"color\":\"#FFFFFF\",\"intensity\":1,\"shadow\":true,\"shadowSize\":4,\"azimuth\":90,\"altitude\":45,\"distance\":10000},\"ground\":{\"show\":false,\"width\":1000,\"length\":1000,\"height\":-0.5,\"color\":\"#FFFFFF\",\"shininess\":0},\"select\":{\"selector\":{\"id\":5,\"name\":\"Faces\"},\"tab\":0},\"version\":\"0.5.8\"}"
+    "version": 4,
+    "settings": "{\"normals\":{\"show\":false,\"size\":5},\"axes\":{\"show\":true,\"size\":50},\"grid\":{\"show\":true,\"size\":500,\"pos_x\":0,\"pos_y\":0,\"pos_z\":0,\"pos\":{\"x\":0,\"y\":0,\"z\":0}},\"positions\":{\"show\":true,\"size\":0.5},\"tjs_summary\":{\"show\":false},\"gi_summary\":{\"show\":false},\"wireframe\":{\"show\":false},\"camera\":{\"pos\":{\"x\":-80,\"y\":-80,\"z\":80},\"pos_x\":-80,\"pos_y\":-80,\"pos_z\":80,\"target\":{\"x\":0,\"y\":0,\"z\":0}},\"colors\":{\"viewer_bg\":\"#E6E6E6\",\"position\":\"#000000\",\"position_s\":\"#0033FF\",\"vertex_s\":\"#FFCC00\",\"face_f\":\"#FFFFFF\",\"face_f_s\":\"#4949BD\",\"face_b\":\"#DDDDDD\",\"face_b_s\":\"#00006D\"},\"ambient_light\":{\"show\":true,\"color\":\"#FFFFFF\",\"intensity\":0.5},\"hemisphere_light\":{\"show\":true,\"helper\":false,\"skyColor\":\"#FFFFFF\",\"groundColor\":\"#FFFFFF\",\"intensity\":0.5},\"directional_light\":{\"show\":false,\"helper\":false,\"color\":\"#FFFFFF\",\"intensity\":1,\"shadow\":true,\"azimuth\":90,\"altitude\":45,\"distance\":10,\"type\":\"directional\"},\"ground\":{\"show\":false,\"width\":1000,\"length\":1000,\"height\":-0.5,\"color\":\"#FFFFFF\",\"shininess\":0},\"select\":{\"selector\":{\"id\":5,\"name\":\"Faces\"},\"tab\":\"0\"},\"version\":\"0.4.38\"}"
 }

@@ -18,5 +18,5 @@ Here is avideo on AWS.
     type="video"
     display_name="a video on aws"
     show_captions="false"
-    video_filename="video.mp4"
+    video_filename="03_Hello_world_PPT_video.mp4"
 }

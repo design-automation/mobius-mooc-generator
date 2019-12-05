@@ -98,18 +98,21 @@ def writeXmlForVidComp(component_path, filename, settings, unit_filename):
     if 'video_filename' in settings:
 
         # get the filename
-        video_filename = settings['video_filename'].strip()
+        video_filename_ext = settings['video_filename'].strip()
+        [video_filename, video_ext] = video_filename_ext.split('.')
 
-        # check that that the file exists
+        # the dir of this component
         component_dir = os.path.dirname(component_path)
-        video_filepath = os.path.normpath(component_dir + '/' + video_filename)
-        if (not os.path.exists(video_filepath) or not os.path.isfile(video_filepath)):
-            print(WARNING, 'The video file does not exist: "' + video_filepath +'" in', component_path)
 
         # set the transcript object
         transcripts_obj = {}
         for lang in __CONSTS__.LANGUAGES:
-            transcripts_obj[lang] = unit_filename + '_sub_' + lang + '.srt'
+            transcripts_obj[lang] = unit_filename + '_' + video_filename + '_sub_' + lang + '.srt'
+
+            # check that that srt files for each language exist
+            video_filepath = os.path.normpath(component_dir + '/' + video_filename + '_sub_' + lang + '.srt')
+            if (not os.path.exists(video_filepath) or not os.path.isfile(video_filepath)):
+                print(WARNING, 'The video srt file does not exist: "' + video_filepath +'" in', component_path)
 
         # escape this dict so that we get &quot; but do not escale the &
         video_tag_transcripts_list = []
@@ -120,10 +123,11 @@ def writeXmlForVidComp(component_path, filename, settings, unit_filename):
 
         # for example "https://mooc-s3cf.s3-ap-southeast-1.amazonaws.com/Fruit+basket_uk.mp4"]
         # create the video urls
-        [video_filename, video_filex] = video_filename.split('.')
+        
         url_base = __CONSTS__.S3_VIDEOS_BUCKET_URL + __CONSTS__.EDX_COURSE + '/'
         for lang in __CONSTS__.LANGUAGES:
-            video_urls[lang] = url_base  + video_filename + '_' + lang + '.' + video_filex
+            video_urls[lang] = url_base  + video_filename + '_' + lang + '.' + video_ext
+
         video_url_default = video_urls['en']
         if video_url_default == None:
             video_url_default = video_urls[video_urls.keys()[0]]
@@ -137,7 +141,7 @@ def writeXmlForVidComp(component_path, filename, settings, unit_filename):
         source_tag.set('src', video_url_default)
         video_tag.append(source_tag)
 
-        # add the trabscripts tag to the video asset tag
+        # add the transcripts tag to the video asset tag
         transcripts_tag = etree.Element('transcripts')
         for lang in __CONSTS__.LANGUAGES:
             transcript_tag = etree.Element('transcript')
@@ -147,7 +151,7 @@ def writeXmlForVidComp(component_path, filename, settings, unit_filename):
             transcripts_tag.append(transcript_tag)
         video_asset_tag.append(transcripts_tag)
 
-        # add the transcript tags
+        # add the second set of transcript tags under video
         for lang in __CONSTS__.LANGUAGES:
             transcript2_tag = etree.Element('transcript')
             transcript2_tag.set('language', lang)
