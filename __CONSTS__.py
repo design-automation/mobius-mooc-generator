@@ -1,12 +1,13 @@
 #MOOC_NAME
-EDX_ORG = 'NUS' 
 EDX_COURSE = 'SCT04' 
-EDX_URL_NAME = '20192020S2'
 EDX_EXTERNAL_GRADER_QUEUENAME = 'spatial_computational_thinking'
 
 ## Course Relative Path
-COURSE_PATH = 'test\\input'
-OUTPUT_PATH = 'test\\output'
+# COURSE_PATH = 'test\\input'
+# OUTPUT_PATH = 'test\\output'
+
+COURSE_PATH = 'C:\\Dropbox\\Files\\Software\\AwsCommitPJ\\spatial-computational-thinking-mooc\\mooc1-procedural-modelling'
+OUTPUT_PATH = 'C:\\Data\\edx-generator\\mooc1'
 
 # ASSETS
 # these files will be included in the zip for edx upload

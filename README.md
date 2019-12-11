@@ -9,7 +9,7 @@ The aim is:
 
 The basic workflow is that you create all your content locally, in a specific folder structure (described below). When you run the python script, it generates a compressed .tar.gz file that can be directly imported into the edx course. When this file is imported, it will automatically populate all course contents on edx.
 
-For the edx import to succeed, it is vital that settings in the __CONSTS__.py file match the settings in edx.
+For the edx import to succeed, it is vital that settings in the root .md file (which is the .md file in the root folder) match the settings in edx.
 ~~~~~~~~~~~~~
 EDX_ORG = 'my_org' 
 EDX_COURSE = 'my_course_number' 
@@ -17,9 +17,9 @@ EDX_URL_NAME = 'my_url_run'
 ~~~~~~~~~~~~~
 
 In the edx UI for the course, under the menu 'Settings > Schedule & Details', these are named as follows:
-- Organization
-- Course Number
-- Course Run
+- EDX_ORG = Organization
+- EDX_COURSE = Course Number
+- EDX_URL_NAME = Course Run
 
 **WARNING: When you upload the .tar.gz file, any existing course contents in edx will be deleted.**
 
