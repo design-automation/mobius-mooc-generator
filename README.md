@@ -12,13 +12,13 @@ The basic workflow is that you create all your content locally, in a specific fo
 For the edx import to succeed, it is vital that settings in the root .md file (which is the .md file in the root folder) match the settings in edx.
 ~~~~~~~~~~~~~
 EDX_ORG = 'my_org' 
-EDX_COURSE = 'my_course_number' 
+S3_MOOC_FOLDER = 'my_course_number' 
 EDX_URL_NAME = 'my_url_run'
 ~~~~~~~~~~~~~
 
 In the edx UI for the course, under the menu 'Settings > Schedule & Details', these are named as follows:
 - EDX_ORG = Organization
-- EDX_COURSE = Course Number
+- S3_MOOC_FOLDER = Course Number
 - EDX_URL_NAME = Course Run
 
 **WARNING: When you upload the .tar.gz file, any existing course contents in edx will be deleted.**
@@ -87,7 +87,7 @@ Execute the python script in order to generate all the MOOC file and the .tar.gz
 python genedx.py
 ~~~~~~~~~~~~~~~~~~~~~
 
-The `__CONSTS__.py` file specifies a set of global that you can set for your context. 
+The `__SETTINGS__.py` file in the MOOC root input folder specifies a set of global that you can set for your context. 
 
 **WARNING: any existing contents in the output folder (i.e. in this case `./out/MOOC1`) will be deleted.**
 

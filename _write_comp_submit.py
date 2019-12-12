@@ -1,10 +1,10 @@
-import os
+import sys, os
 from lxml import etree
-import __CONSTS__ 
 import _edx_consts
 import _process_html
 import _css_settings
 import _mob_iframe
+import __SETTINGS__
 #--------------------------------------------------------------------------------------------------
 WARNING = "      WARNING:"
 
@@ -64,7 +64,7 @@ def writeXmlForSubmitComp(component_path, filename, content, settings, unit_file
     problem_tag.set('display_name', 'Submit Your Mobius File')
 
     # grader queue
-    queuename = __CONSTS__.EDX_EXTERNAL_GRADER_QUEUENAME
+    queuename = __SETTINGS__.EDX_EXTERNAL_GRADER_QUEUENAME
     coderesponse_tag.set('queuename', queuename)
 
     # check the file
@@ -84,7 +84,7 @@ def writeXmlForSubmitComp(component_path, filename, content, settings, unit_file
         print(WARNING, 'Submit problem is missing "answer".', unit_filename)
 
     # construct the question name from the answer file name
-    question = __CONSTS__.EDX_COURSE + '/' + unit_filename + '_' + answer_filename.split('.')[0]
+    question = __SETTINGS__.S3_MOOC_FOLDER + '/' + unit_filename + '_' + answer_filename.split('.')[0]
 
     # payload for grader
     grader_payload_tag = etree.Element("grader_payload")
@@ -162,7 +162,7 @@ def writeXmlForSubmitComp(component_path, filename, content, settings, unit_file
     problem_desc_data = etree.tostring(problem_description_tag, pretty_print=True)
 
     # write the file for the problem_description
-    prob_xml_out_path = os.path.join(__CONSTS__.OUTPUT_PATH, _edx_consts.COMP_HTML_FOLDER, filename + '.xml')
+    prob_xml_out_path = os.path.join(sys.argv[2], _edx_consts.COMP_HTML_FOLDER, filename + '.xml')
     with open(prob_xml_out_path, 'wb') as fout:
         fout.write(problem_desc_data)
 
@@ -190,7 +190,7 @@ def writeXmlForSubmitComp(component_path, filename, content, settings, unit_file
     prob_data = etree.tostring(problem_tag, pretty_print=True)
 
     # write the file
-    prob_xml_out_path = os.path.join(__CONSTS__.OUTPUT_PATH, _edx_consts.COMP_PROBS_FOLDER, filename + '.xml')
+    prob_xml_out_path = os.path.join(sys.argv[2], _edx_consts.COMP_PROBS_FOLDER, filename + '.xml')
     with open(prob_xml_out_path, 'wb') as fout:
         fout.write(prob_data)
 

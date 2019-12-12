@@ -1,10 +1,20 @@
-import os
+import sys, os
 from lxml import etree
-import __CONSTS__ 
 import _edx_consts
 import _process_html
 import _css_settings
 import _mob_iframe
+import __SETTINGS__
+#--------------------------------------------------------------------------------------------------
+ALL_LANGUAGES = {
+    'en': 'English',
+    'zh': 'Mandarin',
+    'pt': 'Portuguese',
+    'fr': 'French',
+    'es': 'Spanish',
+    'de': 'German',
+    'nl': 'Dutch'
+} 
 #--------------------------------------------------------------------------------------------------
 WARNING = "      WARNING:"
 
@@ -106,7 +116,7 @@ def writeXmlForVidComp(component_path, filename, settings, unit_filename):
 
         # set the transcript object
         transcripts_obj = {}
-        for lang in __CONSTS__.LANGUAGES:
+        for lang in __SETTINGS__.LANGUAGES:
             transcripts_obj[lang] = unit_filename + '_' + video_filename + '_sub_' + lang + '.srt'
 
             # check that that srt files for each language exist
@@ -124,8 +134,8 @@ def writeXmlForVidComp(component_path, filename, settings, unit_filename):
         # for example "https://mooc-s3cf.s3-ap-southeast-1.amazonaws.com/Fruit+basket_uk.mp4"]
         # create the video urls
         
-        url_base = __CONSTS__.S3_VIDEOS_BUCKET_URL + __CONSTS__.EDX_COURSE + '/'
-        for lang in __CONSTS__.LANGUAGES:
+        url_base = __SETTINGS__.S3_LINKS_URL + __SETTINGS__.S3_MOOC_FOLDER + '/' + __SETTINGS__.S3_VIDEOS_FOLDER + '/'
+        for lang in __SETTINGS__.LANGUAGES:
             video_urls[lang] = url_base  + video_filename + '_' + lang + '.' + video_ext
 
         video_url_default = video_urls['en']
@@ -143,7 +153,7 @@ def writeXmlForVidComp(component_path, filename, settings, unit_filename):
 
         # add the transcripts tag to the video asset tag
         transcripts_tag = etree.Element('transcripts')
-        for lang in __CONSTS__.LANGUAGES:
+        for lang in __SETTINGS__.LANGUAGES:
             transcript_tag = etree.Element('transcript')
             transcript_tag.set('file_format', 'srt')
             transcript_tag.set('language_code', lang)
@@ -152,7 +162,7 @@ def writeXmlForVidComp(component_path, filename, settings, unit_filename):
         video_asset_tag.append(transcripts_tag)
 
         # add the second set of transcript tags under video
-        for lang in __CONSTS__.LANGUAGES:
+        for lang in __SETTINGS__.LANGUAGES:
             transcript2_tag = etree.Element('transcript')
             transcript2_tag.set('language', lang)
             transcript2_tag.set('src', transcripts_obj[lang])
@@ -160,7 +170,7 @@ def writeXmlForVidComp(component_path, filename, settings, unit_filename):
 
     # write the file
     video_data = etree.tostring(video_tag, pretty_print = True)
-    video_xml_out_path = os.path.join(__CONSTS__.OUTPUT_PATH, _edx_consts.COMP_VIDS_FOLDER, filename + '.xml')
+    video_xml_out_path = os.path.join(sys.argv[2], _edx_consts.COMP_VIDS_FOLDER, filename + '.xml')
     with open(video_xml_out_path, 'wb') as fout:
         fout.write(video_data)
 
@@ -170,7 +180,7 @@ def writeXmlForVidComp(component_path, filename, settings, unit_filename):
     ]
 
     # generate the language options
-    if 'video_filename' in settings and len(__CONSTS__.LANGUAGES) > 1:
+    if 'video_filename' in settings and len(__SETTINGS__.LANGUAGES) > 1:
 
         # ['https://mooc-s3cf.s3-ap-southeast-1.amazonaws.com/SCT101X/2019/TST1.0.1.mp4']
 
@@ -178,7 +188,7 @@ def writeXmlForVidComp(component_path, filename, settings, unit_filename):
 
         # create script str
         script_str = '\nfunction selLang(lang) {\n'
-        for lang in __CONSTS__.LANGUAGES[1:]:
+        for lang in __SETTINGS__.LANGUAGES[1:]:
             script_str += '  document.getElementById("' + lang + '").style="display:none";\n'
         script_str += '  if (lang !== "none") { \n'
         script_str += '    document.getElementById(lang).style="display:block";\n'
@@ -201,14 +211,14 @@ def writeXmlForVidComp(component_path, filename, settings, unit_filename):
         div_tag =  etree.Element("div")
 
         # for each langaue
-        for lang in __CONSTS__.LANGUAGES[1:]:
+        for lang in __SETTINGS__.LANGUAGES[1:]:
 
             # p with row of buttons
             if lang != 'en':
                 button_tag = etree.Element("div")
                 button_tag.set('style', _css_settings.LANG_BUTTON_CSS)
                 button_tag.set('onclick', 'selLang("' + lang + '")')
-                button_tag.text = __CONSTS__.ALL_LANGUAGES[lang]
+                button_tag.text = ALL_LANGUAGES[lang]
                 p_languages_tag.append(button_tag)
 
             # videos
@@ -227,7 +237,7 @@ def writeXmlForVidComp(component_path, filename, settings, unit_filename):
             source_tag.text = 'Your browser does not support the video tag.'
 
         # write the html file for video languages
-        lang_html_out_path = os.path.join(__CONSTS__.OUTPUT_PATH, _edx_consts.COMP_HTML_FOLDER, filename + '.html')
+        lang_html_out_path = os.path.join(sys.argv[2], _edx_consts.COMP_HTML_FOLDER, filename + '.html')
         with open(lang_html_out_path, 'wb') as fout:
             fout.write(etree.tostring(script_tag, pretty_print = True))
             fout.write(etree.tostring(p_languages_tag, pretty_print = True))
@@ -239,7 +249,7 @@ def writeXmlForVidComp(component_path, filename, settings, unit_filename):
         lang_tag.set('filename', filename)
 
         # write the xml file for video languages
-        lang_xml_out_path = os.path.join(__CONSTS__.OUTPUT_PATH, _edx_consts.COMP_HTML_FOLDER, filename + '.xml')
+        lang_xml_out_path = os.path.join(sys.argv[2], _edx_consts.COMP_HTML_FOLDER, filename + '.xml')
         with open(lang_xml_out_path, 'wb') as fout:
             fout.write(etree.tostring(lang_tag, pretty_print = True))
 

@@ -1,7 +1,6 @@
 import sys, os
 import tarfile
 import shutil
-import __CONSTS__ 
 import _edx_consts
 import _read_metadata
 import _write_structure
@@ -12,7 +11,7 @@ import _write_comp_submit
 import _write_comp_video
 import _markdown
 import _util
-
+import __SETTINGS__
 #--------------------------------------------------------------------------------------------------
 # Text strings
 WARNING = "      WARNING:"

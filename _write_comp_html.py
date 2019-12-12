@@ -1,10 +1,10 @@
-import os
+import sys, os
 from lxml import etree
-import __CONSTS__ 
 import _edx_consts
 import _process_html
 import _css_settings
 import _mob_iframe
+import __SETTINGS__
 #--------------------------------------------------------------------------------------------------
 WARNING = "      WARNING:"
 
@@ -54,7 +54,7 @@ def writeXmlForHtmlComp(component_path, filename, content, settings, unit_filena
     _process_html.processHtmlTags(component_path, content, unit_filename)
 
     # write the html file
-    html_out_path = os.path.join(__CONSTS__.OUTPUT_PATH, _edx_consts.COMP_HTML_FOLDER, filename + '.html')
+    html_out_path = os.path.join(sys.argv[2], _edx_consts.COMP_HTML_FOLDER, filename + '.html')
     with open(html_out_path, 'wb') as fout:
         for tag in content:
             tag_result = etree.tostring(tag, pretty_print = True)
@@ -69,7 +69,7 @@ def writeXmlForHtmlComp(component_path, filename, content, settings, unit_filena
     result = etree.tostring(html_tag, pretty_print = True)
 
     # write the xml file
-    xml_out_path = os.path.join(__CONSTS__.OUTPUT_PATH, _edx_consts.COMP_HTML_FOLDER, filename + '.xml')
+    xml_out_path = os.path.join(sys.argv[2], _edx_consts.COMP_HTML_FOLDER, filename + '.xml')
     with open(xml_out_path, 'wb') as fout:
         fout.write(result)
 

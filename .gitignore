@@ -10,3 +10,7 @@ __GITHUB__.py
 
 ## Output data
 test/output/
+
+__RUN__.bat
+__MU_RUN__.bat
+__EG_RUN__.bat

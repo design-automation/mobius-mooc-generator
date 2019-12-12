@@ -1,1 +1,0 @@
-python edx_generator.py

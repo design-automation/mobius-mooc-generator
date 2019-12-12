@@ -1,9 +1,8 @@
-import os
+import sys, os
 from boto3 import Session
 from botocore.exceptions import BotoCoreError, ClientError
 from __AWS__ import aws_access_key_id, aws_secret_access_key
-import __CONSTS__
-
+import __SETTINGS__
 #--------------------------------------------------------------------------------------------------
 # get all the sub folders in a folder
 # return the folder names and folder paths, like this 
@@ -35,12 +34,14 @@ def getFiles(folder_path):
 #--------------------------------------------------------------------------------------------------
 
 # upload a file to the s3 answers bucket
-def upload_s3_answer(file_name, object_name=None):
-    upload_s3(file_name, __CONSTS__.S3_ANSWERS_BUCKET, object_name)
+def upload_s3_answer(file_name, mob_filename):
+    s3_filename = __SETTINGS__.S3_MOOC_FOLDER + '/' + __SETTINGS__.S3_ANSWERS_FOLDER + '/' + mob_filename
+    upload_s3(file_name, __SETTINGS__.S3_BUCKET, s3_filename, {'ACL': 'private'})
     
 # upload a file to the s3 examples bucket
-def upload_s3_example(file_name, object_name=None):
-    upload_s3(file_name, __CONSTS__.S3_EXAMPLES_BUCKET, object_name, {'ACL': 'public-read'})
+def upload_s3_example(file_name, mob_filename):
+    s3_filename = __SETTINGS__.S3_MOOC_FOLDER + '/' + __SETTINGS__.S3_EXAMPLES_FOLDER + '/' + mob_filename
+    upload_s3(file_name, __SETTINGS__.S3_BUCKET, s3_filename, {'ACL': 'public-read'})
 
 # upload a file to an s3 bucket
 def upload_s3(file_name, bucket, object_name=None, extra=None):
@@ -50,6 +51,7 @@ def upload_s3(file_name, bucket, object_name=None, extra=None):
     :param object_name: S3 object name. If not specified then file_name is used
     :return: True if file was uploaded, else False
     """
+    print('---- Uploading:', object_name)
     # If S3 object_name was not specified, use file_name
     if object_name is None:
         object_name = file_name

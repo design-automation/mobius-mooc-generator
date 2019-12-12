@@ -1,12 +1,11 @@
 
-import os, sys
+import sys, os
 from lxml import etree
-import __CONSTS__
 import _edx_consts
 import _read_metadata
 import _markdown
 import _util
-
+import __SETTINGS__
 #--------------------------------------------------------------------------------------------------
 # Text strings
 WARNING = "      WARNING:"
@@ -77,7 +76,7 @@ def writeXmlForRoot():
 
     # get settings
     settings = _getFolderMetaSettings(
-        __CONSTS__.COURSE_PATH, _edx_consts.ROOT_FOLDER_REQ, _edx_consts.ROOT_FOLDER_OPT)
+        sys.argv[1], _edx_consts.ROOT_FOLDER_REQ, _edx_consts.ROOT_FOLDER_OPT)
 
     # check we have settings
     if not settings:
@@ -91,7 +90,7 @@ def writeXmlForRoot():
     result = etree.tostring(course_tag, pretty_print=True)
 
     # write the file
-    root_xml_out_path = os.path.join(__CONSTS__.OUTPUT_PATH, 'course.xml')
+    root_xml_out_path = os.path.join(sys.argv[2], 'course.xml')
     with open(root_xml_out_path, 'wb') as fout:
         fout.write(result)
 
@@ -144,7 +143,7 @@ def writeXmlForCourse(in_folder, filename, sections):
     result = etree.tostring(course_tag, pretty_print = True)
 
     # write the file
-    xml_out_path = os.path.join(__CONSTS__.OUTPUT_PATH, _edx_consts.COURSE_FOLDER, filename + '.xml')
+    xml_out_path = os.path.join(sys.argv[2], _edx_consts.COURSE_FOLDER, filename + '.xml')
     with open(xml_out_path, 'wb') as fout:
         fout.write(result)
 
@@ -189,7 +188,7 @@ def writeXmlForSection(in_folder, filename, subsections):
     result = etree.tostring(chapter_tag, pretty_print = True)
 
     # write the file
-    xml_out_path = os.path.join(__CONSTS__.OUTPUT_PATH, _edx_consts.SECTION_FOLDER, filename + '.xml')
+    xml_out_path = os.path.join(sys.argv[2], _edx_consts.SECTION_FOLDER, filename + '.xml')
     with open(xml_out_path, 'wb') as fout:
         fout.write(result)
 
@@ -250,7 +249,7 @@ def writeXmlForSubsection(in_folder, filename, units):
     result = etree.tostring(sequential_tag, pretty_print=True)
 
     # write the file
-    xml_out_path = os.path.join(__CONSTS__.OUTPUT_PATH, _edx_consts.SUBSECTION_FOLDER, filename + '.xml')
+    xml_out_path = os.path.join(sys.argv[2], _edx_consts.SUBSECTION_FOLDER, filename + '.xml')
     with open(xml_out_path, 'wb') as fout:
         fout.write(result)
 
@@ -297,7 +296,7 @@ def writeXmlForUnit(in_folder, filename, components):
         comp_type = component[1] # 'html' or 'video' or 'problem'
 
         # check the file exists
-        filepath = __CONSTS__.OUTPUT_PATH + '/' + comp_type + '/' + comp_filename + '.xml'
+        filepath = sys.argv[2] + '/' + comp_type + '/' + comp_filename + '.xml'
         if not os.path.exists(filepath):
             print(WARNING, 'Something went wrong. A file does not exist:', filepath)
 
@@ -310,7 +309,7 @@ def writeXmlForUnit(in_folder, filename, components):
     component_data = etree.tostring(vertical_tag, pretty_print = True)
 
     # write file
-    xml_out_path = os.path.join(__CONSTS__.OUTPUT_PATH, _edx_consts.UNIT_FOLDER, filename + '.xml')
+    xml_out_path = os.path.join(sys.argv[2], _edx_consts.UNIT_FOLDER, filename + '.xml')
     with open(xml_out_path, 'wb') as fout:
         fout.write(component_data)
 

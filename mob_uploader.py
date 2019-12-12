@@ -1,11 +1,18 @@
-import os
-import __CONSTS__ 
+import sys, os
+#--------------------------------------------------------------------------------------------------
+if len(sys.argv) != 2:
+    raise Exception('Usage: python ./mob_uploader.py input_path')
+if not os.path.exists(sys.argv[1]):
+    raise Exception('Path does not exist: ' + sys.argv[1])
+if not os.path.exists(os.path.join(sys.argv[1], '__SETTINGS__.py')):
+    raise Exception('Path does not contain __SETTINGS__.py: ' + sys.argv[1])
+sys.path.append(sys.argv[1])
+#--------------------------------------------------------------------------------------------------
 import _util
-
+import __SETTINGS__
 #--------------------------------------------------------------------------------------------------
 # Text strings
 WARNING = "      WARNING:"
-
 #--------------------------------------------------------------------------------------------------
 # process one course
 def main():
@@ -13,13 +20,8 @@ def main():
     print("Start processing")
 
     # get the main mooc input folder, which we assume is the first folder
-    courses = _util.getSubFolders(__CONSTS__.COURSE_PATH)
-    if (len(courses) != 1):
-        print(WARNING, 'There should only be one folder in the root folder.')
-        return
-
-    # select the first subfolder
-    course_path = courses[0][1]
+    root_folder = os.path.normpath(sys.argv[1])
+    course_path = os.path.join(root_folder, 'Course')
 
     # loop
     for [section, section_path] in _util.getSubFolders(course_path):
@@ -40,15 +42,15 @@ def main():
 
                     # create the filename on s3
                     # this matches teh url created in _mob_iframe.py
-                    s3_filename = __CONSTS__.EDX_COURSE + '/' + component_filename + '.' + component_ext
+                    mob_filename = component_filename + '.' + component_ext
                     
                     # upload an answer to a private repo
-                    if s3_filename.endswith(__CONSTS__.MOB_ANSWER_FILENAME):
-                        _util.upload_s3_answer(component_path, s3_filename)
+                    if mob_filename.endswith(__SETTINGS__.MOB_ANSWER_FILENAME):
+                        _util.upload_s3_answer(component_path, mob_filename)
 
                     # upload an example to a public repo
-                    elif s3_filename.endswith(__CONSTS__.MOB_EXAMPLE_FILENAME):
-                        _util.upload_s3_example(component_path, s3_filename)
+                    elif mob_filename.endswith(__SETTINGS__.MOB_EXAMPLE_FILENAME):
+                        _util.upload_s3_example(component_path, mob_filename)
 
                     # ignore files with wrong extension
                     else:

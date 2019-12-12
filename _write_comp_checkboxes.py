@@ -1,10 +1,10 @@
-import os
+import sys, os
 from lxml import etree
-import __CONSTS__ 
 import _edx_consts
 import _process_html
 import _css_settings
 import _mob_iframe
+import __SETTINGS__
 #--------------------------------------------------------------------------------------------------
 WARNING = "      WARNING:"
 
@@ -131,7 +131,7 @@ def writeXmlForProbCheckboxesComp(component_path, filename, content, settings, u
     result = etree.tostring(problem_tag, pretty_print=True)
 
     # write the file
-    xml_out_path = os.path.join(__CONSTS__.OUTPUT_PATH, _edx_consts.COMP_PROBS_FOLDER, filename + '.xml')
+    xml_out_path = os.path.join(sys.argv[2], _edx_consts.COMP_PROBS_FOLDER, filename + '.xml')
     with open(xml_out_path, 'wb') as fout:
         fout.write(result)
 

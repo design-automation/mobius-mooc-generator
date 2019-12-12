@@ -1,12 +1,13 @@
-
+import sys, os
 from lxml import etree
 import urllib
-import __CONSTS__
 import _edx_consts
 import _css_settings
+import __SETTINGS__
 #--------------------------------------------------------------------------------------------------
 # Text strings
 WARNING = "      WARNING:"
+
 #--------------------------------------------------------------------------------------------------
 MODES = ['gallery', 'dashboard', 'flowchart', 'editor', 'publish']
 #--------------------------------------------------------------------------------------------------
@@ -15,10 +16,10 @@ def createMobIframe(mob_filename, mob_settings, unit_filename):
  
     # constcat the mob file url
     # this matches the url created in mob_uploader.py
-    mob_file_url = __CONSTS__.S3_EXAMPLES_BUCKET_URL + __CONSTS__.EDX_COURSE + '/' + unit_filename + '_' + mob_filename
+    mob_file_url = __SETTINGS__.S3_LINKS_URL + __SETTINGS__.S3_MOOC_FOLDER + '/' +  __SETTINGS__.S3_EXAMPLES_FOLDER + '/' + unit_filename + '_' + mob_filename
 
     # the mobius src
-    iframe_src = __CONSTS__.MOB_URL
+    iframe_src = __SETTINGS__.MOB_URL
     if 'mobius' in mob_settings:
 
         # get the mode

@@ -1,13 +1,24 @@
 import sys, os
+#--------------------------------------------------------------------------------------------------
+if len(sys.argv) != 3:
+    print(sys.argv)
+    raise Exception('Usage: python ./edx_generator.py input_path output_path')
+if not os.path.exists(sys.argv[1]):
+    raise Exception('Path does not exist: ' + sys.argv[1])
+if not os.path.exists(os.path.join(sys.argv[1], '__SETTINGS__.py')):
+    raise Exception('Path does not contain __SETTINGS__.py: ' + sys.argv[1])
+if not os.path.exists(sys.argv[2]):
+    raise Exception('Path does not exist: ' + sys.argv[2])
+sys.path.append(sys.argv[1])
+#--------------------------------------------------------------------------------------------------
 import tarfile
 import shutil
-import __CONSTS__ 
 import _edx_consts
 import _read_metadata
 import _write_structure
 import _write_comps
 import _util
-
+import __SETTINGS__
 #--------------------------------------------------------------------------------------------------
 # Text strings
 WARNING = "      WARNING:"
@@ -19,7 +30,7 @@ def writeAsset(component_path, component, unit_filename):
 
     # copy the image to the assets folder
 
-    out_path = os.path.join(__CONSTS__.OUTPUT_PATH, _edx_consts.STATIC_FOLDER, 
+    out_path = os.path.join(sys.argv[2], _edx_consts.STATIC_FOLDER, 
         unit_filename + '_' + component)
 
     shutil.copyfile(component_path, out_path)
@@ -29,23 +40,18 @@ def writeAsset(component_path, component, unit_filename):
 def processCourse():
 
     # get the main mooc input folder, which we assume is the first folder
-    courses = _util.getSubFolders(__CONSTS__.COURSE_PATH)
-    if (len(courses) != 1):
-        print(WARNING, 'There should only be one folder in the root folder.')
-        return
-
-    # select the first subfolder
-    course_path = courses[0][1]
+    root_folder = os.path.normpath(sys.argv[1])
+    course_path = os.path.join(root_folder, 'Course')
 
     # make the folders inside the output folder
-    os.mkdir(os.path.join(__CONSTS__.OUTPUT_PATH, _edx_consts.COURSE_FOLDER))
-    os.mkdir(os.path.join(__CONSTS__.OUTPUT_PATH, _edx_consts.SECTION_FOLDER))
-    os.mkdir(os.path.join(__CONSTS__.OUTPUT_PATH, _edx_consts.SUBSECTION_FOLDER))
-    os.mkdir(os.path.join(__CONSTS__.OUTPUT_PATH, _edx_consts.UNIT_FOLDER))
-    os.mkdir(os.path.join(__CONSTS__.OUTPUT_PATH, _edx_consts.COMP_HTML_FOLDER))
-    os.mkdir(os.path.join(__CONSTS__.OUTPUT_PATH, _edx_consts.COMP_VIDS_FOLDER))
-    os.mkdir(os.path.join(__CONSTS__.OUTPUT_PATH, _edx_consts.COMP_PROBS_FOLDER))
-    os.mkdir(os.path.join(__CONSTS__.OUTPUT_PATH, _edx_consts.STATIC_FOLDER))
+    os.mkdir(os.path.join(sys.argv[2], _edx_consts.COURSE_FOLDER))
+    os.mkdir(os.path.join(sys.argv[2], _edx_consts.SECTION_FOLDER))
+    os.mkdir(os.path.join(sys.argv[2], _edx_consts.SUBSECTION_FOLDER))
+    os.mkdir(os.path.join(sys.argv[2], _edx_consts.UNIT_FOLDER))
+    os.mkdir(os.path.join(sys.argv[2], _edx_consts.COMP_HTML_FOLDER))
+    os.mkdir(os.path.join(sys.argv[2], _edx_consts.COMP_VIDS_FOLDER))
+    os.mkdir(os.path.join(sys.argv[2], _edx_consts.COMP_PROBS_FOLDER))
+    os.mkdir(os.path.join(sys.argv[2], _edx_consts.STATIC_FOLDER))
 
     # create the root xml file
     course_filename = _write_structure.writeXmlForRoot()
@@ -82,7 +88,7 @@ def processCourse():
                             comps.append([unit_comp_filename, unit_comp_type])
 
                     # put assets in static folder of zip
-                    elif filex in __CONSTS__.ASSET_FILE_EXTENSIONS:
+                    elif filex in __SETTINGS__.EDX_ASSET_FILE_EXTENSIONS:
                         # this is an asset that needs to get copied to the STATIC folder
                         writeAsset(filepath, filename, unit_filename)
 
@@ -105,30 +111,33 @@ def main():
     print("Start compiling")
 
     # check the input and output folders
-    print("in", __CONSTS__.COURSE_PATH)
-    if (not os.path.isdir(__CONSTS__.COURSE_PATH)):
+    print("in", sys.argv[1])
+    if (not os.path.isdir(sys.argv[1])):
         print("The input path is not a valid path")
         return
-    print("out", __CONSTS__.OUTPUT_PATH)
+    print("out", sys.argv[2])
     try:
-        if (os.path.isdir(__CONSTS__.OUTPUT_PATH)):
-            print("Deleting contents in " + __CONSTS__.OUTPUT_PATH)
-            shutil.rmtree(__CONSTS__.OUTPUT_PATH)
-        os.mkdir(__CONSTS__.OUTPUT_PATH)
+        if (os.path.isdir(sys.argv[2])):
+            print("Deleting contents in " + sys.argv[2])
+            shutil.rmtree(sys.argv[2])
+        os.mkdir(sys.argv[2])
     except:
-        print("Failed to create the output folder: " + __CONSTS__.OUTPUT_PATH)
+        print("Failed to create the output folder: " + sys.argv[2])
     
     # create content
     processCourse()
 
     # create the tar file
-    [out_folder_path, out_folder_name] = os.path.split(__CONSTS__.OUTPUT_PATH)
-    tar = tarfile.open(out_folder_name + ".tar.gz", "w:gz")
+    [out_folder_path, out_folder_name] = os.path.split(sys.argv[2])
+    tar_path = os.path.normpath(os.path.join(sys.argv[2], '..'))
+    tar_file_path = os.path.join(tar_path, __SETTINGS__.S3_MOOC_FOLDER + '.tar.gz')
+    tar = tarfile.open(tar_file_path, 'w:gz')
     os.chdir(out_folder_path)
     tar.add(out_folder_name, recursive=True)
     tar.close()
 
     print("Finish compiling")
+    print("Tar file written to", tar_file_path)
 
 #--------------------------------------------------------------------------------------------------
 main()
