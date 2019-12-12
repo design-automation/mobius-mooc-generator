@@ -37,7 +37,7 @@ def main():
                 unit_filename = subsection_filename + '_' + unit.lower()
 
                 for [component, component_path] in _util.getFiles(unit_path):
-                    [component_name, component_ext] = component.lower().split('.')
+                    [component_name, component_ext] = component.split('.')
                     component_filename = unit_filename + '_' + component_name
 
                     # create the filename on s3
