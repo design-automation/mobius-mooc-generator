@@ -1,6 +1,3 @@
-# S3 bucket name
-S3_bucket = ""
-
 # your access key id
 aws_access_key_id = ''
 
