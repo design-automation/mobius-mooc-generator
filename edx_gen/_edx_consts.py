@@ -61,9 +61,10 @@ COMP_PROB_SUBMIT_REQ = ['type', 'answer_filename' ]
 COMP_PROB_SUBMIT_OPT = ['example_filename', 'display_name', 'visible_to_staff_only', 'start', 'max_attempts', 'weight', 
     'showanswer', 'attempts_before_showanswer_button']
 
-COMP_PROB_CHECKBOXES_REQ = ['type']
-COMP_PROB_CHECKBOXES_OPT = ['display_name', 'visible_to_staff_only', 'start', 'max_attempts', 'weight', 
+COMP_PROB_QUIZ_REQ = ['type']
+COMP_PROB_QUIZ_OPT = ['display_name', 'visible_to_staff_only', 'start', 'max_attempts', 'weight', 
     'showanswer', 'group_access', 'rerandomize', 'attempts_before_showanswer_button']
+
 
 #--------------------------------------------------------------------------------------------------
 # Metadata settings for components
@@ -95,7 +96,7 @@ METADATA_ENUMS = {
 
     'rerandomize': ["always", "onreset", "never", "per_student"],
 
-    'type': ['html', 'video', 'problem-submit', 'problem-checkboxes']
+    'type': ['html', 'video', 'problem-submit', 'problem-checkboxes', 'problem-multiplechoice']
 
     # more types: ['problem-choice', 'problem-dropdown', 'problem-numerical', 'problem-text']
 

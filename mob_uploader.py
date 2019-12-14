@@ -8,7 +8,7 @@ if not os.path.exists(os.path.join(sys.argv[1], '__SETTINGS__.py')):
     raise Exception('Path does not contain __SETTINGS__.py: ' + sys.argv[1])
 sys.path.append(sys.argv[1])
 #--------------------------------------------------------------------------------------------------
-import _util
+from edx_gen import  _util
 import __SETTINGS__
 #--------------------------------------------------------------------------------------------------
 # Text strings
@@ -41,7 +41,7 @@ def main():
                     component_filename = unit_filename + '_' + component_name
 
                     # create the filename on s3
-                    # this matches teh url created in _mob_iframe.py
+                    # this matches the url created in _mob_iframe.py
                     mob_filename = component_filename + '.' + component_ext
                     
                     # upload an answer to a private repo

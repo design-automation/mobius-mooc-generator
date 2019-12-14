@@ -1,9 +1,9 @@
 import sys, os
 from lxml import etree
-import _edx_consts
-import _process_html
-import _css_settings
-import _mob_iframe
+from edx_gen import  _edx_consts
+from edx_gen import  _process_html
+from edx_gen import  _css_settings
+from edx_gen import  _mob_iframe
 import __SETTINGS__
 #--------------------------------------------------------------------------------------------------
 WARNING = "      WARNING:"

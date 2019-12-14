@@ -1,10 +1,10 @@
 
 import sys, os
 from lxml import etree
-import _edx_consts
-import _read_metadata
-import _markdown
-import _util
+from edx_gen import  _edx_consts
+from edx_gen import  _read_metadata
+from edx_gen import  _markdown
+from edx_gen import  _util
 import __SETTINGS__
 #--------------------------------------------------------------------------------------------------
 # Text strings

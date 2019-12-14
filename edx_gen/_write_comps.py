@@ -1,16 +1,17 @@
 import sys, os
 import tarfile
 import shutil
-import _edx_consts
-import _read_metadata
-import _write_structure
-import _write_comps
-import _write_comp_html
-import _write_comp_checkboxes
-import _write_comp_submit
-import _write_comp_video
-import _markdown
-import _util
+from edx_gen import  _edx_consts
+from edx_gen import  _read_metadata
+from edx_gen import  _write_structure
+from edx_gen import  _write_comps
+from edx_gen import  _write_comp_html
+from edx_gen import  _write_comp_checkboxes
+from edx_gen import  _write_comp_multiplechoice
+from edx_gen import  _write_comp_submit
+from edx_gen import  _write_comp_video
+from edx_gen import  _markdown
+from edx_gen import  _util
 import __SETTINGS__
 #--------------------------------------------------------------------------------------------------
 # Text strings
@@ -97,7 +98,7 @@ def _writeFilesForSnippet(md_filepath, comp_filename, tree_snippet, unit_filenam
 
         # get the setting out of the meta_tag
         settings = _read_metadata.getMetaSettings(md_filepath, meta_tag, 
-            _edx_consts.COMP_PROB_CHECKBOXES_REQ, _edx_consts.COMP_PROB_CHECKBOXES_OPT )
+            _edx_consts.COMP_PROB_QUIZ_REQ, _edx_consts.COMP_PROB_QUIZ_OPT )
 
         # check that we have settings
         if not settings:
@@ -111,6 +112,24 @@ def _writeFilesForSnippet(md_filepath, comp_filename, tree_snippet, unit_filenam
         return _write_comp_checkboxes.writeXmlForProbCheckboxesComp(
             md_filepath, comp_filename, tree_snippet, settings, unit_filename)
     
+    elif comp_type == 'problem-multiplechoice':
+
+        # get the setting out of the meta_tag
+        settings = _read_metadata.getMetaSettings(md_filepath, meta_tag, 
+            _edx_consts.COMP_PROB_QUIZ_REQ, _edx_consts.COMP_PROB_QUIZ_OPT )
+
+        # check that we have settings
+        if not settings:
+            print(WARNING, 'There seem to be no settings for this "problem-multiplechoice" component:', md_filepath)
+            return
+
+        # remove h1 meta_tag from the tree so it does not end up in the output
+        tree_snippet.remove(meta_tag)
+
+        # write the files and return the list of files
+        return _write_comp_multiplechoice.writeXmlForProbMultiplechoiceComp(
+            md_filepath, comp_filename, tree_snippet, settings, unit_filename)
+
     elif comp_type == 'problem-submit':
 
         # get the setting out of the meta_tag

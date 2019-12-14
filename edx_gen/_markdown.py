@@ -1,8 +1,8 @@
 import sys, os
 import markdown
 from lxml import etree
-import _util
-import _edx_consts
+from edx_gen import  _util
+from edx_gen import  _edx_consts
 
 #--------------------------------------------------------------------------------------------------
 # Text strings

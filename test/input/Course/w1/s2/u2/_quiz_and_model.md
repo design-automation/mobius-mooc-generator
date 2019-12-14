@@ -61,5 +61,5 @@ This is not graded.
 ===
 
 The solution to this problem is xxx.
-Here is a more detailed description of teh solution.
+Here is a more detailed description of the solution.
 Each line will be a seperate paragraph.

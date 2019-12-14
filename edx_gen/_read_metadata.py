@@ -1,5 +1,5 @@
 import sys, os
-import _edx_consts
+from edx_gen import  _edx_consts
 
 #--------------------------------------------------------------------------------------------------
 # Text strings

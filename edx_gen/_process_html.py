@@ -1,9 +1,9 @@
 import sys, os
 from lxml import etree
 import urllib
-import _edx_consts
-import _css_settings
-import _mob_iframe
+from edx_gen import  _edx_consts
+from edx_gen import  _css_settings
+from edx_gen import  _mob_iframe
 import __SETTINGS__
 #--------------------------------------------------------------------------------------------------
 # Text strings

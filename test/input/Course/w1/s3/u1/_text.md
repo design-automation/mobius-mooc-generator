@@ -11,6 +11,6 @@
 
 # Head 1
 
-Some text that describes the graded quiz and the graded model that follow in teh next two units. 
+Some text that describes the graded quiz and the graded model that follow in the next two units. 
 
 

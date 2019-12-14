@@ -1,6 +1,6 @@
 # Markdown Structure
 
-The markdown files for teh generator need to be structured in a specific way.
+The markdown files for the generator need to be structured in a specific way.
 
 There are two type of markdown content.
 
@@ -39,7 +39,7 @@ Things to note:
 * The `{: }` settings must immediatley following the heading. There can be now blank lines.
 * Inside the  `{: }` settings container, each setting consists of a key-value pair, `key="value"`. The key-value pairs can be on different lines, but there can be no spaces around the `=` sign. So `key = "value"` will not work.
 
-The files for all folders except unit folders only contain settings. The contaon no content. So there should be nothing in teh file after the settings. (If there is more .md text below, it will be ignored.)
+The files for all folders except unit folders only contain settings. The contaon no content. So there should be nothing in the file after the settings. (If there is more .md text below, it will be ignored.)
 
 For more information on the settings that can be specified for folders:
 
@@ -108,7 +108,7 @@ Things to note:
   * a checkboxes problem, and 
   * a submit problem.
 * The settings for the unit follow the same rules as those described above. Note that the text `# UNIT` must appear on the first line.
-* Follwoing the settings for teh unit, each component starts with a heading `# COMPONENT`
+* Follwoing the settings for the unit, each component starts with a heading `# COMPONENT`
 * Follwoing the heading, the `{: }` settings define settings specific to that component.
 * One important required setting is the `type="xxx"` setting. Valid values are:
   * `type="html"`, `type="problem-checkboxes"`, `type="problem-submit"`, `type="video"`, 

@@ -28,10 +28,14 @@ The text for this question. What is the question?
 
 Some feedback.
 
+===
+
+OK, a hint.
+
 # COMPONENT =======================================================================================
 {:
-    type="problem-checkboxes"
-    display_name="Yet Another Checkboxes" 
+    type="problem-multiplechoice"
+    display_name="Multiplechoice Problem" 
     max_attempts="2"
     rerandomize="always"
     weight="1.0"
@@ -45,13 +49,13 @@ Some more text.
 
 ===
 
-[x] a correct answer
+[x] a correct answer, there can only be one { feedback }
 
-[ ] an incorrect answer
+[ ] an incorrect answer { more feedback }
 
-[x] another correct answer
+[ ] another incorrect answer { some feedback }
 
-[x] yet another correct answer
+[ ] yet another incorrect answer { yet more feedback }
 
 ===
 
@@ -62,3 +66,11 @@ Some more feedback.
 Some feedback about the right answer.
 
 Some more feedback.
+
+===
+
+This is a hint.
+
+This is another hint.
+
+Yet another hint.

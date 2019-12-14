@@ -1,9 +1,10 @@
 import sys, os
 from lxml import etree
-import _edx_consts
-import _process_html
-import _css_settings
-import _mob_iframe
+from edx_gen import  _edx_consts
+from edx_gen import  _process_html
+from edx_gen import  _css_settings
+from edx_gen import  _mob_iframe
+from edx_gen import  _write_comp_util
 import __SETTINGS__
 #--------------------------------------------------------------------------------------------------
 WARNING = "      WARNING:"
@@ -11,18 +12,6 @@ WARNING = "      WARNING:"
 CHECKBOXES_INSTRUCTIONS = [
     'Please select all applicable options from the list below. ' + 
     'Multiple selections are allowed.'][0]
-
-SUBMIT_EXAMPLE_DESCRIPTION = [
-    'Below is an example of the output that you need to submit. ' + 
-    'This model does not include the procedure. ' + 
-    'That is the part you need to figure out.' +
-    'If you look at the paremeters, you will see the values that were used to generate this version of the model.'][0]
-
-SUBMIT_INSTRUCTIONS = [
-    'Please submit your Mobius Model. ' + 
-    'First create your answer model and save it to your local drive. ' + 
-    'Then click Submit and select your .mob file. ' + 
-    'Your submission will be auto-graded and you should receiev the results within a few seconds.'][0]
 
 #--------------------------------------------------------------------------------------------------
 # write xml for problem Checkboxescomponent
@@ -39,8 +28,14 @@ def writeXmlForProbCheckboxesComp(component_path, filename, content, settings, u
     #       <label>xxx, which of the following are true?</label>
     #       <description>Please select all applicable options from the list below. Multiple selections are allowed. </description>
     #       <checkboxgroup>
-    #           <choice correct="false">Some text. </choice>
-    #           <choice correct="false">Some text. </choice>
+    #           <choice correct="false">
+    #               Some text. 
+    #               <choicehint selected="true">Feedback.</choicehint>
+    #           </choice>
+    #           <choice correct="false">
+    #               Some text. 
+    #               <choicehint selected="true">Feedback.</choicehint>
+    #           </choice>
     #           <choice correct="true">Some text. </choice>
     #       </checkboxgroup>
     #       <solution>
@@ -49,6 +44,10 @@ def writeXmlForProbCheckboxesComp(component_path, filename, content, settings, u
     #               <p>xxx</p>
     #           </div>
     #       </solution>
+    #       <demandhint>
+    #           <hint>Hint.</hint>
+    #           <hint>Another hint.</hint>
+    #       </demandhint>
     #   </choiceresponse>
     # </problem>
     # ----  ----  ----
@@ -71,6 +70,7 @@ def writeXmlForProbCheckboxesComp(component_path, filename, content, settings, u
     # the elements are split using '===', there should be two splits
     labels = []
     choices = []
+    hints = []
     solutions = []
     found_splitter = 0 # found ===
     elems = content.getchildren()
@@ -82,40 +82,38 @@ def writeXmlForProbCheckboxesComp(component_path, filename, content, settings, u
                 if found_splitter == 0:
                     labels.append(elem)
                 elif found_splitter == 1:
-                    if elem.text[:3] in ['[ ]', '[x]']:
-                        correct_val = 'true'
-                        if elem.text[:3] == '[ ]':
-                            correct_val = 'false'
-                        choice_tag = etree.Element("choice")
-                        choice_tag.text = elem.text[3:]
-                        choice_tag.set('correct', correct_val)
-                        choices.append(choice_tag)
-                    else:
-                        print(WARNING, 'Submit problem choice must start with [ ] or [x].', filename)
-                else:
+                    _write_comp_util.addChoiceTag(choices, elem, filename)
+                elif found_splitter == 2:
                     solutions.append(elem)
+                else:
+                    _write_comp_util.addHintTag(hints, elem, filename)
     else:
-        print(WARNING, 'Submit problem is missing content.', filename)
+        print(WARNING, 'Checkboxes problem is missing content.', filename)
 
-    # add the choices and solutions to the choiceresponse_tag
+    # add labels
     if labels:
         label_tag = etree.Element("label") 
         choiceresponse_tag.append(label_tag)
         for label in labels:
             label_tag.append(label)
     else:
-        print(WARNING, 'Choice problem seems to have no text that describes the question.', filename)
-    if CHECKBOXES_INSTRUCTIONS:
-        description_tag = etree.Element("description")
-        choiceresponse_tag.append(description_tag)
-        description_tag.text = CHECKBOXES_INSTRUCTIONS
+        print(WARNING, 'Checkboxes problem seems to have no text that describes the question.', filename)
+
+    # add instructions
+    description_tag = etree.Element("description")
+    choiceresponse_tag.append(description_tag)
+    description_tag.text = CHECKBOXES_INSTRUCTIONS
+
+    # add choices
     if choices:
         checkboxgroup_tag = etree.Element("checkboxgroup")
         choiceresponse_tag.append(checkboxgroup_tag)
         for choice in choices:
             checkboxgroup_tag.append(choice)
     else:
-        print(WARNING, 'Choice problem seems to have no choices.', filename)
+        print(WARNING, 'Checkboxes problem seems to have no choices.', filename)
+
+    # add solutions
     if solutions:
         solution_tag = etree.Element("solution")
         div_tag = etree.Element("div")
@@ -126,6 +124,15 @@ def writeXmlForProbCheckboxesComp(component_path, filename, content, settings, u
             div_tag.append(solution)
     else:
         pass # It is ok to have no solution text
+
+    # add hints
+    if hints:
+        demandhint_tag = etree.Element("demandhint")
+        problem_tag.append(demandhint_tag)
+        for hint in hints:
+            demandhint_tag.append(hint)
+    else:
+        pass # It is ok to have no hints
 
     # convert problem_tag to string
     result = etree.tostring(problem_tag, pretty_print=True)
