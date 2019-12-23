@@ -105,69 +105,10 @@ def writeXmlForVidComp(component_path, filename, settings, unit_filename):
 
     video_urls = {}
 
+    # if mp4, then create xml
     if 'video_filename' in settings:
-
-        # get the filename
-        video_filename_ext = settings['video_filename'].strip()
-        [video_filename, video_ext] = video_filename_ext.split('.')
-
-        # the dir of this component
-        component_dir = os.path.dirname(component_path)
-
-        # set the transcript object
-        transcripts_obj = {}
-        for lang in __SETTINGS__.LANGUAGES:
-            transcripts_obj[lang] = unit_filename + '_' + video_filename + '_sub_' + lang + '.srt'
-
-            # check that that srt files for each language exist
-            video_filepath = os.path.normpath(component_dir + '/' + video_filename + '_sub_' + lang + '.srt')
-            if (not os.path.exists(video_filepath) or not os.path.isfile(video_filepath)):
-                print(WARNING, 'The video srt file does not exist: "' + video_filepath +'" in', component_path)
-
-        # escape this dict so that we get &quot; but do not escale the &
-        video_tag_transcripts_list = []
-        for k in transcripts_obj:
-            video_tag_transcripts_list.append( '"' + k + '":"' + transcripts_obj[k] + '"' )
-        video_tag.set('transcripts', '{' + ','.join(video_tag_transcripts_list) + '}')
-
-
-        # for example "https://mooc-s3cf.s3-ap-southeast-1.amazonaws.com/Fruit+basket_uk.mp4"]
-        # create the video urls
+        video_urls = addVideoXML(video_tag, video_asset_tag, component_path, settings, unit_filename)
         
-        url_base = __SETTINGS__.S3_LINKS_URL + __SETTINGS__.S3_MOOC_FOLDER + '/' + __SETTINGS__.S3_VIDEOS_FOLDER + '/'
-        for lang in __SETTINGS__.LANGUAGES:
-            video_urls[lang] = url_base  + video_filename + '_' + lang + '.' + video_ext
-
-        video_url_default = video_urls['en']
-        if video_url_default == None:
-            video_url_default = video_urls[video_urls.keys()[0]]
-
-        # set the html5_sources
-        # html5_sources="[&quot;https://mooc-s3cf.s3-ap-southeast-1.amazonaws.com/Ct2.7.1_uk_comp.mp4&quot;]"
-        video_tag.set('html5_sources', '["' + video_url_default + '"]')
-
-        # add the source tag
-        source_tag = etree.Element("source")
-        source_tag.set('src', video_url_default)
-        video_tag.append(source_tag)
-
-        # add the transcripts tag to the video asset tag
-        transcripts_tag = etree.Element('transcripts')
-        for lang in __SETTINGS__.LANGUAGES:
-            transcript_tag = etree.Element('transcript')
-            transcript_tag.set('file_format', 'srt')
-            transcript_tag.set('language_code', lang)
-            transcript_tag.set('provider', 'Custom')
-            transcripts_tag.append(transcript_tag)
-        video_asset_tag.append(transcripts_tag)
-
-        # add the second set of transcript tags under video
-        for lang in __SETTINGS__.LANGUAGES:
-            transcript2_tag = etree.Element('transcript')
-            transcript2_tag.set('language', lang)
-            transcript2_tag.set('src', transcripts_obj[lang])
-            video_tag.append(transcript2_tag)
-
     # write the file
     video_data = etree.tostring(video_tag, pretty_print = True)
     video_xml_out_path = os.path.join(sys.argv[2], _edx_consts.COMP_VIDS_FOLDER, filename + '.xml')
@@ -181,78 +122,7 @@ def writeXmlForVidComp(component_path, filename, settings, unit_filename):
 
     # generate the language options
     if 'video_filename' in settings and len(__SETTINGS__.LANGUAGES) > 1:
-
-        # ['https://mooc-s3cf.s3-ap-southeast-1.amazonaws.com/SCT101X/2019/TST1.0.1.mp4']
-
-        # create the html file for video languages
-
-        # create script str
-        script_str = '\nfunction selLang(lang) {\n'
-        for lang in __SETTINGS__.LANGUAGES[1:]:
-            script_str += '  document.getElementById("' + lang + '").style="display:none";\n'
-        script_str += '  if (lang !== "none") { \n'
-        script_str += '    document.getElementById(lang).style="display:block";\n'
-        script_str += '  }\n'
-        script_str += '}\n'
-
-        # script tag
-        script_tag = etree.Element("script")
-        script_tag.text = script_str
-
-        # p tag
-        p_languages_tag = etree.Element("p")
-        p_languages_tag.set('style','display:inline')
-        p_languages_tag.text = 'View video in other language: '
-        button_tag = etree.Element("div")
-        button_tag.set('style', _css_settings.LANG_BUTTON_CSS)
-        button_tag.set('onclick', 'selLang("none")')
-        button_tag.text = 'None'
-        p_languages_tag.append(button_tag)
-        div_tag =  etree.Element("div")
-
-        # for each langaue
-        for lang in __SETTINGS__.LANGUAGES[1:]:
-
-            # p with row of buttons
-            if lang != 'en':
-                button_tag = etree.Element("div")
-                button_tag.set('style', _css_settings.LANG_BUTTON_CSS)
-                button_tag.set('onclick', 'selLang("' + lang + '")')
-                button_tag.text = ALL_LANGUAGES[lang]
-                p_languages_tag.append(button_tag)
-
-            # videos
-            video_tag = etree.Element("video")
-            div_tag.append(video_tag)
-            video_tag.set('id', lang)
-            video_tag.set('style', 'display:none')
-            video_tag.set('width', '100%')
-            video_tag.set('controls', '')
-
-            # source tag 
-            source_tag = etree.Element("source")
-            video_tag.append(source_tag)
-            source_tag.set('src', video_urls[lang])
-            source_tag.set('type', 'video/mp4')
-            source_tag.text = 'Your browser does not support the video tag.'
-
-        # write the html file for video languages
-        lang_html_out_path = os.path.join(sys.argv[2], _edx_consts.COMP_HTML_FOLDER, filename + '.html')
-        with open(lang_html_out_path, 'wb') as fout:
-            fout.write(etree.tostring(script_tag, pretty_print = True))
-            fout.write(etree.tostring(p_languages_tag, pretty_print = True))
-            fout.write(etree.tostring(div_tag, pretty_print = True))
-
-        # create the xml file for video languages
-        lang_tag = etree.Element("html")
-        lang_tag.set('display_name', 'View Video in Other Language')
-        lang_tag.set('filename', filename)
-
-        # write the xml file for video languages
-        lang_xml_out_path = os.path.join(sys.argv[2], _edx_consts.COMP_HTML_FOLDER, filename + '.xml')
-        with open(lang_xml_out_path, 'wb') as fout:
-            fout.write(etree.tostring(lang_tag, pretty_print = True))
-
+        [filename, _edx_consts.COMP_HTML_FOLDER] = createVideoLangs(filename, video_urls)
         # add the file to the return list
         files.append( [filename, _edx_consts.COMP_HTML_FOLDER] )
 
@@ -260,3 +130,149 @@ def writeXmlForVidComp(component_path, filename, settings, unit_filename):
     return files
     
 #--------------------------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------
+# xml for the video
+def addVideoXML(video_tag, video_asset_tag, component_path, settings, unit_filename):
+    video_urls = {}
+
+    # get the filename
+    video_filename_ext = settings['video_filename'].strip()
+    [video_filename, video_ext] = video_filename_ext.split('.')
+
+    # the dir of this component
+    component_dir = os.path.dirname(component_path)
+
+    # set the transcript object
+    transcripts_obj = {}
+    for lang in __SETTINGS__.LANGUAGES:
+        transcripts_obj[lang] = unit_filename + '_' + video_filename + '_sub_' + lang + '.srt'
+
+        # check that that srt files for each language exist
+        video_filepath = os.path.normpath(component_dir + '/' + video_filename + '_sub_' + lang + '.srt')
+        if (not os.path.exists(video_filepath) or not os.path.isfile(video_filepath)):
+            print(WARNING, 'The video srt file does not exist: "' + video_filepath +'" in', component_path)
+
+    # escape this dict so that we get &quot; but do not escale the &
+    video_tag_transcripts_list = []
+    for k in transcripts_obj:
+        video_tag_transcripts_list.append( '"' + k + '":"' + transcripts_obj[k] + '"' )
+    video_tag.set('transcripts', '{' + ','.join(video_tag_transcripts_list) + '}')
+
+
+    # for example "https://mooc-s3cf.s3-ap-southeast-1.amazonaws.com/Fruit+basket_uk.mp4"]
+    # create the video urls
+    
+    url_base = __SETTINGS__.S3_LINKS_URL + __SETTINGS__.S3_MOOC_FOLDER + '/' + __SETTINGS__.S3_VIDEOS_FOLDER + '/'
+    for lang in __SETTINGS__.LANGUAGES:
+        video_urls[lang] = url_base  + video_filename + '_' + lang + '.' + video_ext
+
+    video_url_default = video_urls['en']
+    if video_url_default == None:
+        video_url_default = video_urls[video_urls.keys()[0]]
+
+    # set the html5_sources
+    # html5_sources="[&quot;https://mooc-s3cf.s3-ap-southeast-1.amazonaws.com/Ct2.7.1_uk_comp.mp4&quot;]"
+    video_tag.set('html5_sources', '["' + video_url_default + '"]')
+
+    # add the source tag
+    source_tag = etree.Element("source")
+    source_tag.set('src', video_url_default)
+    video_tag.append(source_tag)
+
+    # add the transcripts tag to the video asset tag
+    transcripts_tag = etree.Element('transcripts')
+    for lang in __SETTINGS__.LANGUAGES:
+        transcript_tag = etree.Element('transcript')
+        transcript_tag.set('file_format', 'srt')
+        transcript_tag.set('language_code', lang)
+        transcript_tag.set('provider', 'Custom')
+        transcripts_tag.append(transcript_tag)
+    video_asset_tag.append(transcripts_tag)
+
+    # add the second set of transcript tags under video
+    for lang in __SETTINGS__.LANGUAGES:
+        transcript2_tag = etree.Element('transcript')
+        transcript2_tag.set('language', lang)
+        transcript2_tag.set('src', transcripts_obj[lang])
+        video_tag.append(transcript2_tag)
+
+    # return the urls
+    return video_urls
+
+# languages options
+def createVideoLangs(filename, video_urls):
+    # ['https://mooc-s3cf.s3-ap-southeast-1.amazonaws.com/SCT101X/2019/TST1.0.1.mp4']
+
+    # create the html file for video languages
+
+    # create script str
+    script_str = '\nfunction selLang(lang) {\n'
+    for lang in __SETTINGS__.LANGUAGES[1:]:
+        script_str += '  document.getElementById("' + lang + '").style="display:none";\n'
+    script_str += '  if (lang !== "none") { \n'
+    script_str += '    document.getElementById(lang).style="display:block";\n'
+    script_str += '  }\n'
+    script_str += '}\n'
+
+    # script tag
+    script_tag = etree.Element("script")
+    script_tag.text = script_str
+
+    # p tag
+    p_languages_tag = etree.Element("p")
+    p_languages_tag.set('style','display:inline')
+    p_languages_tag.text = 'View video in other language: '
+    button_tag = etree.Element("div")
+    button_tag.set('style', _css_settings.LANG_BUTTON_CSS)
+    button_tag.set('onclick', 'selLang("none")')
+    button_tag.text = 'None'
+    p_languages_tag.append(button_tag)
+    div_tag =  etree.Element("div")
+
+    # for each langaue
+    for lang in __SETTINGS__.LANGUAGES[1:]:
+
+        # p with row of buttons
+        if lang != 'en':
+            button_tag = etree.Element("div")
+            button_tag.set('style', _css_settings.LANG_BUTTON_CSS)
+            button_tag.set('onclick', 'selLang("' + lang + '")')
+            button_tag.text = ALL_LANGUAGES[lang]
+            p_languages_tag.append(button_tag)
+
+        # videos
+        video_tag = etree.Element("video")
+        div_tag.append(video_tag)
+        video_tag.set('id', lang)
+        video_tag.set('style', 'display:none')
+        video_tag.set('width', '100%')
+        video_tag.set('controls', '')
+
+        # source tag 
+        source_tag = etree.Element("source")
+        video_tag.append(source_tag)
+        source_tag.set('src', video_urls[lang])
+        source_tag.set('type', 'video/mp4')
+        source_tag.text = 'Your browser does not support the video tag.'
+
+    # write the html file for video languages
+    lang_html_out_path = os.path.join(sys.argv[2], _edx_consts.COMP_HTML_FOLDER, filename + '.html')
+    with open(lang_html_out_path, 'wb') as fout:
+        fout.write(etree.tostring(script_tag, pretty_print = True))
+        fout.write(etree.tostring(p_languages_tag, pretty_print = True))
+        fout.write(etree.tostring(div_tag, pretty_print = True))
+
+    # create the xml file for video languages
+    lang_tag = etree.Element("html")
+    lang_tag.set('display_name', 'View Video in Other Language')
+    lang_tag.set('filename', filename)
+
+    # write the xml file for video languages
+    lang_xml_out_path = os.path.join(sys.argv[2], _edx_consts.COMP_HTML_FOLDER, filename + '.xml')
+    with open(lang_xml_out_path, 'wb') as fout:
+        fout.write(etree.tostring(lang_tag, pretty_print = True))
+    
+    # return the filename
+    return [filename, _edx_consts.COMP_HTML_FOLDER]
+
+    

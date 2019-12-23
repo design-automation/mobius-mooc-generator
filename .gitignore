@@ -8,9 +8,12 @@ __pycache__/
 __AWS__.py
 __GITHUB__.py
 
-## Output data
-test/output/
-
+#bat files
 __RUN__.bat
 __MU_RUN__.bat
 __EG_RUN__.bat
+*TEST*.bat
+
+## Output data
+test/output/
+*.tar.gz
