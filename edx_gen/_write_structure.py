@@ -308,6 +308,7 @@ def writeXmlForUnit(in_folder, filename, components):
 
         # normal components
         if comp_type in ['html', 'video', 'problem']:
+
             # check the file exists
             filepath = sys.argv[2] + '/' + comp_type + '/' + comp_filename + '.xml'
             if not os.path.exists(filepath):
@@ -320,6 +321,7 @@ def writeXmlForUnit(in_folder, filename, components):
 
         # discussion components
         elif comp_type == 'discussion':
+            
             # component tag is the comp_filename
             vertical_tag.append(comp_filename)
 
