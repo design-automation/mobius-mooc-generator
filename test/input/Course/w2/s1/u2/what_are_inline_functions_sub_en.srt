@@ -1,0 +1,348 @@
+1
+00:00:00,000 --> 00:00:03,000
+What are Inline Functions?
+
+2
+00:00:03,000 --> 00:00:03,844
+In this video,
+
+3
+00:00:03,844 --> 00:00:10,961
+we will get an understanding of what is meant by Inline Functions and how it can be applied in Computational Thinking.
+
+4
+00:00:10,961 --> 00:00:19,404
+Inline functions are additional functions which can be input into the Main functions to calculate or convert values within the line of code.
+
+5
+00:00:19,404 --> 00:00:23,927
+Some common inline functions you will be using often would be Inline Lists,
+
+6
+00:00:23,927 --> 00:00:24,530
+Constants,
+
+7
+00:00:24,530 --> 00:00:25,918
+Random and Conversions.
+
+8
+00:00:25,918 --> 00:00:25,918
+
+
+9
+00:00:26,280 --> 00:00:29,280
+Inline - List
+
+10
+00:00:29,280 --> 00:00:33,108
+ Len(list)  returns the number of items in the list,
+
+11
+00:00:33,108 --> 00:00:34,857
+also known as the length of the list.
+
+12
+00:00:34,857 --> 00:00:39,111
+Let’s say that  List1 = [0,
+
+13
+00:00:39,111 --> 00:00:39,205
+1,
+
+14
+00:00:39,205 --> 00:00:39,300
+2,
+
+15
+00:00:39,300 --> 00:00:39,725
+3] .
+
+16
+00:00:39,725 --> 00:00:44,121
+ Length_of_List1 = len(List1) .
+
+17
+00:00:44,121 --> 00:00:44,972
+When the variable,
+
+18
+00:00:44,972 --> 00:00:48,044
+ Length_of_List1  is printed,
+
+19
+00:00:48,044 --> 00:00:50,029
+the value 4 will be printed as the output.
+
+20
+00:00:50,029 --> 00:00:52,204
+This is because there are 4 items in the list.
+
+21
+00:00:52,204 --> 00:00:52,440
+Thus,
+
+22
+00:00:52,440 --> 00:00:54,945
+the length of  List1  is 4.
+
+23
+00:00:54,945 --> 00:00:54,945
+
+
+24
+00:00:55,560 --> 00:00:57,100
+ Range(start,
+
+25
+00:00:57,100 --> 00:01:02,474
+end)  generates a list of integers from start to  n - 1  given that end  =  n.
+
+26
+00:01:02,474 --> 00:01:03,301
+Following the example,
+
+27
+00:01:03,301 --> 00:01:05,593
+ List2 = Range(0,
+
+28
+00:01:05,593 --> 00:01:09,689
+5)  will generate a list containing the values from  0  to  4   
+
+29
+00:01:09,840 --> 00:01:11,921
+ Range(start,
+
+30
+00:01:11,921 --> 00:01:12,102
+end,
+
+31
+00:01:12,102 --> 00:01:18,618
+step)  generates a list of integers from start to  n - 1  given that end  =  n,
+
+32
+00:01:18,618 --> 00:01:19,839
+with a specified step size.
+
+33
+00:01:19,839 --> 00:01:20,835
+Following the example,
+
+34
+00:01:20,835 --> 00:01:23,866
+ List2 = Range(0,
+
+35
+00:01:23,866 --> 00:01:23,957
+5,
+
+36
+00:01:23,957 --> 00:01:26,400
+2)  will generate a list containing the values 0,
+
+37
+00:01:26,400 --> 00:01:26,762
+2 and 4.
+
+38
+00:01:26,762 --> 00:01:26,762
+
+
+39
+00:01:27,170 --> 00:01:32,880
+ isList(List)  returns True if the specified variable is a list and false if it is not.
+
+40
+00:01:32,880 --> 00:01:33,492
+For example,
+
+41
+00:01:33,492 --> 00:01:36,449
+ List4 = [ ] .
+
+42
+00:01:36,449 --> 00:01:36,704
+Thus,
+
+43
+00:01:36,704 --> 00:01:40,120
+when  isList(List4)  is printed,
+
+44
+00:01:40,120 --> 00:01:41,344
+the output will be True.
+
+45
+00:01:41,344 --> 00:01:41,344
+
+
+46
+00:01:41,650 --> 00:01:44,650
+Inline - Constants
+
+47
+00:01:44,650 --> 00:01:46,397
+There are inline constants as well.
+
+48
+00:01:46,397 --> 00:01:58,880
+An example would be    which is written as  PI  in the Mobius Modeller.Another example would be  XY  which define a plane at the origin aligned on the  XY   axis.
+
+49
+00:01:58,880 --> 00:01:58,930
+ 
+
+50
+00:01:59,030 --> 00:02:05,059
+Another example would be  XY  which define a plane at the origin aligned on the  XY   axis.
+
+51
+00:02:05,059 --> 00:02:05,104
+ 
+
+52
+00:02:05,150 --> 00:02:08,150
+Inline - Random
+
+53
+00:02:08,150 --> 00:02:10,773
+Inlines can be used to generate random numbers.
+
+54
+00:02:10,773 --> 00:02:12,838
+ Rand(min,
+
+55
+00:02:12,838 --> 00:02:16,243
+max)  will return a random number in the specific range.
+
+56
+00:02:16,243 --> 00:02:16,913
+For example,
+
+57
+00:02:16,913 --> 00:02:20,709
+if  my_number = Rand(0,
+
+58
+00:02:20,709 --> 00:02:21,211
+2) ,
+
+59
+00:02:21,211 --> 00:02:24,784
+then the computer will generate a random number between 0 and 2,
+
+60
+00:02:24,784 --> 00:02:28,412
+inclusive of the minimum number but excluding the maximum number.
+
+61
+00:02:28,412 --> 00:02:30,477
+The numbers include decimals as well.
+
+62
+00:02:30,477 --> 00:02:30,477
+
+
+63
+00:02:30,980 --> 00:02:33,582
+ RandInt(min,
+
+64
+00:02:33,582 --> 00:02:36,945
+max)  will return a random Integer in the specific range.
+
+65
+00:02:36,945 --> 00:02:37,595
+For example,
+
+66
+00:02:37,595 --> 00:02:41,879
+if  my_number = RandInt(0,
+
+67
+00:02:41,879 --> 00:02:42,367
+2) ,
+
+68
+00:02:42,367 --> 00:02:45,892
+then the computer will generate a random integer between 0 and 2,
+
+69
+00:02:45,892 --> 00:02:49,417
+inclusive of the minimum number but excluding the maximum number.
+
+70
+00:02:49,417 --> 00:02:49,688
+Thus,
+
+71
+00:02:49,688 --> 00:02:53,321
+the value 0 or 1 will be generated every time the code is executed.
+
+72
+00:02:53,321 --> 00:02:53,321
+
+
+73
+00:02:53,810 --> 00:02:55,868
+ Rand(min,
+
+74
+00:02:55,868 --> 00:02:56,064
+max,
+
+75
+00:02:56,064 --> 00:02:59,103
+seed)  will return a random number in the specific range,
+
+76
+00:02:59,103 --> 00:03:02,044
+but the same random number upon every execution of the code.
+
+77
+00:03:02,044 --> 00:03:02,093
+ 
+
+78
+00:03:02,290 --> 00:03:05,290
+Inline - Conversion
+
+79
+00:03:05,290 --> 00:03:07,862
+Inlines can also be used to convert values.
+
+80
+00:03:07,862 --> 00:03:11,273
+This is because some functions only accept radian values,
+
+81
+00:03:11,273 --> 00:03:15,820
+but it is more intuitive to use  degrees .
+
+82
+00:03:15,820 --> 00:03:15,820
+
+
+83
+00:03:16,000 --> 00:03:19,258
+This sums up the video on Inline functions.
+
+84
+00:03:19,258 --> 00:03:23,351
+Next up are some practice questions for your revision.
+
+85
+00:03:23,351 --> 00:03:24,942
+See you next session.
+
+86
+00:03:24,942 --> 00:03:24,942
+
+
+87
+00:03:25,170 --> 00:03:28,170
+The End
+

@@ -1,0 +1,16 @@
+1
+00:00:00,000 --> 00:00:05,000
+{"video_file_name": "chrome_configuration", "display_name": "Chrome Configuration", "voice":"3"}
+
+2
+00:00:05,000 --> 00:00:12,033
+To check if GPU usage is activated on Google Chrome, type <sub alias="gpu">chrome://gpu/</sub> into Google Chrome. 
+
+3
+00:00:12,700 --> 00:00:14,166
+Under Graphics Feature Status,
+
+4
+00:00:14,166 --> 00:00:18,166
+<sub alias="gpu1">WEBGL</sub> and <sub alias="gpu2">WEBGL2</sub> should be indicated as 'Hardware Accelerated'. 
+

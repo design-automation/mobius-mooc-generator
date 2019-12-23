@@ -1,0 +1,19 @@
+{
+    "chrome_configuration": {
+        "video_file_name": "chrome_configuration",
+        "display_name": "Chrome Configuration",
+        "voice": "3",
+        "meta": {
+            "pre_polly": {
+                "path": "C:\\Dropbox\\Files\\Software\\GitHub\\design-automation2\\edx-generator\\test\\input\\Course\\w2\\s1\\u3\\chrome_configuration.mp4",
+                "last_edit": 1577078059.1800268
+            },
+            "srt": {
+                "en": {
+                    "path": "C:\\Dropbox\\Files\\Software\\GitHub\\design-automation2\\edx-generator\\test\\input\\Course\\w2\\s1\\u3\\chrome_configuration_en.srt",
+                    "last_edit": 1577077586.5474854
+                }
+            }
+        }
+    }
+}

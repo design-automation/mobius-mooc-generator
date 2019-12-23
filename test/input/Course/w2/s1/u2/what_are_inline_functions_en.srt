@@ -1,0 +1,72 @@
+1
+00:00:00,000 --> 00:00:05,000
+{"display_name": "What are Inline Functions?", "voice":"0"}
+
+2
+00:00:05,000 --> 00:00:10,000
+In this video, we will get an understanding of what is meant by Inline Functions and how it can be applied in Computational Thinking. Inline functions are additional functions which can be input into the Main functions to calculate or convert values within the line of code. Some common inline functions you will be using often would be Inline Lists, Constants, Random and Conversions.
+
+3
+00:00:10,000 --> 00:00:15,000
+{"display_name": "Inline - List"}
+
+4
+00:00:15,000 --> 00:00:20,000
+<sub alias="Length List">Len(list)</sub> returns the number of items in the list, also known as the length of the list. Let’s say that <sub alias="list one represents a list of integers from 0 to 3">List1 = [0, 1, 2, 3]</sub>. <sub alias="Length of list one equals to length list one">Length_of_List1 = len(List1)</sub>. When the variable, <sub alias="Length of list one">Length_of_List1</sub> is printed, the value 4 will be printed as the output. This is because there are 4 items in the list. Thus, the length of <sub alias="List one">List1</sub> is 4.
+
+5
+00:00:20,000 --> 00:00:25,000
+<sub alias="Range Start End">Range(start, end)</sub> generates a list of integers from start to <sub alias="end minus one List">n - 1</sub> given that end <sub alias="equals">=</sub> n. Following the example, <sub alias="list two equals range zero five">List2 = Range(0, 5)</sub> will generate a list containing the values from <sub alias="zero">0</sub> to <sub alias="">4</sub> 
+
+6
+00:00:25,000 --> 00:00:30,000
+<sub alias="Range Start End Step">Range(start, end, step)</sub> generates a list of integers from start to <sub alias="end minus one List">n - 1</sub> given that end <sub alias="equals">=</sub> n, with a specified step size. Following the example, <sub alias="list three equals range zero five two">List2 = Range(0, 5, 2)</sub> will generate a list containing the values 0, 2 and 4.
+
+7
+00:00:30,000 --> 00:00:35,000
+<sub alias="Is List">isList(List)</sub> returns True if the specified variable is a list and false if it is not. For example, <sub alias="List Four is an empty list">List4 = [ ]</sub>. Thus, when <sub alias="Is List List four">isList(List4)</sub> is printed, the output will be True.
+
+8
+00:00:35,000 --> 00:00:40,000
+{"display_name": "Inline - Constants"}
+
+9
+00:00:40,000 --> 00:00:45,000
+There are inline constants as well. An example would be <sub alias="pie"></sub> which is written as <sub alias="pee eye">PI</sub> in the Mobius Modeller.Another example would be <sub alias="X Y">XY</sub> which define a plane at the origin aligned on the <sub alias="X Y">XY</sub>  axis. 
+
+10
+00:00:45,000 --> 00:00:50,000
+Another example would be <sub alias="X Y">XY</sub> which define a plane at the origin aligned on the <sub alias="X Y">XY</sub>  axis. 
+
+11
+00:00:50,000 --> 00:00:55,000
+{"display_name": "Inline - Random"}
+
+12
+00:00:55,000 --> 00:01:00,000
+Inlines can be used to generate random numbers. <sub alias="Random Min Max">Rand(min, max)</sub> will return a random number in the specific range. For example, if <sub alias="my number equals random zero two">my_number = Rand(0, 2)</sub>, then the computer will generate a random number between 0 and 2, inclusive of the minimum number but excluding the maximum number. The numbers include decimals as well.
+
+13
+00:01:00,000 --> 00:01:05,000
+<sub alias="Random Integer Min Max">RandInt(min, max)</sub> will return a random Integer in the specific range. For example, if <sub alias="my number equals random integer zero two">my_number = RandInt(0, 2)</sub>, then the computer will generate a random integer between 0 and 2, inclusive of the minimum number but excluding the maximum number. Thus, the value 0 or 1 will be generated every time the code is executed.
+
+14
+00:01:05,000 --> 00:01:10,000
+<sub alias="Random min max Seed">Rand(min, max, seed)</sub> will return a random number in the specific range, but the same random number upon every execution of the code. 
+
+15
+00:01:10,000 --> 00:01:15,000
+{"display_name": "Inline - Conversion"}
+
+16
+00:01:15,000 --> 00:01:20,000
+Inlines can also be used to convert values. This is because some functions only accept radian values, but it is more intuitive to use <sub alias="the unit degrees">degrees</sub>.
+
+17
+00:01:20,000 --> 00:01:25,000
+This sums up the video on Inline functions. Next up are some practice questions for your revision. See you next session.
+
+18
+00:01:25,000 --> 00:01:30,000
+{"display_name": "The End"}
+

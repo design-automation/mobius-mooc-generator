@@ -1,9 +1,9 @@
-# UNIT ============================================================================================
+# UNIT ==========
 {:
-    display_name="Unit 2 - AWS Video"
+    display_name="AWS Powerpoint Video"
 }
 
-# COMPONENT =======================================================================================
+# COMPONENT ==========
 {:
     type="html"
     display_name="Some text"
@@ -11,12 +11,12 @@
 
 # Head 1
 
-Here is avideo on AWS.
+Here is a video on AWS.
 
-# COMPONENT =======================================================================================
+# COMPONENT ==========
 {:
     type="video"
     display_name="a video on aws"
     show_captions="false"
-    video_filename="03_Hello_world_PPT_video.mp4"
+    video_filename="what_are_inline_functions.mp4"
 }

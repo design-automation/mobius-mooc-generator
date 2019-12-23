@@ -1,0 +1,19 @@
+{
+    "what_are_inline_functions": {
+        "video_file_name": "what_are_inline_functions",
+        "display_name": "What are Inline Functions?",
+        "voice": "0",
+        "meta": {
+            "pre_polly": {
+                "path": "C:\\Dropbox\\Files\\Software\\GitHub\\design-automation2\\edx-generator\\test\\input\\Course\\w2\\s1\\u2\\what_are_inline_functions.pptx",
+                "last_edit": 1577072861.8753524
+            },
+            "srt": {
+                "en": {
+                    "path": "C:\\Dropbox\\Files\\Software\\GitHub\\design-automation2\\edx-generator\\test\\input\\Course\\w2\\s1\\u2\\what_are_inline_functions_en.srt",
+                    "last_edit": 1577078219.1329894
+                }
+            }
+        }
+    }
+}

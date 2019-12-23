@@ -1,22 +1,22 @@
-# UNIT ============================================================================================
+# UNIT ==========
 {:
-    display_name="Unit 3 - Youtube Video"
+    display_name="AWS Normal Video"
 }
 
-# COMPONENT =======================================================================================
+# COMPONENT ==========
 {:
     type="html"
-    display_name="Image and Iframe"
+    display_name="Some text"
 }
 
 # Head 1
 
-Here is a YouTube Video.
+Here is a normal video on AWS.
 
-# COMPONENT =======================================================================================
+# COMPONENT ==========
 {:
     type="video"
-    display_name="A Youtube Video"
-    youtube_id_1_0="3_yD_cEKoCk"
+    display_name="a normal video on aws"
     show_captions="false"
+    video_filename="chrome_configuration.mp4"
 }

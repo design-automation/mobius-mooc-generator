@@ -1,11 +1,10 @@
 ## S3 settings
-S3_MOOC_FOLDER = 'SCT04'
-S3_BUCKET = "test"
-S3_VIDEOS_FOLDER = "videos"
+S3_MOOC_FOLDER = 'sct04'
+S3_BUCKET = "mooc-test"
 S3_VIDEOS_FOLDER = "videos"
 S3_ANSWERS_FOLDER =  'mob_answers'
 S3_EXAMPLES_FOLDER =  'mob_examples'
-S3_LINKS_URL = 'https://mooc-s3cf.s3-ap-southeast-1.amazonaws.com/' # must end in '/'
+S3_LINKS_URL = 'https://mooc-test.s3-ap-southeast-1.amazonaws.com/' # must end in '/'
 
 # edx settings
 EDX_EXTERNAL_GRADER_QUEUENAME = 'spatial_computational_thinking'
@@ -19,7 +18,7 @@ MOB_URL = 'https://design-automation.github.io/mobius-parametric-modeller-dev' #
 
 # LANGUAGES
 # available languages: ['us', 'uk', 'pt', 'es', 'zh', 'fr', 'de', 'nl']
-LANGUAGES = ['en', 'zh']
+LANGUAGES = ['en']
 ALL_LANGUAGES = {
     'en': 'English',
     'zh': 'Mandarin',

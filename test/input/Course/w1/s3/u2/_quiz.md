@@ -1,9 +1,9 @@
-# UNIT ============================================================================================
+# UNIT ==========
 {:
     display_name="Unit 2 Quiz Questions"
 }
 
-# COMPONENT =======================================================================================
+# COMPONENT ==========
 {:
     type="problem-checkboxes"
     display_name="More Checkboxes"
@@ -32,7 +32,7 @@ Some feedback.
 
 OK, a hint.
 
-# COMPONENT =======================================================================================
+# COMPONENT ==========
 {:
     type="problem-multiplechoice"
     display_name="Multiplechoice Problem" 

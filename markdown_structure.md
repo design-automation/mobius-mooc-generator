@@ -52,12 +52,12 @@ The unit content is added to the markdown files in the unit folders, under the s
 Here is a snippet of an example of some settings and content for a unit.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# UNIT ===================================================
+# UNIT ==========
 {:
     display_name="Unit 2 Ungraded Quiz"
 }
 
-# COMPONENT ==============================================
+# COMPONENT ==========
 {:
     type="problem-checkboxes"
     display_name="A Checkboxes Test Problem"
@@ -83,7 +83,7 @@ Some feedback about the correct answer.
 
 Some more feedback in a seperate paragraph.
 
-# COMPONENT ==============================================
+# COMPONENT ==========
 {:
     type="problem-submit"
     display_name="A Problem with File Submission"

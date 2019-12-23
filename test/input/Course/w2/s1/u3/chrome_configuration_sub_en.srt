@@ -1,0 +1,32 @@
+1
+00:00:00,000 --> 00:00:03,000
+Chrome Configuration
+
+2
+00:00:08,000 --> 00:00:10,873
+To check if GPU usage is activated on Google Chrome,
+
+3
+00:00:10,873 --> 00:00:14,244
+type  chrome://gpu/  into Google Chrome.
+
+4
+00:00:14,244 --> 00:00:14,299
+ 
+
+5
+00:00:15,700 --> 00:00:18,332
+Under Graphics Feature Status,
+
+6
+00:00:18,332 --> 00:00:18,332
+
+
+7
+00:00:18,420 --> 00:00:22,643
+ WEBGL  and  WEBGL2  should be indicated as 'Hardware Accelerated'.
+
+8
+00:00:22,643 --> 00:00:22,681
+ 
+

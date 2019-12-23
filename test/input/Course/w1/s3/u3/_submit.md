@@ -1,9 +1,9 @@
-# UNIT ============================================================================================
+# UNIT ==========
 {:
     display_name="Unit 3 Model Questions"
 }
 
-# COMPONENT =======================================================================================
+# COMPONENT ==========
 {:
     type="problem-submit"
     display_name="Submit Problem"
@@ -22,7 +22,7 @@ In this assignment, you will model ....
 The solution to this problem is xxx.
 Here is a more detailed description of the solution.
 
-# COMPONENT =======================================================================================
+# COMPONENT ==========
 {:
     type="problem-submit"
     display_name="Another Submit Problem"
