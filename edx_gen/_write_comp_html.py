@@ -56,6 +56,10 @@ def writeXmlForHtmlComp(component_path, filename, content, settings, unit_filena
     # write the html file
     html_out_path = os.path.join(sys.argv[2], _edx_consts.COMP_HTML_FOLDER, filename + '.html')
     with open(html_out_path, 'wb') as fout:
+        if 'display_name' in  settings:
+            h1_tag = etree.Element("h1")
+            h1_tag.text = settings['display_name']
+            fout.write(etree.tostring(h1_tag, pretty_print = True))
         for tag in content:
             tag_result = etree.tostring(tag, pretty_print = True)
             fout.write(tag_result)
