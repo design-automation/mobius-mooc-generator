@@ -148,6 +148,10 @@ line = make.Polyline([pos1, pos2])
 ~~~~~~~~~~~~~~~~~~~~~
 
 
-Youc an add extra attribute to your html like this.
-{: aaa=bbb }
+Youc an add extra attribute to your html like this. {: aaa=bbb }
 
+# COMPONENT ==========
+{:
+    type="discussion"
+    display_name="Discussion"
+}

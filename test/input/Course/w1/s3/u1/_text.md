@@ -13,4 +13,8 @@
 
 Some text that describes the graded quiz and the graded model that follow in the next two units. 
 
-
+# COMPONENT ==========
+{:
+    type="discussion"
+    display_name="Discussion"
+}

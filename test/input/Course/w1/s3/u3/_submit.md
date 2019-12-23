@@ -48,3 +48,9 @@ You can use special characters "like quotes", like [lists], and {anything else}.
 The solution to this problem is xxx.
 
 Here is a more detailed description of the solution...
+
+# COMPONENT ==========
+{:
+    type="discussion"
+    display_name="Discussion"
+}

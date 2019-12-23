@@ -264,6 +264,13 @@ def writeXmlForUnit(in_folder, filename, components):
     #     <html url_name="7d3ba88c180745e5baf29084667409b2"/>
     #     <video url_name="05c171c507ab4d76830823f60075b0ae"/>
     #     <problem url_name="e2b890df14c1441ca66528ab58ca07b9"/>
+    #     <discussion 
+    #         url_name="28461d49643f4ee597cfc385cccc5fd3" 
+    #         xblock-family="xblock.v1" 
+    #         display_name="Discussion" 
+    #         discussion_category="Week 1" 
+    #         discussion_target="Topic-Level Student-Visible Label"
+    #     />
     # </vertical>
     # ----  ----  ----
 
@@ -289,21 +296,35 @@ def writeXmlForUnit(in_folder, filename, components):
     for key in settings:
         vertical_tag.set(key, settings[key])
 
+    # loop through the components
     for component in components:
 
         # get the component data
         comp_filename = component[0]
         comp_type = component[1] # 'html' or 'video' or 'problem'
 
-        # check the file exists
-        filepath = sys.argv[2] + '/' + comp_type + '/' + comp_filename + '.xml'
-        if not os.path.exists(filepath):
-            print(WARNING, 'Something went wrong. A file does not exist:', filepath)
-
-        # add the main component
+        # create the main component tag
         component_tag = etree.Element(comp_type)
-        component_tag.set('url_name', comp_filename)
-        vertical_tag.append(component_tag)
+
+        # normal components
+        if comp_type in ['html', 'video', 'problem']:
+            # check the file exists
+            filepath = sys.argv[2] + '/' + comp_type + '/' + comp_filename + '.xml'
+            if not os.path.exists(filepath):
+                print(WARNING, 'Something went wrong. A file does not exist:', filepath)
+
+            # create the main component tag
+            component_tag = etree.Element(comp_type)
+            component_tag.set('url_name', comp_filename)
+            vertical_tag.append(component_tag)
+
+        # discussion components
+        elif comp_type == 'discussion':
+            # component tag is the comp_filename
+            vertical_tag.append(comp_filename)
+
+        else:
+            print(WARNING, 'Something went wrong. Component type not recognised:', comp_type)
 
     # convert the component data to string
     component_data = etree.tostring(vertical_tag, pretty_print = True)

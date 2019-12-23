@@ -65,6 +65,8 @@ COMP_PROB_QUIZ_REQ = ['type']
 COMP_PROB_QUIZ_OPT = ['display_name', 'visible_to_staff_only', 'start', 'max_attempts', 'weight', 
     'showanswer', 'group_access', 'rerandomize', 'attempts_before_showanswer_button']
 
+COMP_DISCUSS_REQ = ['type']
+COMP_DISCUSS_OPT = ['display_name', 'discussion_category', 'discussion_target']
 
 #--------------------------------------------------------------------------------------------------
 # Metadata settings for components
@@ -96,7 +98,7 @@ METADATA_ENUMS = {
 
     'rerandomize': ["always", "onreset", "never", "per_student"],
 
-    'type': ['html', 'video', 'problem-submit', 'problem-checkboxes', 'problem-multiplechoice']
+    'type': ['html', 'video', 'problem-submit', 'problem-checkboxes', 'problem-multiplechoice', 'discussion']
 
     # more types: ['problem-choice', 'problem-dropdown', 'problem-numerical', 'problem-text']
 

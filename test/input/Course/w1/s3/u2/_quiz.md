@@ -74,3 +74,9 @@ This is a hint.
 This is another hint.
 
 Yet another hint.
+
+# COMPONENT ==========
+{:
+    type="discussion"
+    display_name="Discussion"
+}

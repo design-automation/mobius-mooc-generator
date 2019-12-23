@@ -23,3 +23,8 @@ This is a sub section.
 
 ![This is the alt text for the third image, called img3.jpg.](img3.jpg "Another test image.")
 
+# COMPONENT ==========
+{:
+    type="discussion"
+    display_name="Discussion"
+}

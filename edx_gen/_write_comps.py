@@ -10,6 +10,7 @@ from edx_gen import  _write_comp_checkboxes
 from edx_gen import  _write_comp_multiplechoice
 from edx_gen import  _write_comp_submit
 from edx_gen import  _write_comp_video
+from edx_gen import  _write_comp_discuss
 from edx_gen import  _markdown
 from edx_gen import  _util
 import __SETTINGS__
@@ -33,7 +34,7 @@ def writeCompsForUnit(md_filepath, unit_filename):
     # list to store all files
     files = []
 
-    # process htmls
+    # process components
     for i in range(1, len(tree_snippets)):
         tree_snippet = tree_snippets[i]
 
@@ -71,7 +72,7 @@ def _writeFilesForSnippet(md_filepath, comp_filename, tree_snippet, unit_filenam
     # get the type for this component
     comp_type = meta_tag.get('type')
     if comp_type == None or comp_type not in _edx_consts.METADATA_ENUMS['type']:
-        print(WARNING, 'The "type"setting is not recognised:', md_filepath)
+        print(WARNING, 'The "type" setting is not recognised:', md_filepath)
         print(WARNING, '  Found:', comp_type)
         print(WARNING, '  Valid options:', _edx_consts.METADATA_ENUMS['type'])
 
@@ -165,7 +166,23 @@ def _writeFilesForSnippet(md_filepath, comp_filename, tree_snippet, unit_filenam
         # write the files and return the list of files
         return _write_comp_video.writeXmlForVidComp(
             md_filepath, comp_filename, settings, unit_filename)
-    
+
+    elif comp_type == 'discussion':
+
+        # get the setting out of the meta_tag
+        settings = _read_metadata.getMetaSettings(md_filepath, meta_tag, 
+            _edx_consts.COMP_DISCUSS_REQ, _edx_consts.COMP_DISCUSS_OPT )
+
+        # check that we have ssettings
+        if not settings:
+            print(WARNING, 'There seem to be no settings for this "discussion" component:', md_filepath)
+            return
+
+        # in this case, there is actually no file
+        # we return the component tag instead
+        return _write_comp_discuss.tagForDiscussComp(
+            md_filepath, comp_filename, tree_snippet, settings, unit_filename)
+
     else:
         print(WARNING, 'Component type not recognised:', comp_type, "in", md_filepath)
 
