@@ -18,7 +18,7 @@ MOB_URL = 'https://design-automation.github.io/mobius-parametric-modeller-dev' #
 
 # LANGUAGES
 # available languages: ['us', 'uk', 'pt', 'es', 'zh', 'fr', 'de', 'nl']
-LANGUAGES = ['en', 'zh']
+LANGUAGES = ['en']
 ALL_LANGUAGES = {
     'en': 'English',
     'zh': 'Mandarin',

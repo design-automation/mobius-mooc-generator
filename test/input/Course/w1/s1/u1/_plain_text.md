@@ -23,9 +23,13 @@ Strong emphasis, aka bold, with **asterisks** or __underscores__.
 
 Combined emphasis with **asterisks and _underscores_**.
 
-Strikethrough uses two tildes. ~~Scratch this.~~
+Strikethrough uses two tildes. ~~Scratch this.~~ (Does not work...)
 
 ## Links
+
+https://www.google.com
+
+<https://www.google.com>
 
 [I'm an inline-style link](https://www.google.com)
 

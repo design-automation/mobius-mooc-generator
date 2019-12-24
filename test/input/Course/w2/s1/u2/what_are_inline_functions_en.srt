@@ -12,7 +12,7 @@ In this video, we will get an understanding of what is meant by Inline Functions
 
 4
 00:00:15,000 --> 00:00:20,000
-<sub alias="Length List">Len(list)</sub> returns the number of items in the list, also known as the length of the list. Let&apos;s say that <sub alias="list one represents a list of integers from 0 to 3">List1 = [0, 1, 2, 3]</sub>. <sub alias="Length of list one equals to length list one">Length_of_List1 = len(List1)</sub>. When the variable, <sub alias="Length of list one">Length_of_List1</sub> is printed, the value 4 will be printed as the output. This is because there are 4 items in the list. Thus, the length of <sub alias="List one">List1</sub> is 4.
+<sub alias="Length List">Len(list)</sub> returns the number of items in the list, also known as the length of the list. Lets say that <sub alias="list one represents a list of integers from 0 to 3">List1 = [0, 1, 2, 3]</sub>. <sub alias="Length of list one equals to length list one">Length_of_List1 = len(List1)</sub>. When the variable, <sub alias="Length of list one">Length_of_List1</sub> is printed, the value 4 will be printed as the output. This is because there are 4 items in the list. Thus, the length of <sub alias="List one">List1</sub> is 4.
 
 5
 00:00:20,000 --> 00:00:25,000
@@ -32,11 +32,11 @@ In this video, we will get an understanding of what is meant by Inline Functions
 
 9
 00:00:40,000 --> 00:00:45,000
-There are inline constants as well. An example would be <sub alias="pie"></sub> which is written as <sub alias="pee eye">PI</sub> in the Mobius Modeller.Another example would be <sub alias="X Y">XY</sub> which define a plane at the origin aligned on the <sub alias="X Y">XY</sub>  axis. 
+There are inline constants as well. An example would be <sub alias="pie"></sub> which is written as <sub alias="pee eye">PI</sub> in the Mobius Modeller.Another example would be <sub alias="X Y">XY</sub> which define a plane at the origin aligned on the <sub alias="X Y">XY</sub> axis. 
 
 10
 00:00:45,000 --> 00:00:50,000
-Another example would be <sub alias="X Y">XY</sub> which define a plane at the origin aligned on the <sub alias="X Y">XY</sub>  axis. 
+Another example would be <sub alias="X Y">XY</sub> which define a plane at the origin aligned on the <sub alias="X Y">XY</sub> axis. 
 
 11
 00:00:50,000 --> 00:00:55,000

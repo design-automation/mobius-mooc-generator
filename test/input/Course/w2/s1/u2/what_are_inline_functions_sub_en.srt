@@ -35,59 +35,59 @@ Random and Conversions.
 Inline - List
 
 10
-00:00:29,280 --> 00:00:33,074
+00:00:29,280 --> 00:00:33,115
  Len(list)  returns the number of items in the list,
 
 11
-00:00:33,074 --> 00:00:34,807
+00:00:33,115 --> 00:00:34,867
 also known as the length of the list.
 
 12
-00:00:34,807 --> 00:00:39,257
-Let's say that  List1 = [0,
+00:00:34,867 --> 00:00:39,081
+Lets say that  List1 = [0,
 
 13
-00:00:39,257 --> 00:00:39,351
+00:00:39,081 --> 00:00:39,176
 1,
 
 14
-00:00:39,351 --> 00:00:39,445
+00:00:39,176 --> 00:00:39,271
 2,
 
 15
-00:00:39,445 --> 00:00:39,866
+00:00:39,271 --> 00:00:39,697
 3] .
 
 16
-00:00:39,866 --> 00:00:44,223
+00:00:39,697 --> 00:00:44,100
  Length_of_List1 = len(List1) .
 
 17
-00:00:44,223 --> 00:00:45,066
+00:00:44,100 --> 00:00:44,953
 When the variable,
 
 18
-00:00:45,066 --> 00:00:48,111
+00:00:44,953 --> 00:00:48,031
  Length_of_List1  is printed,
 
 19
-00:00:48,111 --> 00:00:50,079
+00:00:48,031 --> 00:00:50,019
 the value 4 will be printed as the output.
 
 20
-00:00:50,079 --> 00:00:52,234
+00:00:50,019 --> 00:00:52,198
 This is because there are 4 items in the list.
 
 21
-00:00:52,234 --> 00:00:52,468
+00:00:52,198 --> 00:00:52,434
 Thus,
 
 22
-00:00:52,468 --> 00:00:54,951
+00:00:52,434 --> 00:00:54,944
 the length of  List1  is 4.
 
 23
-00:00:54,951 --> 00:00:54,951
+00:00:54,944 --> 00:00:54,944
 
 
 24
@@ -183,23 +183,23 @@ the output will be True.
 Inline - Constants
 
 47
-00:01:44,650 --> 00:01:46,397
+00:01:44,650 --> 00:01:46,403
 There are inline constants as well.
 
 48
-00:01:46,397 --> 00:01:58,880
-An example would be    which is written as  PI  in the Mobius Modeller.Another example would be  XY  which define a plane at the origin aligned on the  XY   axis.
+00:01:46,403 --> 00:01:58,879
+An example would be    which is written as  PI  in the Mobius Modeller.Another example would be  XY  which define a plane at the origin aligned on the  XY  axis.
 
 49
-00:01:58,880 --> 00:01:58,930
+00:01:58,879 --> 00:01:58,929
  
 
 50
-00:01:59,030 --> 00:02:05,059
-Another example would be  XY  which define a plane at the origin aligned on the  XY   axis.
+00:01:59,030 --> 00:02:05,058
+Another example would be  XY  which define a plane at the origin aligned on the  XY  axis.
 
 51
-00:02:05,059 --> 00:02:05,104
+00:02:05,058 --> 00:02:05,104
  
 
 52
