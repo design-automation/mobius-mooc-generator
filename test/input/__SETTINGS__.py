@@ -1,5 +1,5 @@
 ## S3 settings
-S3_MOOC_FOLDER = 'sct04'
+S3_MOOC_FOLDER = 'sct03'
 S3_BUCKET = "mooc-test"
 S3_VIDEOS_FOLDER = "videos"
 S3_ANSWERS_FOLDER =  'mob_answers'
@@ -18,7 +18,7 @@ MOB_URL = 'https://design-automation.github.io/mobius-parametric-modeller-dev' #
 
 # LANGUAGES
 # available languages: ['us', 'uk', 'pt', 'es', 'zh', 'fr', 'de', 'nl']
-LANGUAGES = ['en']
+LANGUAGES = ['en', 'zh']
 ALL_LANGUAGES = {
     'en': 'English',
     'zh': 'Mandarin',
