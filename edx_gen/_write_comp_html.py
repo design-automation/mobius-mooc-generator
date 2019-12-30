@@ -59,6 +59,7 @@ def writeXmlForHtmlComp(component_path, filename, content, settings, unit_filena
         if 'display_name' in  settings:
             h3_tag = etree.Element("h3")
             h3_tag.text = settings['display_name']
+            h3_tag.set('style', _css_settings.H3_CSS)
             fout.write(etree.tostring(h3_tag, pretty_print = True))
         for tag in content:
             tag_result = etree.tostring(tag, pretty_print = True)

@@ -12,6 +12,12 @@ WARNING = "      WARNING:"
 # process a hrefs
 def processHtmlTags(component_path, content_root_tag, unit_filename):
 
+    # process headings
+    h3_tags = list(content_root_tag.iter('h3'))
+    h4_tags = list(content_root_tag.iter('h4'))
+    h5_tags = list(content_root_tag.iter('h5'))
+    _processHeadingsTags(h3_tags, h4_tags, h5_tags)
+
     # process hrefs
     a_tags = list(content_root_tag.iter('a'))
     _processHtmlATags(component_path, a_tags, unit_filename)
@@ -19,6 +25,16 @@ def processHtmlTags(component_path, content_root_tag, unit_filename):
     # process images
     img_tags = list(content_root_tag.iter('img'))
     _processHtmlImgTags(component_path, img_tags, unit_filename)
+
+#--------------------------------------------------------------------------------------------------
+# process headings
+def _processHeadingsTags(h3_tags, h4_tags, h5_tags):
+    for h3_tag in h3_tags:
+        h3_tag.set('style', _css_settings.H3_CSS)
+    for h4_tag in h4_tags:
+        h4_tag.set('style', _css_settings.H4_CSS)
+    for h5_tag in h5_tags:
+        h5_tag.set('style', _css_settings.H5_CSS)
 
 #--------------------------------------------------------------------------------------------------
 # process images

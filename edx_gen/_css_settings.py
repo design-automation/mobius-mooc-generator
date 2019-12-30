@@ -1,4 +1,27 @@
 #--------------------------------------------------------------------------------------------------
+# Settings for headings
+H3_CSS = ';'.join([
+    'font-size: 24px',
+    'font-weight: 600',
+    'font-style: normal',
+    'color: #474747'
+    ])
+
+H4_CSS = ';'.join([
+    'font-size: 20px',
+    'font-weight: 600',
+    'font-style: italic',
+    'color: #474747'
+    ])
+
+H5_CSS = ';'.join([
+    'font-size: 18px',
+    'font-weight: 600',
+    'text-decoration: underline',
+    'color: #474747'
+    ])
+
+#--------------------------------------------------------------------------------------------------
 # Settings for figures
 
 FIGURE_CSS = 'margin:20px;'
@@ -29,6 +52,7 @@ IMAGE_CSS = ';'.join([
     'border-style:solid',
     'border-width:1px'
     ])
+
 #--------------------------------------------------------------------------------------------------
 # Settings for the language buttons
 # These are the buttons that appear under each video
