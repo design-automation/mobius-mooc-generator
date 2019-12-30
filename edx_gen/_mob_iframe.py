@@ -13,7 +13,7 @@ MODES = ['gallery', 'dashboard', 'flowchart', 'editor', 'publish']
 #--------------------------------------------------------------------------------------------------
 # create an iframe with a mobius model inside it
 def createMobIframe(mob_filename, mob_settings, unit_filename):
- 
+    
     # constcat the mob file url
     # this matches the url created in mob_uploader.py
     mob_file_url = __SETTINGS__.S3_LINKS_URL + __SETTINGS__.S3_MOOC_FOLDER + '/' +  __SETTINGS__.S3_EXAMPLES_FOLDER + '/' + unit_filename + '_' + mob_filename
@@ -41,8 +41,18 @@ def createMobIframe(mob_filename, mob_settings, unit_filename):
 
     # the iframe tag
     iframe_tag = etree.Element('iframe')
-    iframe_tag.set('width', _css_settings.MOB_IFRAME_WIDTH)
-    iframe_tag.set('height', _css_settings.MOB_IFRAME_HEIGHT)
+
+    # check size
+    small = False
+    if 'size' in mob_settings and mob_settings['size'] == 'small':
+        small = True
+    
+    if small:
+        iframe_tag.set('width', _css_settings.MOB_MINI_IFRAME_WIDTH)
+        iframe_tag.set('height', _css_settings.MOB_MINI_IFRAME_HEIGHT)
+    else:
+        iframe_tag.set('width', _css_settings.MOB_IFRAME_WIDTH)
+        iframe_tag.set('height', _css_settings.MOB_IFRAME_HEIGHT)
     iframe_tag.set('style', _css_settings.MOB_IFRAME_STYLE)
     iframe_tag.set('src', iframe_src)
 

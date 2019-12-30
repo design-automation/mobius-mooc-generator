@@ -29,9 +29,18 @@ def _processHtmlImgTags(component_path, img_tags, unit_filename):
         # create new image
         new_img_tag = etree.Element("img")
         for key in img_tag.keys():
-            if key != 'src':
+            if not key in ['src', 'modal']:
                 new_img_tag.set(key, img_tag.get(key))
-        if _css_settings.IMAGE_CSS:
+        
+        # get modal setting
+        modal = False
+        if 'modal' in img_tag.keys() and img_tag.get('modal') == 'true':
+            modal = True
+
+        # add css
+        if modal:
+            new_img_tag.set('style', _css_settings.IMAGE_MODAL_CSS)
+        else:
             new_img_tag.set('style', _css_settings.IMAGE_CSS)
         src = img_tag.get('src')
 
@@ -40,7 +49,6 @@ def _processHtmlImgTags(component_path, img_tags, unit_filename):
         if src.startswith('/') or src.startswith('http'):
             new_src = src
         else:
-
             # check that that the file exists
             component_dir = os.path.dirname(component_path)
             image_filepath = os.path.normpath(component_dir + '/' + src)
@@ -49,18 +57,19 @@ def _processHtmlImgTags(component_path, img_tags, unit_filename):
             # new src
             new_src = '/' + _edx_consts.STATIC_FOLDER + '/' + unit_filename + '_' + src
         new_img_tag.set('src', new_src)
-
-        # create an a href tag
-        a_tag = etree.Element("a")
-        a_tag.set('target', 'image')
-        a_tag.set('href', new_src)
-        a_tag.append(new_img_tag)
-
+            
         # create figure
         figure_tag = etree.Element("figure")
         if _css_settings.FIGURE_CSS:
             figure_tag.set('style', _css_settings.FIGURE_CSS)
-        figure_tag.append(a_tag)
+        if modal:
+            a_tag = etree.Element("a")
+            a_tag.set('target', 'image')
+            a_tag.set('href', new_src)
+            a_tag.append(new_img_tag)
+            figure_tag.append(a_tag)
+        else:
+            figure_tag.append(new_img_tag)
 
         #  create caption for the figure
         if 'alt' in img_tag.keys():
