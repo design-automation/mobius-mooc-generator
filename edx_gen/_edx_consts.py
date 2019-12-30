@@ -19,9 +19,13 @@ COMP_HTML_FOLDER = "html"
 COMP_VIDS_FOLDER = "video"
 COMP_PROBS_FOLDER = "problem"
 
-# Folder folder for all assets
+# Folder for all assets
 STATIC_FOLDER = "static"
 
+# Folder for policies
+POLICIES_FOLDER = "policies"
+POLICY_FILENAME = "policy.json"
+POLICY_GRADING_FILENAME = "grading_policy.json"
 #--------------------------------------------------------------------------------------------------
 # Metadata settings for folders
 

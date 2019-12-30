@@ -34,7 +34,8 @@ def tagForDiscussComp(component_path, filename, content, settings, unit_filename
         component_tag.set('discussion_target', settings['discussion_target'])
     else:
         component_tag.set('discussion_target', 'General')
-
+    # restric access
+    component_tag.set('group_access', '{"50":[2]}')
 
     # return the file name and folder
     return [[component_tag, 'discussion']]

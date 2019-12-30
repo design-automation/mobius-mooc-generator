@@ -17,6 +17,7 @@ from edx_gen import  _edx_consts
 from edx_gen import  _read_metadata
 from edx_gen import  _write_structure
 from edx_gen import  _write_comps
+from edx_gen import  _copy_policies
 from edx_gen import  _util
 import __SETTINGS__
 #--------------------------------------------------------------------------------------------------
@@ -52,9 +53,13 @@ def processCourse():
     os.mkdir(os.path.join(sys.argv[2], _edx_consts.COMP_VIDS_FOLDER))
     os.mkdir(os.path.join(sys.argv[2], _edx_consts.COMP_PROBS_FOLDER))
     os.mkdir(os.path.join(sys.argv[2], _edx_consts.STATIC_FOLDER))
+    os.mkdir(os.path.join(sys.argv[2], _edx_consts.POLICIES_FOLDER))
 
     # create the root xml file
     course_filename = _write_structure.writeXmlForRoot()
+
+    # copy policies
+    _copy_policies.copyPolicies(course_filename)
 
     # main loop
     sections = []
