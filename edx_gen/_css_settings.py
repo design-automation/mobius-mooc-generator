@@ -28,27 +28,27 @@ FIGURE_CSS = 'margin:20px;'
 
 FIGCAPTION_CSS = ';'.join([
     'width:400px',
-    'display:block',
-    'margin-left:auto',
-    'margin-right:auto',
+    # 'display:block',
+    # 'margin-left:auto',
+    # 'margin-right:auto',
     'margin-top:8px',
-    'text-align:center',
+    'text-align:left',
     'font-style:italic'
     ])
 
 IMAGE_MODAL_CSS = ';'.join([
     'width:400px',
-    'display:block',
-    'margin-left:auto',
-    'margin-right:auto',
+    # 'display:block',
+    # 'margin-left:auto',
+    # 'margin-right:auto',
     'border-style:solid',
     'border-width:1px'
     ])
 
 IMAGE_CSS = ';'.join([
-    'display:block',
-    'margin-left:auto',
-    'margin-right:auto',
+    # 'display:block',
+    # 'margin-left:auto',
+    # 'margin-right:auto',
     'border-style:solid',
     'border-width:1px'
     ])
@@ -86,9 +86,9 @@ MOB_MINI_IFRAME_WIDTH = '80%'
 MOB_MINI_IFRAME_HEIGHT ='400px'
 
 MOB_IFRAME_STYLE = ';'.join([
-    'display:block',
-    'margin-left:auto',
-    'margin-right:auto',
+    # 'display:block',
+    # 'margin-left:auto',
+    # 'margin-right:auto',
     'border-style:solid',
     'border-width:1px'
     ])
