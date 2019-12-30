@@ -56,5 +56,16 @@ def createMobIframe(mob_filename, mob_settings, unit_filename):
     iframe_tag.set('style', _css_settings.MOB_IFRAME_STYLE)
     iframe_tag.set('src', iframe_src)
 
-    # return the iframe tag
-    return iframe_tag
+    # add a div
+    div_tag = etree.Element('div')
+    div_tag.append(iframe_tag)
+    a_tag = etree.Element('a')
+    a_tag.set('href', iframe_src)
+    a_tag.set('target', 'Mobius')
+    a_tag.text = 'Open Mobius in a separate browser tab.'
+    p_tag = etree.Element('p')
+    p_tag.append(a_tag)
+    div_tag.append(p_tag)
+
+    # return the div tag
+    return div_tag

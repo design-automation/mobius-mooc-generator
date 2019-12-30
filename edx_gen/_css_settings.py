@@ -55,10 +55,19 @@ function myFunction(lang) {
 # Settings for Mobius Iframes
 # These are the embedded Mobius models
 
-MOB_IFRAME_WIDTH = '100%' 
-MOB_IFRAME_HEIGHT ='600px' 
-MOB_IFRAME_STYLE = 'border: 1px solid black;'
+MOB_IFRAME_WIDTH = '100%'
+MOB_IFRAME_HEIGHT ='600px'
 
-MOB_MINI_IFRAME_WIDTH = '80%' 
-MOB_MINI_IFRAME_HEIGHT ='400px' 
+MOB_MINI_IFRAME_WIDTH = '80%'
+MOB_MINI_IFRAME_HEIGHT ='400px'
+
+MOB_IFRAME_STYLE = ';'.join([
+    'display:block',
+    'margin-left:auto',
+    'margin-right:auto',
+    'border-style:solid',
+    'border-width:1px'
+    ])
+
+
 #--------------------------------------------------------------------------------------------------
