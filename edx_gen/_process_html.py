@@ -4,6 +4,7 @@ import urllib
 from edx_gen import  _edx_consts
 from edx_gen import  _css_settings
 from edx_gen import  _mob_iframe
+from edx_gen import  _util
 import __SETTINGS__
 #--------------------------------------------------------------------------------------------------
 # Text strings
@@ -111,11 +112,11 @@ def _processHtmlATags(component_path, a_tags, unit_filename):
             return
 
         # create the new tag, either an <iframe/> or an image <a/>
-        if href.endswith(__SETTINGS__.MOB_EXAMPLE_FILENAME):
+        if _util.ends(href, __SETTINGS__.MOB_EXAMPLE_FILENAMES):
             _createMobIframeTag(a_tag, href, unit_filename)
 
         # an answer! this should not happen
-        elif href.endswith(__SETTINGS__.MOB_ANSWER_FILENAME):
+        elif _util.ends(href, __SETTINGS__.MOB_ANSWER_FILENAMES):
             print(WARNING, 'Found an answer being displayed to the learners:', unit_filename)
 
         # normal a tag

@@ -9,18 +9,18 @@ import __SETTINGS__
 WARNING = "      WARNING:"
 
 SUBMIT_EXAMPLE_DESCRIPTION = [
-    'Below is an example of the output that your Mobius Model will need to be able to generate. ' + 
-    'This example model does not include the procedure. ' + 
-    'That is the part you need to figure out.' +
-    'If you open the paremeters, you will see the values that were used to generate this version of the model.' +
-    'If you open the settings, you will be able to switch on the GI Summary and see ' + 
-    'the number of geometric entities that have been generated.'][0]
+    'Below is an example of the output that your Mobius codescript will need to generate for this assignment. ' + 
+    'This example only contains the output geometry, it does not include the codescript. ' + 
+    'If you open the parameters, you will see the values that were used to generate this output.'][0]
+
+SUBMIT_BASE_DESCRIPTION = [
+    'Below is the base file that you should use to create your answer for this assignment. '+
+    'Add your code to this base file, save your codescript as a .mob file, ' + 
+    'and then upload it by clicking the "Submit" button. '][0]
 
 SUBMIT_INSTRUCTIONS = [
-    'Please submit your Mobius Model. ' + 
-    'First create your answer model and save it to your local drive. ' + 
-    'Then click Submit and select your .mob file. ' + 
-    'Your submission will be auto-graded and you should receiev the results within a few seconds.'][0]
+    'Please submit your Mobius codescript. ' + 
+    'Your submission will be auto-graded and you should receive the results within a few seconds.'][0]
 
 #--------------------------------------------------------------------------------------------------
 # write xml for problem submit
@@ -84,7 +84,7 @@ def writeXmlForSubmitComp(component_path, filename, content, settings, unit_file
         print(WARNING, 'Submit problem is missing "answer".', unit_filename)
 
     # construct the question name from the answer file name
-    question = __SETTINGS__.S3_MOOC_FOLDER + '/' + unit_filename + '_' + answer_filename.split('.')[0]
+    question = __SETTINGS__.S3_MOOC_FOLDER + '/' + __SETTINGS__.S3_ANSWERS_FOLDER + '/' + unit_filename + '_' + answer_filename.split('.')[0]
 
     # payload for grader
     grader_payload_tag = etree.Element("grader_payload")
@@ -101,12 +101,12 @@ def writeXmlForSubmitComp(component_path, filename, content, settings, unit_file
     display_name = 'Mobius Modelling Assignment'
     if 'display_name' in settings:
         display_name = settings['display_name']
+        # add an h3 heading to the description tag
+        h3_tag = etree.Element("h3")
+        h3_tag.text = display_name
+        h3_tag.set('style', _css_settings.H3_CSS)
+        problem_description_tag.append(h3_tag)
     problem_description_tag.set('display_name', display_name)
-
-    # add an h1 heading to the description tag
-    h1_tag = etree.Element("h1")
-    h1_tag.text = display_name
-    problem_description_tag.append(h1_tag)
 
     # process the elements
     # these will be saved in the problem_description_tag and as solution <p> elements
@@ -130,33 +130,11 @@ def writeXmlForSubmitComp(component_path, filename, content, settings, unit_file
 
     # if there is an example model, add a mobius iframe
     if 'example_filename' in settings:
+        _addExampleModel(component_path, settings, unit_filename, problem_description_tag)
 
-        # get the filename
-        example_filename = settings['example_filename'].strip()
-
-        # check that that the file exists
-        component_dir = os.path.dirname(component_path)
-        example_filepath = os.path.normpath(component_dir + '/' + example_filename)
-        if (not os.path.exists(example_filepath) or not os.path.isfile(example_filepath)):
-            print(WARNING, 'The example file does not exist: "' + example_filepath +'" in', component_path)
-
-        # heading
-        h2_tag = etree.Element("h2")
-        h2_tag.text = 'Example Model'
-        problem_description_tag.append(h2_tag)
-        
-        # the example model description text
-        example_descr_p_tag = etree.Element("p")
-        example_descr_p_tag.text = SUBMIT_EXAMPLE_DESCRIPTION
-        problem_description_tag.append(example_descr_p_tag)
-
-        # the example model iframe
-        mob_settings = {
-            'mobius':'publish',
-            'showView':'1'
-        }
-        iframe_tag = _mob_iframe.createMobIframe(example_filename, mob_settings, unit_filename)
-        problem_description_tag.append(iframe_tag)
+    # if there is a base model, add a mobius iframe
+    if 'base_filename' in settings:
+        _addBaseModel(component_path, settings, unit_filename, problem_description_tag)
 
     # convert problem_description_data to string
     problem_desc_data = etree.tostring(problem_description_tag, pretty_print=True)
@@ -200,4 +178,67 @@ def writeXmlForSubmitComp(component_path, filename, content, settings, unit_file
         [filename, _edx_consts.COMP_PROBS_FOLDER]
     ]
 
+# add the example
+def _addExampleModel(component_path, settings, unit_filename, problem_description_tag):
+
+    # get the filename
+    example_filename = settings['example_filename'].strip()
+
+    # check that that the file exists
+    component_dir = os.path.dirname(component_path)
+    example_filepath = os.path.normpath(component_dir + '/' + example_filename)
+    if (not os.path.exists(example_filepath) or not os.path.isfile(example_filepath)):
+        print(WARNING, 'The example file does not exist: "' + example_filepath +'" in', component_path)
+
+    # heading
+    h4_tag = etree.Element("h4")
+    h4_tag.set('style', _css_settings.H4_CSS)
+    h4_tag.text = 'Example Model'
+    problem_description_tag.append(h4_tag)
+    
+    # the example model description text
+    example_descr_p_tag = etree.Element("p")
+    example_descr_p_tag.text = SUBMIT_EXAMPLE_DESCRIPTION
+    problem_description_tag.append(example_descr_p_tag)
+
+    # the example model iframe
+    mob_settings = {
+        'mobius':'publish',
+        'showView':'1'
+    }
+    iframe_tag = _mob_iframe.createMobIframe(example_filename, mob_settings, unit_filename)
+    problem_description_tag.append(iframe_tag)
+
+
+# add the example
+def _addBaseModel(component_path, settings, unit_filename, problem_description_tag):
+
+    # get the filename
+    example_filename = settings['base_filename'].strip()
+
+    # check that that the file exists
+    component_dir = os.path.dirname(component_path)
+    example_filepath = os.path.normpath(component_dir + '/' + example_filename)
+    if (not os.path.exists(example_filepath) or not os.path.isfile(example_filepath)):
+        print(WARNING, 'The example file does not exist: "' + example_filepath +'" in', component_path)
+
+    # heading
+    h4_tag = etree.Element("h4")
+    h4_tag.set('style', _css_settings.H4_CSS)
+    h4_tag.text = 'Base Model'
+    problem_description_tag.append(h4_tag)
+    
+    # the base model description text
+    base_descr_p_tag = etree.Element("p")
+    base_descr_p_tag.text = SUBMIT_BASE_DESCRIPTION
+    problem_description_tag.append(base_descr_p_tag)
+
+    # the base model iframe
+    mob_settings = {
+        'mobius':'editor',
+        'showView':'1',
+        'node':'1'
+    }
+    iframe_tag = _mob_iframe.createMobIframe(example_filename, mob_settings, unit_filename)
+    problem_description_tag.append(iframe_tag)
 #--------------------------------------------------------------------------------------------------

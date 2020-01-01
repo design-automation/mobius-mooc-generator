@@ -24,7 +24,10 @@ H5_CSS = ';'.join([
 #--------------------------------------------------------------------------------------------------
 # Settings for figures
 
-FIGURE_CSS = 'margin:20px;'
+FIGURE_CSS = ';'.join([
+    'margin-top:20px',
+    'margin-bottom:20px'
+    ])
 
 FIGCAPTION_CSS = ';'.join([
     'width:400px',
@@ -90,7 +93,8 @@ MOB_IFRAME_STYLE = ';'.join([
     # 'margin-left:auto',
     # 'margin-right:auto',
     'border-style:solid',
-    'border-width:1px'
+    'border-width:3px',
+    'border-color:grey'
     ])
 
 

@@ -45,11 +45,11 @@ def main():
                     mob_filename = component_filename + '.' + component_ext
                     
                     # upload an answer to a private repo
-                    if mob_filename.endswith(__SETTINGS__.MOB_ANSWER_FILENAME):
+                    if _util.ends(mob_filename, __SETTINGS__.MOB_ANSWER_FILENAMES):
                         _util.upload_s3_answer(component_path, mob_filename)
 
                     # upload an example to a public repo
-                    elif mob_filename.endswith(__SETTINGS__.MOB_EXAMPLE_FILENAME):
+                    elif _util.ends(mob_filename, __SETTINGS__.MOB_EXAMPLE_FILENAMES):
                         _util.upload_s3_example(component_path, mob_filename)
 
                     # ignore files with wrong extension
