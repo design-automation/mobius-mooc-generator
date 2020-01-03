@@ -13,7 +13,7 @@ MODES = ['gallery', 'dashboard', 'flowchart', 'editor', 'publish']
 #--------------------------------------------------------------------------------------------------
 # create an iframe with a mobius model inside it
 def createMobIframe(mob_filename, mob_settings, unit_filename):
-    
+
     # constcat the mob file url
     # this matches the url created in mob_uploader.py
     mob_file_url = __SETTINGS__.S3_LINKS_URL + __SETTINGS__.S3_MOOC_FOLDER + '/' +  __SETTINGS__.S3_EXAMPLES_FOLDER + '/' + unit_filename + '_' + mob_filename

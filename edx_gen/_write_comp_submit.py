@@ -210,15 +210,20 @@ def _addExampleModel(component_path, settings, unit_filename, problem_descriptio
     problem_description_tag.append(iframe_tag)
 
 
-# add the example
+# add the base file
 def _addBaseModel(component_path, settings, unit_filename, problem_description_tag):
 
     # get the filename
-    example_filename = settings['base_filename'].strip()
+    base_filename = settings['base_filename'].strip()
+
+    # check if there are any parameters
+    params = ''
+    if '?' in base_filename:
+        [base_filename, params] = base_filename.split('?')
 
     # check that that the file exists
     component_dir = os.path.dirname(component_path)
-    example_filepath = os.path.normpath(component_dir + '/' + example_filename)
+    example_filepath = os.path.normpath(component_dir + '/' + base_filename)
     if (not os.path.exists(example_filepath) or not os.path.isfile(example_filepath)):
         print(WARNING, 'The example file does not exist: "' + example_filepath +'" in', component_path)
 
@@ -239,6 +244,13 @@ def _addBaseModel(component_path, settings, unit_filename, problem_description_t
         'showView':'1',
         'node':'1'
     }
-    iframe_tag = _mob_iframe.createMobIframe(example_filename, mob_settings, unit_filename)
+
+    # add the params to the mob_settings
+    for param in params.split('&'):
+        if '=' in param:
+            [key, value] = param.split('=')
+            mob_settings[key.strip()] = value.strip()
+
+    iframe_tag = _mob_iframe.createMobIframe(base_filename, mob_settings, unit_filename)
     problem_description_tag.append(iframe_tag)
 #--------------------------------------------------------------------------------------------------

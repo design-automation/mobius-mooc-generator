@@ -1,22 +1,22 @@
 #--------------------------------------------------------------------------------------------------
 # Settings for headings
 H3_CSS = ';'.join([
-    'font-size: 24px',
-    'font-weight: 600',
+    'font-size: 22px',
+    'font-weight: 400',
     'font-style: normal',
     'color: #474747'
     ])
 
 H4_CSS = ';'.join([
     'font-size: 20px',
-    'font-weight: 600',
+    'font-weight: 400',
     'font-style: italic',
     'color: #474747'
     ])
 
 H5_CSS = ';'.join([
     'font-size: 18px',
-    'font-weight: 600',
+    'font-weight: 400',
     'text-decoration: underline',
     'color: #474747'
     ])
