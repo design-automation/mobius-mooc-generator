@@ -77,7 +77,7 @@ def processCourse():
             units = []
 
             for [unit, unit_path] in _util.getSubFolders(subsection_path):
-                print("--- unit", unit)
+                print("--- unit", section, subsection, unit)
                 unit_filename = subsection_filename + '_' + unit.lower()
                 units.append(unit_filename)
                 comps = []
