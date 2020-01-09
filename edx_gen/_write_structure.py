@@ -232,9 +232,8 @@ def writeXmlForSubsection(in_folder, filename, units):
         return
 
     # graded ?
-    if 'graded' in settings:
-        if settings['graded'] == 'true':
-            settings['format'] = 'Assignment'
+    if 'graded' in settings and settings['graded'] == 'true' and not 'format' in settings:
+        settings['format'] = 'Assignment'
 
     # create the root tag
     sequential_tag = etree.Element("sequential")
