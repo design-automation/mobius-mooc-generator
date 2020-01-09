@@ -22,6 +22,7 @@ def tagForDiscussComp(component_path, filename, content, settings, unit_filename
     # create the main component tag
     component_tag = etree.Element('discussion')
     component_tag.set('xblock-family', 'xblock.v1')
+    component_tag.set('url_name', filename)
     if 'display_name' in settings:
         component_tag.set('display_name', settings['display_name'])
     else:
