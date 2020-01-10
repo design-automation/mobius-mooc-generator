@@ -63,7 +63,6 @@ def convertMd(in_path):
     # return html
     
     return tree_snippets
-
 #--------------------------------------------------------------------------------------------------
 # Preprocess the md
 def _preprocess(data):
@@ -72,7 +71,7 @@ def _preprocess(data):
     new_lines = ['']
     found_attribs = False
     for line in data:
-        line = line.strip()
+        line = line.strip('\n')
         if line.startswith('{:') and not '}' in line:
             found_attribs = True
         if found_attribs:
