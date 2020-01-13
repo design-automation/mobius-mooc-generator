@@ -56,6 +56,16 @@ IMAGE_CSS = ';'.join([
     'border-width:1px'
     ])
 
+PRE_CSS = ';'.join([
+    'font-weight: 600',
+    'white-space: pre-line',
+    'background:#E6E6E6',
+    'border-style:solid',
+    'border-width:1px',
+    'padding:10px;',
+    'font-family:Terminus,Consolas,Courier,Terminal,monospace'
+    ])
+
 #--------------------------------------------------------------------------------------------------
 # Settings for the language buttons
 # These are the buttons that appear under each video
@@ -93,7 +103,7 @@ MOB_IFRAME_STYLE = ';'.join([
     # 'margin-left:auto',
     # 'margin-right:auto',
     'border-style:solid',
-    'border-width:3px',
+    'border-width:5px',
     'border-color:grey'
     ])
 
