@@ -23,20 +23,24 @@ def tagForDiscussComp(component_path, filename, content, settings, unit_filename
     component_tag = etree.Element('discussion')
     component_tag.set('xblock-family', 'xblock.v1')
     component_tag.set('url_name', filename)
+    # verified only
+    if 'verified_only' in settings and settings['verified_only'] == 'true':
+        component_tag.set('group_access', '{"50":[2]}')
+    # display name
     if 'display_name' in settings:
         component_tag.set('display_name', settings['display_name'])
     else:
         component_tag.set('display_name', 'Discussion')
+    # category
     if 'discussion_category' in settings:
         component_tag.set('discussion_category', settings['discussion_category'])
     else:
         component_tag.set('discussion_category', unit_filename)
+    # target
     if 'discussion_target' in settings:
         component_tag.set('discussion_target', settings['discussion_target'])
     else:
         component_tag.set('discussion_target', 'General')
-    # restric access
-    # component_tag.set('group_access', '{"50":[2]}')
 
     # return the file name and folder
     return [[component_tag, 'discussion']]

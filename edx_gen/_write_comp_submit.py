@@ -57,8 +57,12 @@ def writeXmlForSubmitComp(component_path, filename, content, settings, unit_file
 
     # process the settings
     for key in settings:
-        if key not in ['type', 'answer_filename', 'example_filename', 'display_name']:
+        if key not in ['type', 'answer_filename', 'example_filename', 'verified_only', 'display_name']:
             problem_tag.set(key, settings[key])
+
+    # verified_only
+    if 'verified_only' in settings and settings['verified_only'] == 'true':
+        problem_tag.set('group_access', '{"50":[2]}')
 
     # override display name
     problem_tag.set('display_name', 'Submit Your Mobius File')
