@@ -65,6 +65,7 @@ PRE_CSS = ';'.join([
     ])
 
 CODE_CSS = ';'.join([
+    'font-size: 12px',
     'font-weight: 600',
     'font-family:monospace'
     #'font-family:Terminus,Consolas,Courier,Terminal,monospace'
