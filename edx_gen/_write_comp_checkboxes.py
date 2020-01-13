@@ -59,8 +59,12 @@ def writeXmlForProbCheckboxesComp(component_path, filename, content, settings, u
 
     # process the settings
     for key in settings:
-        if key not in ['type']:
+        if key not in ['type', 'verified_only', 'id']:
             problem_tag.set(key, settings[key])
+
+    # verified_only
+    if 'verified_only' in settings and settings['verified_only'] == 'true':
+        problem_tag.set('group_access', '{"50":[2]}')
 
     # process html
     _process_html.processHtmlTags(component_path, content, unit_filename)
