@@ -57,15 +57,18 @@ IMAGE_CSS = ';'.join([
     ])
 
 PRE_CSS = ';'.join([
-    'font-weight: 600',
     'white-space: pre-line',
-    'background:#E6E6E6',
+    'background:#F8F8F8',
     'border-style:solid',
     'border-width:1px',
-    'padding:10px;',
-    'font-family:Terminus,Consolas,Courier,Terminal,monospace'
+    'padding:10px;'
     ])
 
+CODE_CSS = ';'.join([
+    'font-weight: 600',
+    'font-family:monospace'
+    #'font-family:Terminus,Consolas,Courier,Terminal,monospace'
+    ])
 #--------------------------------------------------------------------------------------------------
 # Settings for the language buttons
 # These are the buttons that appear under each video

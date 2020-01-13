@@ -23,6 +23,10 @@ def processHtmlTags(component_path, content_root_tag, unit_filename):
     pre_tags = list(content_root_tag.iter('pre'))
     _processPreTags(pre_tags)
 
+    # process code
+    code_tags = list(content_root_tag.iter('code'))
+    _processCodeTags(code_tags)
+
     # process hrefs
     a_tags = list(content_root_tag.iter('a'))
     _processHtmlATags(component_path, a_tags, unit_filename)
@@ -46,16 +50,15 @@ def _processHeadingsTags(h3_tags, h4_tags, h5_tags):
 def _processPreTags(pre_tags):
     for pre_tag in pre_tags:
         pre_tag.set('style', _css_settings.PRE_CSS)
-        children = pre_tag.getchildren()
-        if len(children) > 0:
-            first_child = children[0]
-            if first_child.tag == 'code':
-                code = first_child.text
-                if code.startswith('\n'):
-                    code = code[1:]
-                if code.endswith('\n'):
-                    code = code[:-1]
-                first_child.text = code
+#--------------------------------------------------------------------------------------------------
+# process code
+def _processCodeTags(code_tags):
+    for code_tag in code_tags:
+        code_tag.set('style', _css_settings.CODE_CSS)
+        if code_tag.text.startswith('\n'):
+            code_tag.text = code_tag.text[1:]
+        if code_tag.text.endswith('\n'):
+            code_tag.text = code_tag.text[:-1]
 #--------------------------------------------------------------------------------------------------
 # process images
 def _processHtmlImgTags(component_path, img_tags, unit_filename):
