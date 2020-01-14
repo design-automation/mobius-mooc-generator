@@ -31,6 +31,10 @@ def writeCompsForUnit(md_filepath, unit_filename):
     if len(tree_snippets) <= 1:
         print(WARNING, 'The markdown file does not seem to contain any components:', md_filepath)
 
+    # get the display name of the unit
+    first_h1_tag = list(tree_snippets[0].iter('h1'))[0]
+    unit_display_name = first_h1_tag.get('display_name')
+
     # list to store all files
     files = []
 
@@ -40,7 +44,7 @@ def writeCompsForUnit(md_filepath, unit_filename):
 
         # generate the files
         new_filename = unit_filename + '_c' + str(i)
-        comp_files = _writeFilesForSnippet(md_filepath, new_filename, tree_snippet, unit_filename)
+        comp_files = _writeFilesForSnippet(md_filepath, new_filename, tree_snippet, unit_filename, unit_display_name)
         files.extend(comp_files)
 
     # return the result
@@ -48,7 +52,7 @@ def writeCompsForUnit(md_filepath, unit_filename):
 
 #--------------------------------------------------------------------------------------------------
 # write to either units folder or problems folder, depending on the type
-def _writeFilesForSnippet(md_filepath, comp_filename, tree_snippet, unit_filename):
+def _writeFilesForSnippet(md_filepath, comp_filename, tree_snippet, unit_filename, unit_display_name):
 
     meta_tag = None
     comp_type = None
@@ -181,7 +185,7 @@ def _writeFilesForSnippet(md_filepath, comp_filename, tree_snippet, unit_filenam
         # in this case, there is actually no file
         # we return the component tag instead
         return _write_comp_discuss.tagForDiscussComp(
-            md_filepath, comp_filename, tree_snippet, settings, unit_filename)
+            md_filepath, comp_filename, tree_snippet, settings, unit_filename, unit_display_name)
 
     else:
         print(WARNING, 'Component type not recognised:', comp_type, "in", md_filepath)

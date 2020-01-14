@@ -7,7 +7,7 @@ from edx_gen import  _mob_iframe
 import __SETTINGS__
 #--------------------------------------------------------------------------------------------------
 # xml for discussion component
-def tagForDiscussComp(component_path, filename, content, settings, unit_filename):
+def tagForDiscussComp(component_path, filename, content, settings, unit_filename, unit_display_name):
 
     # ---- XML tag ----
     # <vertical display_name="Unit">
@@ -35,12 +35,12 @@ def tagForDiscussComp(component_path, filename, content, settings, unit_filename
     if 'discussion_category' in settings:
         component_tag.set('discussion_category', settings['discussion_category'])
     else:
-        component_tag.set('discussion_category', unit_filename)
+        component_tag.set('discussion_category', unit_filename + ":" + unit_display_name)
     # target
     if 'discussion_target' in settings:
         component_tag.set('discussion_target', settings['discussion_target'])
     else:
-        component_tag.set('discussion_target', 'General')
+        component_tag.set('discussion_target', 'Queries')
 
     # return the file name and folder
     return [[component_tag, 'discussion']]

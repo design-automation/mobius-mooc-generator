@@ -17,7 +17,6 @@ md = markdown.Markdown(extensions = ['extra', 'sane_lists'])
 # returns the html string (in xml tags)
 def convertMd(in_path):
 
-    # we look for a file that has a name that ends with 'settings.md'
     html = None
 
     # read the settings file
