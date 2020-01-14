@@ -172,18 +172,19 @@ def writeXmlForSubmitComp(component_path, filename, content, settings, unit_file
     prob_data = etree.tostring(problem_tag, pretty_print=True)
 
     # check if we have id
+    filename_prob = filename
     if 'id' in settings:
-        filename = settings['id']
+        filename_prob = settings['id']
 
     # write the file
-    prob_xml_out_path = os.path.join(sys.argv[2], _edx_consts.COMP_PROBS_FOLDER, filename + '.xml')
+    prob_xml_out_path = os.path.join(sys.argv[2], _edx_consts.COMP_PROBS_FOLDER, filename_prob + '.xml')
     with open(prob_xml_out_path, 'wb') as fout:
         fout.write(prob_data)
 
     # return the file name and folder
     return [
         [filename, _edx_consts.COMP_HTML_FOLDER], 
-        [filename, _edx_consts.COMP_PROBS_FOLDER]
+        [filename_prob, _edx_consts.COMP_PROBS_FOLDER]
     ]
 
 # add the example

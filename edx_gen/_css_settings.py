@@ -65,10 +65,15 @@ PRE_CSS = ';'.join([
     ])
 
 CODE_CSS = ';'.join([
-    'font-size: 12px',
-    'font-weight: 600',
-    'font-family:monospace'
     #'font-family:Terminus,Consolas,Courier,Terminal,monospace'
+    'font-size: 14px',
+    'font-weight: 600',
+    'font-family:monospace',
+    'margin: 0 2px',
+    'padding: 0px 5px',
+    'border: 1px solid #eaeaea',
+    'border-radius: 3px',
+    'background-color: #f9f9f9'
     ])
 #--------------------------------------------------------------------------------------------------
 # Settings for the language buttons
@@ -107,8 +112,8 @@ MOB_IFRAME_STYLE = ';'.join([
     # 'margin-left:auto',
     # 'margin-right:auto',
     'border-style:solid',
-    'border-width:5px',
-    'border-color:grey'
+    'border-width:4px',
+    'border-color:#065683'
     ])
 
 
