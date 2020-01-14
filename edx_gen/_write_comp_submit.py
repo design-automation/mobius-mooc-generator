@@ -57,7 +57,7 @@ def writeXmlForSubmitComp(component_path, filename, content, settings, unit_file
 
     # process the settings
     for key in settings:
-        if key not in ['type', 'answer_filename', 'example_filename', 'verified_only', 'display_name']:
+        if key not in ['type', 'id', 'answer_filename', 'example_filename', 'verified_only', 'display_name']:
             problem_tag.set(key, settings[key])
 
     # verified_only
@@ -170,6 +170,10 @@ def writeXmlForSubmitComp(component_path, filename, content, settings, unit_file
 
     # convert problem_tag to string
     prob_data = etree.tostring(problem_tag, pretty_print=True)
+
+    # check if we have id
+    if 'id' in settings:
+        filename = settings['id']
 
     # write the file
     prob_xml_out_path = os.path.join(sys.argv[2], _edx_consts.COMP_PROBS_FOLDER, filename + '.xml')

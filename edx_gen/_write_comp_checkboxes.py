@@ -141,6 +141,10 @@ def writeXmlForProbCheckboxesComp(component_path, filename, content, settings, u
     # convert problem_tag to string
     result = etree.tostring(problem_tag, pretty_print=True)
 
+    # check if we have id
+    if 'id' in settings:
+        filename = settings['id']
+
     # write the file
     xml_out_path = os.path.join(sys.argv[2], _edx_consts.COMP_PROBS_FOLDER, filename + '.xml')
     with open(xml_out_path, 'wb') as fout:

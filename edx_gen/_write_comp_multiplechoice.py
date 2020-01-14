@@ -58,7 +58,7 @@ def writeXmlForProbMultiplechoiceComp(component_path, filename, content, setting
 
     # process the settings
     for key in settings:
-        if key not in ['type', 'verified_only']:
+        if key not in ['type', 'id', 'verified_only']:
             problem_tag.set(key, settings[key])
 
     # verified_only
@@ -139,6 +139,10 @@ def writeXmlForProbMultiplechoiceComp(component_path, filename, content, setting
 
     # convert problem_tag to string
     result = etree.tostring(problem_tag, pretty_print=True)
+
+    # check if we have id
+    if 'id' in settings:
+        filename = settings['id']
 
     # write the file
     xml_out_path = os.path.join(sys.argv[2], _edx_consts.COMP_PROBS_FOLDER, filename + '.xml')
