@@ -8,19 +8,33 @@ import __SETTINGS__
 #--------------------------------------------------------------------------------------------------
 WARNING = "      WARNING:"
 
+SUBMIT_PRELUDE = [
+    'Below is the example model and the base codescript for this assignment.'
+    ][0]
+
+SUBMIT_PRELUDE_BULLETS = [
+    "Explore the example model and get an understanding of the geometric entities your codescript needs to generate.",
+    "Go to the base model below and add your code.",
+    "Click 'execute' and check the resulting geometric entities match the example model.",
+    "Save your Mobius codescript file (.mob) on your computer.",
+    "Scroll down to the Submit button below, click the 'Choose Files' button, and select your saved file (.mob) and click 'submit'."
+    ]
+
 SUBMIT_EXAMPLE_DESCRIPTION = [
-    'Below is an example of the output that your Mobius codescript will need to generate for this assignment. ' + 
+    'This is an example of the output that your Mobius codescript will need to generate for this assignment. ' + 
     'This example only contains the output geometry, it does not include the codescript. ' + 
-    'If you open the parameters, you will see the values that were used to generate this output.'][0]
+    'If you open the parameters, you will see the values that were used to generate this output.'
+    ][0]
 
 SUBMIT_BASE_DESCRIPTION = [
-    'Below is the base file that you should use to create your answer for this assignment. '+
-    'Add your code to this base file, save your codescript as a .mob file, ' + 
-    'and then upload it by clicking the "Submit" button. '][0]
+    'This is the base file that you should use to create your answer for this assignment. '+
+    'Add your code to this base file save it.'
+    ][0]
 
 SUBMIT_INSTRUCTIONS = [
     'Please submit your Mobius codescript. ' + 
-    'Your submission will be auto-graded and you should receive the results within a few seconds.'][0]
+    'Your submission will be auto-graded and you should receive the results within a few seconds.'
+    ][0]
 
 #--------------------------------------------------------------------------------------------------
 # write xml for problem submit
@@ -57,7 +71,7 @@ def writeXmlForSubmitComp(component_path, filename, content, settings, unit_file
 
     # process the settings
     for key in settings:
-        if key not in ['type', 'id', 'answer_filename', 'example_filename', 'verified_only', 'display_name']:
+        if key not in ['type', 'id', 'answer_filename', 'example_filename', 'base_filename', 'verified_only', 'display_name']:
             problem_tag.set(key, settings[key])
 
     # verified_only
@@ -132,6 +146,10 @@ def writeXmlForSubmitComp(component_path, filename, content, settings, unit_file
     else:
         print(WARNING, 'Submit problem is missing content.', unit_filename)
 
+    # add prelude
+    if 'example_filename' in settings and 'base_filename' in settings:
+        _addPrelude(problem_description_tag)
+
     # if there is an example model, add a mobius iframe
     if 'example_filename' in settings:
         _addExampleModel(component_path, settings, unit_filename, problem_description_tag)
@@ -187,6 +205,26 @@ def writeXmlForSubmitComp(component_path, filename, content, settings, unit_file
         [filename_prob, _edx_consts.COMP_PROBS_FOLDER]
     ]
 
+# add prelude
+def _addPrelude(problem_description_tag):
+
+    # heading
+    h4_tag = etree.Element("h4")
+    h4_tag.set('style', _css_settings.H4_CSS)
+    h4_tag.text = 'Completing the Assignment'
+    problem_description_tag.append(h4_tag)
+
+    # the example model description text
+    prelude_p_tag = etree.Element("p")
+    prelude_p_tag.text = SUBMIT_PRELUDE
+    problem_description_tag.append(prelude_p_tag)
+    prelude_ul_tag = etree.Element("ul")
+    problem_description_tag.append(prelude_ul_tag)
+    for bullet in SUBMIT_PRELUDE_BULLETS:
+        prelude_li_tag = etree.Element("li")
+        prelude_li_tag.text = bullet
+        prelude_ul_tag.append(prelude_li_tag)
+
 # add the example
 def _addExampleModel(component_path, settings, unit_filename, problem_description_tag):
 
@@ -239,7 +277,7 @@ def _addBaseModel(component_path, settings, unit_filename, problem_description_t
     # heading
     h4_tag = etree.Element("h4")
     h4_tag.set('style', _css_settings.H4_CSS)
-    h4_tag.text = 'Base Model'
+    h4_tag.text = 'Base Codescript'
     problem_description_tag.append(h4_tag)
     
     # the base model description text
