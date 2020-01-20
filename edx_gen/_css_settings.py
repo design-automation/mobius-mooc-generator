@@ -56,15 +56,7 @@ IMAGE_CSS = ';'.join([
     'border-width:1px'
     ])
 
-PRE_CSS = ';'.join([
-    'white-space: pre-line',
-    'background:#F8F8F8',
-    'border-style:solid',
-    'border-width:1px',
-    'padding:10px;'
-    ])
-
-CODE_CSS = ';'.join([
+CODE_INLINE_CSS = ';'.join([
     #'font-family:Terminus,Consolas,Courier,Terminal,monospace'
     'font-size: 14px',
     'font-weight: 600',
@@ -72,8 +64,31 @@ CODE_CSS = ';'.join([
     'margin: 0 2px',
     'padding: 0px 5px',
     'border: 1px solid #eaeaea',
-    'border-radius: 3px',
     'background-color: #f9f9f9'
+    ])
+
+CODE_BOX_CSS = ';'.join([
+    'display: block',
+    'clear: both',
+    'margin-bottom: 10px',
+    'border: 1px solid #000000',
+    'border-radius: 0px',
+    'padding: 10px',
+    'width: 600px',
+    'background-color: #fafafa'
+    ])
+
+CODE_LINE_CSS = ';'.join([
+    'font-size: 14px',
+    'font-weight: 600',
+    'font-family:monospace',
+    'margin: 2px',
+    'padding: 5px',
+    'border-left: 1px solid #999999',
+    'border-bottom: 1px solid #999999',
+    'border-top: 0px',
+    'border-right: 0px',
+    'border-radius: 0px'
     ])
 #--------------------------------------------------------------------------------------------------
 # Settings for the language buttons

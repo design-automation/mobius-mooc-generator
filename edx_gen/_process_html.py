@@ -49,16 +49,32 @@ def _processHeadingsTags(h3_tags, h4_tags, h5_tags):
 # process pre
 def _processPreTags(pre_tags):
     for pre_tag in pre_tags:
-        pre_tag.set('style', _css_settings.PRE_CSS)
+        parent = pre_tag.getparent()
+        div_tag = etree.Element("div")
+        for child in pre_tag:
+            div_tag.append(child)
+        if pre_tag.text:
+            div_tag.text = pre_tag.text
+        div_tag.set('style', _css_settings.CODE_BOX_CSS)
+        parent.replace(pre_tag, div_tag)
+        
 #--------------------------------------------------------------------------------------------------
 # process code
 def _processCodeTags(code_tags):
     for code_tag in code_tags:
-        code_tag.set('style', _css_settings.CODE_CSS)
-        if code_tag.text.startswith('\n'):
-            code_tag.text = code_tag.text[1:]
-        if code_tag.text.endswith('\n'):
-            code_tag.text = code_tag.text[:-1]
+        lines = code_tag.text.strip().split('\n')
+        if len(lines) > 1:
+            parent = code_tag.getparent()
+            div_tag = etree.Element("div")
+            for line in lines:
+                if len(line) > 0:
+                    pre_tag = etree.Element("pre")
+                    pre_tag.set('style', _css_settings.CODE_LINE_CSS)
+                    pre_tag.text = line
+                    div_tag.append(pre_tag)
+            parent.replace(code_tag, div_tag)
+        else:
+            code_tag.set('style', _css_settings.CODE_INLINE_CSS)
 #--------------------------------------------------------------------------------------------------
 # process images
 def _processHtmlImgTags(component_path, img_tags, unit_filename):
