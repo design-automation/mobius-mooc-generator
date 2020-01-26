@@ -10,7 +10,7 @@ WARNING = "      WARNING:"
 
 #--------------------------------------------------------------------------------------------------
 # create the markdow instance
-md = markdown.Markdown(extensions = ['extra', 'sane_lists'])
+md = markdown.Markdown(extensions = ['extra', 'sane_lists'], tab_length=2)
 
 #--------------------------------------------------------------------------------------------------
 # converts markdown to html
