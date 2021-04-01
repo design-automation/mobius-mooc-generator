@@ -63,7 +63,7 @@ def writeXmlForHtmlComp(component_path, filename, content, settings, unit_filena
             h3_tag.set('style', _css_settings.H3_CSS)
             fout.write(etree.tostring(h3_tag, pretty_print = True))
         for tag in content:
-            tag_result = etree.tostring(tag, pretty_print = True)
+            tag_result = etree.tostring(tag, pretty_print = True, method = "html")
             fout.write(tag_result)
 
     # create xml
