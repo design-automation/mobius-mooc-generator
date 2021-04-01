@@ -8,9 +8,8 @@ import __SETTINGS__
 #--------------------------------------------------------------------------------------------------
 WARNING = "      WARNING:"
 
-SUBMIT_PRELUDE = [
+SUBMIT_PRELUDE = '' + \
     'Below is the example model and the base codescript for this assignment.'
-    ][0]
 
 SUBMIT_PRELUDE_BULLETS = [
     "Explore the example model and get an understanding of the geometric entities your codescript needs to generate.",
@@ -20,21 +19,18 @@ SUBMIT_PRELUDE_BULLETS = [
     "Scroll down to the Submit button below, click the 'Choose Files' button, and select your saved file (.mob) and click 'submit'."
     ]
 
-SUBMIT_EXAMPLE_DESCRIPTION = [
-    'This is an example of the output that your Mobius codescript will need to generate for this assignment. ' + 
-    'This example only contains the output geometry, it does not include the codescript. ' + 
+SUBMIT_EXAMPLE_DESCRIPTION = '' + \
+    'This is an example of the output that your Mobius codescript will need to generate for this assignment. ' + \
+    'This example only contains the output geometry, it does not include the codescript. ' + \
     'If you open the parameters, you will see the values that were used to generate this output.'
-    ][0]
 
-SUBMIT_BASE_DESCRIPTION = [
-    'This is the base file that you should use to create your answer for this assignment. '+
+SUBMIT_BASE_DESCRIPTION = '' + \
+    'This is the base file that you should use to create your answer for this assignment. '+ \
     'Add your code to this base file save it.'
-    ][0]
 
-SUBMIT_INSTRUCTIONS = [
-    'Please submit your Mobius codescript. ' + 
+SUBMIT_INSTRUCTIONS = '' + \
+    'Please submit your Mobius codescript. ' + \
     'Your submission will be auto-graded and you should receive the results within a few seconds.'
-    ][0]
 
 #--------------------------------------------------------------------------------------------------
 # write xml for problem submit
@@ -160,6 +156,11 @@ def writeXmlForSubmitComp(component_path, filename, content, settings, unit_file
 
     # convert problem_description_data to string
     problem_desc_data = etree.tostring(problem_description_tag, pretty_print=True)
+    # print("=================")
+    # print(problem_desc_data)
+    # print("=================")
+    # print(etree.dump(problem_description_tag))
+    # print("=================")
 
     # write the file for the problem_description
     prob_xml_out_path = os.path.join(sys.argv[2], _edx_consts.COMP_HTML_FOLDER, filename + '.xml')

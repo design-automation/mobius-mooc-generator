@@ -55,6 +55,7 @@ def createMobIframe(mob_filename, mob_settings, unit_filename):
         iframe_tag.set('height', _css_settings.MOB_IFRAME_HEIGHT)
     iframe_tag.set('style', _css_settings.MOB_IFRAME_STYLE)
     iframe_tag.set('src', iframe_src)
+    iframe_tag.text = 'Mobius Modeller'
 
     # add a div
     div_tag = etree.Element('div')
