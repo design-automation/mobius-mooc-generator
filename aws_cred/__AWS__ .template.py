@@ -1,3 +1,5 @@
+# Add your AWS credentials for uploading files to your S3 bucket
+
 # your access key id
 aws_access_key_id = ''
 
