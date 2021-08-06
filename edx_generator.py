@@ -1,5 +1,6 @@
 import sys, os
 #--------------------------------------------------------------------------------------------------
+print("\n\n\n\n=========================================================\n\n\n\n")
 if len(sys.argv) != 3:
     print(sys.argv)
     raise Exception('Usage: python ./edx_generator.py input_path output_path')

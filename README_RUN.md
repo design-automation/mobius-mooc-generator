@@ -10,13 +10,11 @@ Make sure to save backups!
 
 ## Dependencies
 
-This Puthon3 script requires three python modules. These can be installed with pip as follows:
+This Python3 script requires three python modules. These can be installed with `pip` as follows:
 
-`pip install markdown`
-
-`pip install lxml`
-
-`pip install boto3`
+* `pip install markdown`
+* `pip install lxml`
+* `pip install boto3`
 
 Markdown is processes using the python markdown module.
 - https://python-markdown.github.io

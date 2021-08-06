@@ -1,4 +1,4 @@
-# edx-generator
+# Edx Generator
 
 A Python3 script for generating an edx course from markdown.
 
@@ -8,6 +8,8 @@ The aim is:
 - to allow better control over formatting and styles.
 
 The basic workflow is that you create all your content locally, in a specific folder structure (described below). When you run the python script, it generates a compressed .tar.gz file that can be directly imported into the edx course. When this file is imported, it will automatically populate all course contents on edx.
+
+## More Information
 
 For more information about creating the content for the Edx Generator:
 * [Creating content for the Edx Generator](./README_DEV.md)

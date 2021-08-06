@@ -1,3 +1,11 @@
-python ./mob_uploader.py "C:/xxxx/mooc1-procedural-modelling"
+REM Script to execute Edx Generator
 
-python ./edx_generator.py "C:/xxxx/mooc1-procedural-modelling" "C:/Data/xxxx/mooc1"
+set mob_uploader_script="C:/xxx/mob_uploader.py"
+set edx_generator_script="C:/xxx/edx_generator.py"
+set input="C:/yyy/mooc1-procedural-modelling-v3"
+set output="C:/zzz/proc"
+
+python %mob_uploader_script% %input%
+python %edx_generator_script% %input% %output%
+
+
