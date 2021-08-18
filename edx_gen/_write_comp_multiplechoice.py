@@ -144,11 +144,13 @@ def writeXmlForProbMultiplechoiceComp(component_path, filename, content, setting
     if 'id' in settings:
         filename = settings['id']
 
-    # write the file
+    # write XML file to COMP_PROBS_FOLDER
     xml_out_path = os.path.join(sys.argv[2], _edx_consts.COMP_PROBS_FOLDER, filename + '.xml')
     with open(xml_out_path, 'wb') as fout:
         fout.write(result)
 
     # return the file name and folder
-    return [[filename, _edx_consts.COMP_PROBS_FOLDER]]
+    return [
+        [filename, _edx_consts.COMP_PROBS_FOLDER]
+    ]
 #--------------------------------------------------------------------------------------------------

@@ -29,7 +29,7 @@ SUBMIT_INSTRUCTIONS = [
 # write xml for Html component
 def writeXmlForHtmlComp(component_path, filename, content, settings, unit_filename):
 
-    # ---- Html file ----
+    # ---- Html file in COMP_HTML_FOLDER----
     # <p>
     #   <span style="text-decoration: underline;">Objective:</span>
     # </p>
@@ -43,9 +43,9 @@ def writeXmlForHtmlComp(component_path, filename, content, settings, unit_filena
     # </p>
     # ----  ----  ----
 
-    # ---- XML file ----
+    # ---- XML file in COMP_HTML_FOLDER----
     # <html 
-    #   filename="1c870c63861749dbb45ea16ace9fbe24" 
+    #   filename="xxx" 
     #   display_name="Task" 
     #   editor="visual"
     # />
@@ -74,11 +74,13 @@ def writeXmlForHtmlComp(component_path, filename, content, settings, unit_filena
     html_tag.set('filename', filename)
     result = etree.tostring(html_tag, pretty_print = True)
 
-    # write the xml file
+    # write the xml file to COMP_HTML_FOLDER
     xml_out_path = os.path.join(sys.argv[2], _edx_consts.COMP_HTML_FOLDER, filename + '.xml')
     with open(xml_out_path, 'wb') as fout:
         fout.write(result)
 
     # return the file name and folder
-    return [[filename, _edx_consts.COMP_HTML_FOLDER]]
+    return [
+        [filename, _edx_consts.COMP_HTML_FOLDER]
+    ]
 #--------------------------------------------------------------------------------------------------

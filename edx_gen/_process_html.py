@@ -9,6 +9,7 @@ import __SETTINGS__
 #--------------------------------------------------------------------------------------------------
 # Text strings
 WARNING = "      WARNING:"
+INFO = "      INFO:"
 #--------------------------------------------------------------------------------------------------
 # process a hrefs
 def processHtmlTags(component_path, content_root_tag, unit_filename):
@@ -174,8 +175,23 @@ def _createMobIframeTag(a_tag, href, unit_filename):
     # replace the existing a with the new tag
     a_tag.getparent().replace(a_tag, new_iframe_tag)
 
-# create an image tag
+# update the href in an <a href=''></a> tag
 def _updateATag(a_tag, href, unit_filename):
+
+    # ends with /, so must be a url like http://google.com/
+    # do nothing
+    if href.endswith('/'):
+        return
+
+    # ends with html or htm, so must be a url like http://google.com/hello.html
+    # do nothing
+    if href.endswith('.html') or href.endswith('.htm'):
+        return
+
+    # a mob file with a bad extension
+    elif href.endswith('.mob'):
+        print(WARNING, 'Found a .mob file with a bad filename:', href, unit_filename)
+        return
 
     # break down the url
     href_parts = list(urllib.parse.urlparse(href))
@@ -184,12 +200,11 @@ def _updateATag(a_tag, href, unit_filename):
     href_path = href_parts[2]
     if href_path and '.' in href_path:
         href_file = href_path.split('/')[-1]
-        href_file_ext = href_path.split('.')[-1]
-
-    # create the new href
-    new_href = None
+        if '.' in href_file:
+            href_file_ext = href_file.split('.')[-1]
 
     # no extension, so must be a url like http://google.com
+    # do nothing
     if href_file_ext == None or href_file_ext == '':
         return
 
@@ -200,7 +215,6 @@ def _updateATag(a_tag, href, unit_filename):
 
     # something unknown
     else:
-        new_href = href
-        print(WARNING, 'Found an unrecognised href:', href, href_file_ext, unit_filename)
+        print(INFO, 'Found a strange href:', href, unit_filename)
 
 #--------------------------------------------------------------------------------------------------

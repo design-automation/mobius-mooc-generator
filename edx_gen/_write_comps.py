@@ -36,7 +36,7 @@ def writeCompsForUnit(md_filepath, unit_filename):
     unit_display_name = first_h1_tag.get('display_name')
 
     # list to store all files
-    files = []
+    unit_comps = []
 
     # process components
     for i in range(1, len(tree_snippets)):
@@ -45,10 +45,10 @@ def writeCompsForUnit(md_filepath, unit_filename):
         # generate the files
         new_filename = unit_filename + '_c' + str(i)
         comp_files = _writeFilesForSnippet(md_filepath, new_filename, tree_snippet, unit_filename, unit_display_name)
-        files.extend(comp_files)
+        unit_comps.extend(comp_files)
 
     # return the result
-    return files
+    return unit_comps
 
 #--------------------------------------------------------------------------------------------------
 # write to either units folder or problems folder, depending on the type
@@ -80,14 +80,14 @@ def _writeFilesForSnippet(md_filepath, comp_filename, tree_snippet, unit_filenam
         print(WARNING, '  Found:', comp_type)
         print(WARNING, '  Valid options:', _edx_consts.METADATA_ENUMS['type'])
 
-    # generate xml files
+    # write xml and/or html files
     if comp_type == 'html':
 
         # get the setting out of the meta_tag
         settings = _read_metadata.getMetaSettings(md_filepath, meta_tag, 
             _edx_consts.COMP_HTML_REQ, _edx_consts.COMP_HTML_OPT )
 
-        # check that we have ssettings
+        # check that we have settings
         if not settings:
             print(WARNING, 'There seem to be no settings for this "html" component:', md_filepath)
             return
@@ -95,7 +95,9 @@ def _writeFilesForSnippet(md_filepath, comp_filename, tree_snippet, unit_filenam
         # remove h1 meta_tag from the tree so it does not end up in the output
         tree_snippet.remove(meta_tag)
 
-        # write the files and return the list of files
+        # write .html file to COMP_HTML_FOLDER
+        # write .xml file to COMP_HTML_FOLDER
+        # return the list of files
         return _write_comp_html.writeXmlForHtmlComp(
             md_filepath, comp_filename, tree_snippet, settings, unit_filename)
     
@@ -113,7 +115,8 @@ def _writeFilesForSnippet(md_filepath, comp_filename, tree_snippet, unit_filenam
         # remove h1 meta_tag from the tree so it does not end up in the output
         tree_snippet.remove(meta_tag)
 
-        # write the files and return the list of files
+        # write .xml file to COMP_PROBS_FOLDER
+        # return the list of files
         return _write_comp_checkboxes.writeXmlForProbCheckboxesComp(
             md_filepath, comp_filename, tree_snippet, settings, unit_filename)
     
@@ -131,16 +134,18 @@ def _writeFilesForSnippet(md_filepath, comp_filename, tree_snippet, unit_filenam
         # remove h1 meta_tag from the tree so it does not end up in the output
         tree_snippet.remove(meta_tag)
 
-        # write the files and return the list of files
+        # write .xml file to COMP_PROBS_FOLDER
+        # return the list of files
         return _write_comp_multiplechoice.writeXmlForProbMultiplechoiceComp(
             md_filepath, comp_filename, tree_snippet, settings, unit_filename)
 
     elif comp_type == 'problem-submit':
 
+        print("===PROBLEM SUBMIT===")
         # get the setting out of the meta_tag
         settings = _read_metadata.getMetaSettings(md_filepath, meta_tag, 
             _edx_consts.COMP_PROB_SUBMIT_REQ , _edx_consts.COMP_PROB_SUBMIT_OPT )
-            
+
         # check that we have settings
         if not settings:
             print(WARNING, 'There seem to be no settings for this "problem-submit" component:', md_filepath)
@@ -149,7 +154,9 @@ def _writeFilesForSnippet(md_filepath, comp_filename, tree_snippet, unit_filenam
         # remove h1 meta_tag from the tree so it does not end up in the output
         tree_snippet.remove(meta_tag)
 
-        # write the files and return the list of files
+        # write .xml file to COMP_HTML_FOLDER
+        # write .xml file to COMP_PROBS_FOLDER
+        # return the list of files
         return _write_comp_submit.writeXmlForSubmitComp(
             md_filepath, comp_filename, tree_snippet, settings, unit_filename)
     
@@ -167,7 +174,11 @@ def _writeFilesForSnippet(md_filepath, comp_filename, tree_snippet, unit_filenam
         # remove h1 meta_tag from the tree so it does not end up in the output
         tree_snippet.remove(meta_tag)
 
-        # write the files and return the list of files
+        # write .xml file to COMP_VIDS_FOLDER
+        # for each language
+        # write .html file to COMP_HTML_FOLDER
+        # write .xml file to COMP_HTML_FOLDER
+        # return the list of files
         return _write_comp_video.writeXmlForVidComp(
             md_filepath, comp_filename, settings, unit_filename)
 
@@ -177,12 +188,12 @@ def _writeFilesForSnippet(md_filepath, comp_filename, tree_snippet, unit_filenam
         settings = _read_metadata.getMetaSettings(md_filepath, meta_tag, 
             _edx_consts.COMP_DISCUSS_REQ, _edx_consts.COMP_DISCUSS_OPT )
 
-        # check that we have ssettings
+        # check that we have settings
         if not settings:
             print(WARNING, 'There seem to be no settings for this "discussion" component:', md_filepath)
             return
 
-        # in this case, there is actually no file
+        # in this case, no files are written
         # we return the component tag instead
         return _write_comp_discuss.tagForDiscussComp(
             md_filepath, comp_filename, tree_snippet, settings, unit_filename, unit_display_name)

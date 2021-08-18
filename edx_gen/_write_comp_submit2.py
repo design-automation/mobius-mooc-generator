@@ -95,9 +95,34 @@ def writeXmlForSubmitComp(component_path, filename, content, settings, unit_file
     # </problem>
     # ----  ----  ----
 
-    #----------------------------------------------------------------------------------------------
-    # Check the answer file exists
+    # make the xml
+    from lxml import etree
 
+    # process html
+    _process_html.processHtmlTags(component_path, content, unit_filename)
+
+    # return the file name and folder
+    return [
+        [filename, _edx_consts.COMP_HTML_FOLDER], 
+        [filename_prob, _edx_consts.COMP_PROBS_FOLDER]
+    ]
+
+#--------------------------------------------------------------------------------------------------
+# split teh data
+def _splutContent(component_path, filename, content, settings, unit_filename):
+    pass
+
+#--------------------------------------------------------------------------------------------------
+# write file
+def _writeXMLFileToForDescr(component_path, filename, content, settings, unit_filename):
+    pass
+
+#--------------------------------------------------------------------------------------------------
+# write file that contains the Html component before the problem
+def _writeXMLFileForProb(component_path, filename, content, settings, unit_filename):
+    problem_tag = etree.Element("problem")
+
+    # check the file
     answer_filename = ''
     if 'answer_filename' in settings:
 
@@ -115,16 +140,20 @@ def writeXmlForSubmitComp(component_path, filename, content, settings, unit_file
     else:
         print(WARNING, 'Submit problem is missing "answer".', unit_filename)
 
-    #----------------------------------------------------------------------------------------------
-    # Create problem_tag, with coderesponse_tag as child
+    # construct the question name from the answer file name
+    question = __SETTINGS__.S3_MOOC_FOLDER + \
+        '/' + __SETTINGS__.S3_ANSWERS_FOLDER + '/'
+    question = question + unit_filename + '_' + answer_filename.split('.')[0]
 
-    # make the xml
-    from lxml import etree
-    problem_tag = etree.Element("problem") 
+    # payload for grader
+    grader_payload_tag = etree.Element("grader_payload")
+    grader_payload_tag.text = '{"question": "' + question + '"}'
+
 
     # process the settings
     for key in settings:
-        if key not in ['type', 'id', 'answer_filename', 'example_filename', 'base_filename', 'verified_only', 'display_name']:
+        if key not in ['type', 'id', 'answer_filename', 'example_filename', 'base_filename',
+                'verified_only', 'display_name']:
             problem_tag.set(key, settings[key])
 
     # verified_only
@@ -134,24 +163,55 @@ def writeXmlForSubmitComp(component_path, filename, content, settings, unit_file
     # override display name
     problem_tag.set('display_name', 'Submit Your Mobius File')
 
-    # create coderesponse_tag
+    # convert problem_tag to string
+    prob_data = etree.tostring(problem_tag, pretty_print=True)
+
+    # check if we have id
+    filename_prob = filename
+    if 'id' in settings:
+        filename_prob = settings['id']
+
+    # write the XML file to COMP_PROBS_FOLDER
+    prob_xml_out_path = os.path.join(
+        sys.argv[2], _edx_consts.COMP_PROBS_FOLDER, filename_prob + '.xml')
+    with open(prob_xml_out_path, 'wb') as fout:
+        fout.write(prob_data)
+    
+#--------------------------------------------------------------------------------------------------
+# write file
+def _writeHtmlFileForDescr(component_path, filename, content, settings, unit_filename):
+    # create tags for description and solution
+    problem_description_tag = etree.Element("div")
+    problem_solutions_tag = etree.Element("div")
+
+    #
     coderesponse_tag = etree.Element("coderesponse")
     problem_tag.append(coderesponse_tag)
 
-    # add grader queue to coderesponse_tag
+    # grader queue
     queuename = __SETTINGS__.EDX_EXTERNAL_GRADER_QUEUENAME
     coderesponse_tag.set('queuename', queuename)
 
-    #----------------------------------------------------------------------------------------------
-    # Go through content line by line
-    # Create problem_description_tag and problem_solutions_tag
+    # add labels to the coderesponse_tag
+    label_tag = etree.Element("label")
+    coderesponse_tag.append(label_tag)
 
-    # process html
-    _process_html.processHtmlTags(component_path, content, unit_filename)
+    # add the instruction text
+    # dont use p, it results in small text
+    instruct_p_tag = etree.Element("div")
+    instruct_p_tag.text = SUBMIT_INSTRUCTIONS
+    label_tag.append(instruct_p_tag)
 
-    # create tags for description and solution
-    problem_description_tag = etree.Element("div")
-    problem_solutions_tag = etree.Element("div") 
+    # add <filesubmission> and <codeparam> to the coderesponse_tag
+    coderesponse_tag.append(etree.Element("filesubmission"))
+    codeparam_tag = etree.Element("codeparam")
+    codeparam_tag.append(grader_payload_tag)
+    coderesponse_tag.append(codeparam_tag)
+
+    # add <solution> to the coderesponse_tag
+    solution_tag = etree.Element("solution")
+    coderesponse_tag.append(solution_tag)
+    solution_tag.append(problem_solutions_tag)
 
     # set the display name for the description tag
     display_name = 'Mobius Modelling Assignment'
@@ -168,9 +228,9 @@ def writeXmlForSubmitComp(component_path, filename, content, settings, unit_file
     # these will be saved in the problem_description_tag and as solution <p> elements
     # the elements are spli using '==='
     # everything before the split is added to <label>
-    # everything after the split is added to 
+    # everything after the split is added to
 
-    found_splitter = 0 # found ===
+    found_splitter = 0  # found ===
     elems = content.getchildren()
     if elems:
         for elem in elems:
@@ -184,23 +244,23 @@ def writeXmlForSubmitComp(component_path, filename, content, settings, unit_file
     else:
         print(WARNING, 'Submit problem is missing content.', unit_filename)
 
-    #----------------------------------------------------------------------------------------------
-    # Create description for the Html file for COMP_HTML_FOLDER
-
     # add prelude
     if 'example_filename' in settings and 'base_filename' in settings:
         _addPrelude(problem_description_tag)
 
     # if there is an example model, add a mobius iframe
     if 'example_filename' in settings:
-        _addExampleModel(component_path, settings, unit_filename, problem_description_tag)
+        _addExampleModel(component_path, settings,
+                         unit_filename, problem_description_tag)
 
     # if there is a base model, add a mobius iframe
     if 'base_filename' in settings:
-        _addBaseModel(component_path, settings, unit_filename, problem_description_tag)
+        _addBaseModel(component_path, settings,
+                      unit_filename, problem_description_tag)
 
     # convert problem_description_data to string
-    problem_desc_data = etree.tostring(problem_description_tag, pretty_print=True)
+    problem_desc_data = etree.tostring(
+        problem_description_tag, pretty_print=True)
     # print("=================")
     # print(problem_desc_data)
     # print("=================")
@@ -208,80 +268,12 @@ def writeXmlForSubmitComp(component_path, filename, content, settings, unit_file
     # print("=================")
 
     # write the Html file for the problem_description to COMP_HTML_FOLDER
-    prob_xml_out_path = os.path.join(sys.argv[2], _edx_consts.COMP_HTML_FOLDER, filename + '.html')
+    prob_xml_out_path = os.path.join(
+        sys.argv[2], _edx_consts.COMP_HTML_FOLDER, filename + '.html')
     with open(prob_xml_out_path, 'wb') as fout:
         fout.write(problem_desc_data)
 
-    #----------------------------------------------------------------------------------------------
-    # Create description content for the xml file for COMP_HTML_FOLDER
-
-    # create xml
-    html_tag = etree.Element("html")
-    for key in settings:
-        if key not in ['type']:
-            html_tag.set(key, settings[key])
-    html_tag.set('filename', filename)
-    result = etree.tostring(html_tag, pretty_print=True)
-
-    # write the xml file to COMP_HTML_FOLDER
-    xml_out_path = os.path.join(sys.argv[2], _edx_consts.COMP_HTML_FOLDER, filename + '.xml')
-    with open(xml_out_path, 'wb') as fout:
-        fout.write(result)
-    
-    #----------------------------------------------------------------------------------------------
-    # Create problem content for the XML file for COMP_PROBS_FOLDER
-
-    # add labels to the coderesponse_tag
-    label_tag = etree.Element("label") 
-    coderesponse_tag.append(label_tag)
-
-    # add the instruction text
-    instruct_p_tag = etree.Element("div") # dont use p, it results in small text
-    instruct_p_tag.text = SUBMIT_INSTRUCTIONS
-    label_tag.append(instruct_p_tag)
-
-    # construct the question name from the answer file name
-    question = __SETTINGS__.S3_MOOC_FOLDER + \
-        '/' + __SETTINGS__.S3_ANSWERS_FOLDER + '/'
-    question = question + unit_filename + '_' + answer_filename.split('.')[0]
-
-    # payload for grader
-    grader_payload_tag = etree.Element("grader_payload")
-    grader_payload_tag.text = '{"question": "' + question + '"}'
-
-    # add <filesubmission> and <codeparam> to the coderesponse_tag
-    coderesponse_tag.append(etree.Element("filesubmission") )
-    codeparam_tag = etree.Element("codeparam")
-    codeparam_tag.append(grader_payload_tag)
-    coderesponse_tag.append(codeparam_tag)
-
-    # add <solution> to the coderesponse_tag
-    solution_tag = etree.Element("solution")
-    coderesponse_tag.append(solution_tag)
-    solution_tag.append(problem_solutions_tag)
-
-    # convert problem_tag to string
-    prob_data = etree.tostring(problem_tag, pretty_print=True)
-
-    # check if we have id
-    filename_prob = filename
-    if 'id' in settings:
-        filename_prob = settings['id']
-
-    # write the XML file to COMP_PROBS_FOLDER
-    prob_xml_out_path = os.path.join(sys.argv[2], _edx_consts.COMP_PROBS_FOLDER, filename_prob + '.xml')
-    with open(prob_xml_out_path, 'wb') as fout:
-        fout.write(prob_data)
-
-    #----------------------------------------------------------------------------------------------
-    # Return result
-
-    # return the file name and folder
-    return [
-        [filename, _edx_consts.COMP_HTML_FOLDER], 
-        [filename_prob, _edx_consts.COMP_PROBS_FOLDER]
-    ]
-
+#--------------------------------------------------------------------------------------------------
 # add prelude
 def _addPrelude(problem_description_tag):
 

@@ -16,7 +16,7 @@ There are two types of files:
 
 ## Structure of Folders and .md files
 
-The folder strcture is as follows:
+The folder structure is as follows:
 
 - Course_Folder (_1st level_)
   - course_settings.md
@@ -27,7 +27,7 @@ The folder strcture is as follows:
       - Unit_Folder (_4th level_)
         - unit_settings_and_components.md
 
-Note that each folder should contaon exactly one markdown (.md) file. These files can have any name, but must always have a '.md' extension.
+Note that each folder should contain exactly one markdown (.md) file. These files can have any name, but must always have a '.md' extension.
 
 You can explore an example input dataset here:
 - https://github.com/design-automation/edx-generator/tree/master/test/input

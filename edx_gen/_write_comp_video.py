@@ -109,7 +109,7 @@ def writeXmlForVidComp(component_path, filename, settings, unit_filename):
     if 'video_filename' in settings:
         video_urls = addVideoXML(video_tag, video_asset_tag, component_path, settings, unit_filename)
         
-    # write the file
+    # write XML file to COMP_VIDS_FOLDER
     video_data = etree.tostring(video_tag, pretty_print = True)
     video_xml_out_path = os.path.join(sys.argv[2], _edx_consts.COMP_VIDS_FOLDER, filename + '.xml')
     with open(video_xml_out_path, 'wb') as fout:

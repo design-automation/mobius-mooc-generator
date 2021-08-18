@@ -87,7 +87,7 @@ def processCourse():
                 for [filename, filepath] in _util.getFiles(unit_path):
                     filex = filename.lower().split('.')[1]
                     
-                    # write the files
+                    # write the xml and html files
                     if filex == 'md':
                         unit_comps = _write_comps.writeCompsForUnit(filepath, unit_filename)
                         for [unit_comp_filename, unit_comp_type] in unit_comps:

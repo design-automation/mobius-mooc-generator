@@ -42,6 +42,8 @@ def tagForDiscussComp(component_path, filename, content, settings, unit_filename
     else:
         component_tag.set('discussion_target', 'Queries')
 
-    # return the file name and folder
-    return [[component_tag, 'discussion']]
+    # return the tag and type
+    return [
+        [component_tag, 'discussion']
+    ]
 #--------------------------------------------------------------------------------------------------
