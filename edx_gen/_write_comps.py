@@ -82,6 +82,7 @@ def _writeFilesForSnippet(md_filepath, comp_filename, tree_snippet, unit_filenam
 
     # write xml and/or html files
     if comp_type == 'html':
+        print("    |_ HTML COMP")
 
         # get the setting out of the meta_tag
         settings = _read_metadata.getMetaSettings(md_filepath, meta_tag, 
@@ -102,6 +103,7 @@ def _writeFilesForSnippet(md_filepath, comp_filename, tree_snippet, unit_filenam
             md_filepath, comp_filename, tree_snippet, settings, unit_filename)
     
     elif comp_type == 'problem-checkboxes':
+        print("    |_ PROBLEM CHECKBOXES")
 
         # get the setting out of the meta_tag
         settings = _read_metadata.getMetaSettings(md_filepath, meta_tag, 
@@ -121,6 +123,7 @@ def _writeFilesForSnippet(md_filepath, comp_filename, tree_snippet, unit_filenam
             md_filepath, comp_filename, tree_snippet, settings, unit_filename)
     
     elif comp_type == 'problem-multiplechoice':
+        print("    |_ PROBLEM MULTI-CHOICE")
 
         # get the setting out of the meta_tag
         settings = _read_metadata.getMetaSettings(md_filepath, meta_tag, 
@@ -140,8 +143,8 @@ def _writeFilesForSnippet(md_filepath, comp_filename, tree_snippet, unit_filenam
             md_filepath, comp_filename, tree_snippet, settings, unit_filename)
 
     elif comp_type == 'problem-submit':
+        print("    |_ PROBLEM SUBMIT")
 
-        print("===PROBLEM SUBMIT===")
         # get the setting out of the meta_tag
         settings = _read_metadata.getMetaSettings(md_filepath, meta_tag, 
             _edx_consts.COMP_PROB_SUBMIT_REQ , _edx_consts.COMP_PROB_SUBMIT_OPT )
@@ -161,6 +164,7 @@ def _writeFilesForSnippet(md_filepath, comp_filename, tree_snippet, unit_filenam
             md_filepath, comp_filename, tree_snippet, settings, unit_filename)
     
     elif comp_type == 'video':
+        print("    |_ VIDEO COMP")
 
         # get the setting out of the meta_tag
         settings = _read_metadata.getMetaSettings(
@@ -183,6 +187,7 @@ def _writeFilesForSnippet(md_filepath, comp_filename, tree_snippet, unit_filenam
             md_filepath, comp_filename, settings, unit_filename)
 
     elif comp_type == 'discussion':
+        print("    |_ DISCUSS COMP")
 
         # get the setting out of the meta_tag
         settings = _read_metadata.getMetaSettings(md_filepath, meta_tag, 

@@ -188,6 +188,10 @@ def _updateATag(a_tag, href, unit_filename):
     if href.endswith('.html') or href.endswith('.htm'):
         return
 
+    # a mob file that is a copy, i.e. a file for the learner to download
+    elif href.endswith('copy.mob'):
+        return
+
     # a mob file with a bad extension
     elif href.endswith('.mob'):
         print(WARNING, 'Found a .mob file with a bad filename:', href, unit_filename)
