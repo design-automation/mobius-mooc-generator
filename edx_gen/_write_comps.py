@@ -10,7 +10,9 @@ from edx_gen import  _write_comp_checkboxes
 from edx_gen import  _write_comp_multiplechoice
 from edx_gen import  _write_comp_submit
 from edx_gen import  _write_comp_video
-from edx_gen import  _write_comp_discuss
+from edx_gen import  _xml_final_proj
+from edx_gen import  _xml_google_doc
+from edx_gen import  _xml_discuss
 from edx_gen import  _markdown
 from edx_gen import  _util
 import __SETTINGS__
@@ -186,6 +188,41 @@ def _writeFilesForSnippet(md_filepath, comp_filename, tree_snippet, unit_filenam
         return _write_comp_video.writeXmlForVidComp(
             md_filepath, comp_filename, settings, unit_filename)
 
+    elif comp_type == 'final-project':
+        print("    |_ FINAL PROJECT")
+
+        # get the setting out of the meta_tag
+        settings = _read_metadata.getMetaSettings(md_filepath, meta_tag,
+            _edx_consts.COMP_FINAL_PROJ_REQ, _edx_consts.COMP_FINAL_PROJ_OPT)
+
+        # check that we have settings
+        if not settings:
+            print(
+                WARNING, 'There seem to be no settings for this "final-project" component:', md_filepath)
+            return
+
+        # in this case, no files are written
+        # we return the component tag instead
+        return _xml_final_proj.tagForFinalProj(comp_filename, settings)
+
+
+    elif comp_type == 'google-doc':
+        print("    |_ GOOGLE DOC COMP")
+
+        # get the setting out of the meta_tag
+        settings = _read_metadata.getMetaSettings(md_filepath, meta_tag,
+            _edx_consts.COMP_GOOGLE_DOC_REQ, _edx_consts.COMP_GOOGLE_DOC_OPT)
+
+        # check that we have settings
+        if not settings:
+            print(WARNING, 'There seem to be no settings for this "Google Doc" component:', md_filepath)
+            return
+
+        # in this case, no files are written
+        # we return the component tag instead
+        return _xml_google_doc.tagForGoogleDocComp(comp_filename, settings, unit_filename)
+
+
     elif comp_type == 'discussion':
         print("    |_ DISCUSS COMP")
 
@@ -200,8 +237,8 @@ def _writeFilesForSnippet(md_filepath, comp_filename, tree_snippet, unit_filenam
 
         # in this case, no files are written
         # we return the component tag instead
-        return _write_comp_discuss.tagForDiscussComp(
-            md_filepath, comp_filename, tree_snippet, settings, unit_filename, unit_display_name)
+        return _xml_discuss.tagForDiscussComp( comp_filename, settings, unit_filename, 
+            unit_display_name)
 
     else:
         print(WARNING, 'Component type not recognised:', comp_type, "in", md_filepath)

@@ -69,6 +69,12 @@ COMP_PROB_QUIZ_REQ = ['type']
 COMP_PROB_QUIZ_OPT = ['display_name', 'visible_to_staff_only', 'id', 'verified_only', 'start', 'max_attempts', 'weight', 
     'showanswer', 'group_access', 'rerandomize', 'attempts_before_showanswer_button']
 
+COMP_FINAL_PROJ_REQ = ['type']
+COMP_FINAL_PROJ_OPT = ['text_response','text_response_editor','allow_multiple_files','allow_latex','prompts_type','teams_enabled','selected_teamset_id','show_rubric_during_response']
+
+COMP_GOOGLE_DOC_REQ = ['type']
+COMP_GOOGLE_DOC_OPT = ['display_name', 'google_doc_url']
+
 COMP_DISCUSS_REQ = ['type']
 COMP_DISCUSS_OPT = ['verified_only', 'display_name', 'discussion_category', 'discussion_target']
 
@@ -102,7 +108,8 @@ METADATA_ENUMS = {
 
     'rerandomize': ["always", "onreset", "never", "per_student"],
 
-    'type': ['html', 'video', 'problem-submit', 'problem-checkboxes', 'problem-multiplechoice', 'discussion']
+    'type': ['html', 'video', 'problem-submit', 'problem-checkboxes', 'problem-multiplechoice',
+        'final-project', 'google-doc', 'discussion']
 
     # more types: ['problem-choice', 'problem-dropdown', 'problem-numerical', 'problem-text']
 

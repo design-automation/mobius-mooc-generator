@@ -7,7 +7,7 @@ from edx_gen import  _mob_iframe
 import __SETTINGS__
 #--------------------------------------------------------------------------------------------------
 # xml for discussion component
-def tagForDiscussComp(component_path, filename, content, settings, unit_filename, unit_display_name):
+def tagForDiscussComp(filename, settings, unit_filename, unit_display_name):
 
     # ---- XML tag ----
     # <vertical display_name="Unit">

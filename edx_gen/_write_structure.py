@@ -302,11 +302,11 @@ def writeXmlForUnit(in_folder, filename, components):
         comp_filename = component[0]
         comp_type = component[1] # 'html' or 'video' or 'problem'
 
-        # create the main component tag
-        component_tag = etree.Element(comp_type)
-
         # normal components
         if comp_type in ['html', 'video', 'problem']:
+
+            # create the main component tag
+            component_tag = etree.Element(comp_type)
 
             # check the file exists
             filepath = sys.argv[2] + '/' + comp_type + '/' + comp_filename + '.xml'
@@ -317,6 +317,18 @@ def writeXmlForUnit(in_folder, filename, components):
             component_tag = etree.Element(comp_type)
             component_tag.set('url_name', comp_filename)
             vertical_tag.append(component_tag)
+
+        # final project components
+        elif comp_type == 'final-project':
+
+            # component tag is the comp_filename
+            vertical_tag.append(comp_filename)
+
+        # google document components
+        elif comp_type == 'google-doc':
+
+            # component tag is the comp_filename
+            vertical_tag.append(comp_filename)
 
         # discussion components
         elif comp_type == 'discussion':
