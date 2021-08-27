@@ -183,11 +183,6 @@ def _updateATag(a_tag, href, unit_filename):
     if href.endswith('/'):
         return
 
-    # ends with html or htm, so must be a url like http://google.com/hello.html
-    # do nothing
-    if href.endswith('.html') or href.endswith('.htm'):
-        return
-
     # a mob file that is a copy, i.e. a file for the learner to download
     elif href.endswith('copy.mob'):
         return
@@ -212,8 +207,13 @@ def _updateATag(a_tag, href, unit_filename):
     if href_file_ext == None or href_file_ext == '':
         return
 
+    # ends with html or htm, so must be a url like http://google.com/hello.html
+    # do nothing
+    if href_file_ext in ['html', 'htm', 'asp']:
+        return
+
     # an asset that goes to the edx static folder
-    elif href_file_ext in __SETTINGS__.EDX_ASSET_FILE_EXTENSIONS:
+    if href_file_ext in __SETTINGS__.EDX_ASSET_FILE_EXTENSIONS:
         new_href = '/' + _edx_consts.STATIC_FOLDER + '/' + unit_filename + '_' + href_file
         a_tag.set('href', new_href)
 
