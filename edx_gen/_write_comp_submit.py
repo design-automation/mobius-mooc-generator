@@ -364,7 +364,7 @@ def _addBaseModel(component_path, settings, unit_filename, problem_description_t
 
     # the base model iframe
     mob_settings = {
-        'mobius':'editor',
+        'mobius':'flowchart',
         'showView':'1',
         'node':'1'
     }
