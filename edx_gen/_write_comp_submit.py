@@ -61,7 +61,7 @@ def writeXmlForSubmitComp(component_path, filename, content, settings, unit_file
     #     <a href="https://design-automation.github.io/mobius-parametric-modeller-dev-0-8/publish?file=https://mooc-s3cf.s3-ap-southeast-1.amazonaws.com/procedural_modelling_v3/mob_examples/w1_s7_u2_assign_building_exp.mob&amp;showView=1" target="Mobius"> Open Mobius in a separate browser tab.</a>
     #   </p>
     # </div>
-    # <h4 style="font-size: 20px;font-weight: 400;font-style: italic;color: #474747"> Base Codescript </h4>
+    # <h4 style="font-size: 20px;font-weight: 400;font-style: italic;color: #474747"> Base Script </h4>
     # <p> This is the base file that you should use to create your answer for this assignment. Add your code to this base file save it.</p>
     # <div>
     #   <iframe width="100%" height="600px" style="border-style:solid;border-width:4px;border-color:#065683" src="https://design-automation.github.io/mobius-parametric-modeller-dev-0-8/editor?file=https://mooc-s3cf.s3-ap-southeast-1.amazonaws.com/procedural_modelling_v3/mob_examples/w1_s7_u2_assign_building_base.mob&amp;showView=1&amp;node=1"> Mobius Modeller </iframe>
@@ -354,7 +354,7 @@ def _addBaseModel(component_path, settings, unit_filename, problem_description_t
     # heading
     h4_tag = etree.Element("h4")
     h4_tag.set('style', _css_settings.H4_CSS)
-    h4_tag.text = 'Base Codescript'
+    h4_tag.text = 'Base Script'
     problem_description_tag.append(h4_tag)
     
     # the base model description text
