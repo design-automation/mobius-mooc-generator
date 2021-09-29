@@ -15,20 +15,54 @@ FINAL_PROJ_INSTRUCTIONS = "Copy and paste the URL of your published Mobius Model
 
 FINAL_PROJ_CRITERION_OPTIONS = [
     [
-        'Poor', '0', 
-        'Your Mobius script needs improvement. You have not passed your final project. You need to improve your script and re-submit.'
+        'Not-Gradable',
+        '1',
+        'Your Mobius script has major issues and is not gradable. You have not passed your final project. You need to re-submit a new script.'
+    ],
+    [
+        'Very-Weak', 
+        '2', 
+        'Your Mobius script is very weak. You have not passed your final project. You need to make significant improvements to your script and re-submit.'
+    ],
+    [
+        'Weak',
+        '3',
+        'Your Mobius script is weak. You have not passed your final project. You need to improve your script and re-submit.'
+    ],
+    [
+        'Below-Average',
+        '4',
+        'Your Mobius script is below average. You have not passed your final project. You need to make some improvements to your script and re-submit.'
+    ],
+    [
+        'Average',
+        '5',
+        'The Mobius script is OK. You have passed your final project.'
+    ],
+    [
+        'Above-Average',
+        '6', 
+        'The Mobius script is above average. You have passed your final project.'
     ], 
     [
-        'Fair', '1', 
-        'The Mobius script is fair. You have passed your final project.'
-    ], 
-    [
-        'Good', '2', 
+        'Good', 
+        '7', 
         'The Mobius script is good. Well done. You have passed your final project.'
-    ], 
+    ],
     [
-        'Excellent', '3',
-        'The Mobius script is excellent. Very well done! You have passed your final project.'
+        'Very-Good',
+        '8',
+        'The Mobius script is very good. Very well done! You have passed your final project.'
+    ],
+    [
+        'Excellent', 
+        '9',
+        'The Mobius script is excellent. Nice work! You have passed your final project.'
+    ],
+    [
+        'Outstanding',
+        '10',
+        'The Mobius script is outstanding. Impressive! You have passed your final project.'
     ]
 ]
 #--------------------------------------------------------------------------------------------------
