@@ -1,4 +1,4 @@
-# Running the Edx Generator
+# Running the Möbius MOOC Generator
 
 Important note:
 
