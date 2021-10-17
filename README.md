@@ -1,4 +1,4 @@
-# Edx Generator
+# Möbius MOOC Generator
 
 A Python3 script for generating an edx course from markdown.
 
