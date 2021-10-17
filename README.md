@@ -12,7 +12,7 @@ The basic workflow is that you create all your content locally, in a specific fo
 ## More Information
 
 For more information about creating the content for the Edx Generator:
-* [Creating content for the Edx Generator](./README_DEV.md)
+* [Creating content for the Möbius MOOC Generator](./README_DEV.md)
 
 For more information about running the Edx Generator:
-* [Running the Edx Generator](./README_RUN.md)
+* [Running the Möbius MOOC Generator](./README_RUN.md)
