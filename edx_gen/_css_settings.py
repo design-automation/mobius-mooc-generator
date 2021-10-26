@@ -52,6 +52,7 @@ IMAGE_CSS = ';'.join([
     # 'display:block',
     # 'margin-left:auto',
     # 'margin-right:auto',
+    'max-width:100%',
     'border-style:solid',
     'border-width:1px'
     ])
